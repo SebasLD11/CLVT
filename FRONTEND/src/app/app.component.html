@@ -1,0 +1,390 @@
+<!-- TOP NAV -->
+<header class="topnav">
+  <div class="container nav-bar">
+    <div class="brand">
+      <img class="logo-img" src="assets/img/Logo.BK.png" alt="Bye K1tty" />
+      <span class="brand-text">BYE K1TTY</span>
+    </div>
+
+    <div class="actions">
+      <button type="button" [class.active]="tab()==='shop'" (click)="tab.set('shop')">Shop</button>
+      <button type="button" [class.active]="tab()==='about'" (click)="tab.set('about')">About</button>
+
+      <button
+        type="button"
+        class="theme"
+        (click)="toggleTheme()"
+        [attr.aria-pressed]="dark"
+        [title]="dark ? 'Cambiar a claro' : 'Cambiar a oscuro'">
+        {{ dark ? '☀️' : '🌙' }}
+      </button>
+
+      <!-- Cart toggle accesible -->
+      <button
+        type="button"
+        class="cart"
+        (click)="cartOpen=true"
+        aria-label="Abrir carrito"
+        aria-controls="drawerCart"
+        [attr.aria-expanded]="cartOpen ? 'true' : 'false'">
+        Carrito
+        <span class="badge" *ngIf="(cartSvc.itemCount$ | async) as count">{{ count }}</span>
+      </button>
+    </div>
+  </div>
+</header>
+<main class="container">
+  <!-- BANNER DE ENTRADA (full screen) -->
+  <section *ngIf="showEntry" class="entry-banner" role="dialog" aria-modal="true">
+    <img class="entry-bg" src="assets/img/BK.ripndip.png" alt="" aria-hidden="true" />
+    <div class="inner">
+      <button class="entry-cta" (click)="enterShop()">Entrar a la tienda</button>
+    </div>
+  </section>
+  <!-- Cuando NO es /checkout, muestro Shop/About -->
+  <ng-container *ngIf="!isRouted(); else routedTpl">
+    <!-- SHOP --> 
+    <section *ngIf="tab()==='shop'" class="shop" id="shopTop">
+      <div class="shop-header">
+        <h2>Tienda</h2>
+        <div class="right-actions">
+          <div class="tags">
+            <span *ngFor="let t of allTags()">#{{ t }}</span>
+          </div>
+          <!-- + aria-controls / expanded -->
+          <button type="button" class="filters-toggle" (click)="filtersOpen = true" aria-controls="filtersPanel" [attr.aria-expanded]="filtersOpen ? 'true' : 'false'">
+            Filtros
+          </button>
+        </div>
+      </div>
+
+      <div class="shop-layout">
+        <!-- backdrop móvil -->
+        <div class="filters-backdrop" *ngIf="filtersOpen" (click)="filtersOpen=false"></div>
+        <!-- ASIDE: Filtros -->
+        <aside id="filtersPanel" class="filters" [class.open]="filtersOpen">
+          <header class="filters-head">
+            <h3>Filtros</h3>
+            <button type="button" class="filters-close" (click)="filtersOpen=false" aria-label="Cerrar filtros">✕</button>
+          </header>
+
+          <div class="filters-group">
+            <label for="searchBox">Buscar</label>
+            <input
+              id="searchBox"
+              type="search"
+              placeholder="Nombre del producto…"
+              [value]="search()"
+              (input)="search.set($any($event.target).value)" />
+          </div> 
+
+          <div class="filters-group">
+            <label>Etiquetas</label>
+            <div class="chips">
+              <button
+                *ngFor="let t of allTags()"
+                class="chip"
+                [class.active]="tagChecked(t)"
+                (click)="toggleTag(t)">
+                {{ t }}
+              </button>
+            </div>
+          </div>
+
+          <div class="filters-group">
+            <label>Precio</label>
+            <div class="price-row">
+              <input
+                type="number"
+                [min]="priceMin()" [max]="priceMax()"
+                [value]="filterMin()"
+                (input)="filterMin.set(+($any($event.target).value) || priceMin())">
+                <span>—</span>
+              <input
+                type="number"
+                [min]="priceMin()" [max]="priceMax()"
+                [value]="filterMax()"
+                (input)="filterMax.set(+($any($event.target).value) || priceMax())">
+            </div>
+            <small class="muted">
+              {{ priceMin() | currency:'EUR' }} – {{ priceMax() | currency:'EUR' }}
+            </small>
+          </div>
+
+          <div class="filters-actions">
+            <button class="clear" (click)="clearFilters()">Limpiar</button>
+            <button class="apply" (click)="filtersOpen=false">Aplicar</button>
+          </div>
+        </aside>
+        <!-- CATÁLOGO centrado -->
+        <section class="catalog">
+          <div class="collection" *ngFor="let g of groups()">
+            <h3 class="collection-head">
+              <button type="button"
+                      class="collection-title"
+                      (click)="toggleCollection(g.title)"
+                      [attr.aria-expanded]="!isCollapsed(g.title)"
+                      [attr.aria-controls]="'col-'+g.title">
+                {{ g.title }} <small>({{ g.items.length }})</small>
+              </button>
+            </h3>
+            <div class="grid"
+              [id]="'col-'+g.title"
+              *ngIf="!isCollapsed(g.title)">
+              <article class="card" *ngFor="let p of g.items; trackBy: trackById">
+                <div class="media" (click)="openProduct(p)">
+                  <img
+                    [src]="p.images?.length ? p.images[0] : FALLBACK_IMG"
+                    [alt]="p.name"
+                    (error)="onImgErr($event)" />
+                  <div class="thumbs">
+                    <img *ngFor="let src of p.images"
+                      [src]="src"
+                      alt="thumb"
+                      (error)="onImgErr($event)" />
+                  </div>
+                </div>
+                <div class="info">
+                  <div>
+                    <h3>{{ p.name }}</h3>
+                    <p class="price">{{ p.price | currency:'EUR' }}</p>
+                  </div>
+                  <div class="right">
+                    <span class="tag">{{ p.tag }}</span>
+                    <button class="add"
+                      (click)="(p['sizes']?.length > 1) || (p['colors']?.length) ? openProduct(p) : cartSvc.add(p, null, (p['colors']?.[0] || null))">
+                      + Añadir
+                    </button>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>      
+    <!-- ABOUT -->
+    <section *ngIf="tab()==='about'" class="about">
+      <!-- Hero de bienvenida (ahora en About) -->
+      <div class="hero about-hero">
+        <h1>Bienvenido/a a BYE K1TTY</h1>
+        <p>
+          Aquí encontrarás al detalle cada pieza exclusiva y colecciones que se lanzan. Espero que disfrutes de la
+          experiencia y el paso por la tienda. Encontrarás diseños originales que no verás en otro lugar, además de encontrar tu favorito
+          y si tienes preguntas, no dudes en contactar.
+        </p>
+      </div>
+      <header class="about-header">
+        <h2>Sobre Bye K1tty</h2>
+        <p>
+          Diseñador de moda urbana y artista gráfico, especializado en la creación de prendas con mensaje provocador y estética underground.
+          Mi trabajo fusiona el arte, la crítica social y la cultura callejera para dar vida a diseños originales que invitan a la reflexión y la autoexpresión. Además colaboro con la 
+          comunidad <a class="reference" href="https://www.valodigs.com/" target="_blank" rel="noopener">VALODI</a> en el desarrollo de colecciones exclusivas, aportando visión 
+          creativa y compromiso por mantener viva la autenticidad de la moda urbana.
+        </p>
+      </header>
+
+      <div class="about-grid">
+        <!-- Imagen -->
+        <figure class="about-media">
+          <!-- Ajusta el nombre del archivo si es distinto -->
+          <img src="assets/img/BK.Vulgar.png" alt="Bye K1tty — retrato" (error)="onImgErr($event)" />
+        </figure>
+
+        <!-- Contenido lateral: contacto + FAQ -->
+        <div class="about-content">
+          <!-- Contacto -->
+          <section class="contact">
+            <h3>Contacto</h3>
+            <ul class="contact-list">
+              <li>
+                <!-- Sustituye 34XXXXXXXXX por tu número en formato internacional -->
+                <a class="contact-card" href="https://wa.me/34634183862" target="_blank" rel="noopener">
+                  <img class="icon" src="assets/img/notificacion.png" alt="" />
+                  <span>Escríbeme por WhatsApp</span>
+                </a>
+              </li>
+              <li>
+                <!-- Sustituye el handle por el tuyo -->
+                <a class="contact-card" href="https://www.instagram.com/byekitttty" target="_blank" rel="noopener">
+                  <img class="icon" src="assets/img/inst-icon.png" alt="" />
+                  <span>Sígueme en Instagram</span>
+                </a>
+              </li>
+            </ul>
+          </section>
+
+          <!-- FAQ -->
+          <section class="faq">
+            <h3>FAQ</h3>
+
+            <details>
+              <summary>¿Qué tallas manejas?</summary>
+              <p>Normalmente S–XL. Cada prenda indica las tallas en la ficha. Si dudas entre dos tallas, elige la mayor para un fit oversize.</p>
+            </details>
+
+            <details>
+              <summary>¿Cuánto tarda el envío?</summary>
+              <p>España peninsular: 48–72h laborables. Islas/UE: 4–7 días. Recibirás tracking cuando el pedido salga del taller.</p>
+            </details>
+
+            <details>
+              <summary>¿Aceptas cambios o devoluciones?</summary>
+              <p>Dispones de 14 días desde la recepción. La prenda debe estar sin usar y con etiquetas. Escribe por WhatsApp para gestionar el caso.</p>
+            </details>
+
+            <details>
+              <summary>¿Cómo cuido mis prendas?</summary>
+              <p>Lavar del revés con agua fría, programa suave, sin secadora. No planchar directamente el estampado.</p>
+            </details>
+
+            <details>
+              <summary>¿Qué métodos de pago aceptas?</summary>
+              <p>Se aceptan solo tarjetas. Por el momento los pagos se procesan por medio de WhatsApp y Bizum, siempre con tu recibo de compra. Estamos trabajando para habilitar el 
+                método <a class="reference" href="https://stripe.com/es" target="_blank" rel="noopener">Stripe</a> con pasarela cifrada.
+              </p>
+            </details>
+
+            <details>
+              <summary>¿Cómo funcionan los impuestos y aduanas (Canarias, Ceuta/Melilla y fuera de la UE)?</summary>
+              <p>
+                Península y Baleares: los precios incluyen IVA. <br>
+                Canarias, Ceuta y Melilla: el precio no incluye IGIC/IPSI ni gastos de gestión/DUA. 
+                Estos pueden exigirse en la entrega por el transportista y corren a cargo del cliente. <br>
+                Por el momento nuestro alcance de envio se centra en España y estamos trabajando para llegar a otros lugares dentro y fuera de la UE.
+              </p>
+            </details>
+
+            <details>
+              <summary>Mi pedido ha llegado dañado o incorrecto, ¿qué hago?</summary>
+              <p>
+                Escríbenos dentro de las 48&nbsp;h desde la recepción con fotos del embalaje y de la prenda. 
+                Según la ley de consumidores, gestionaremos sin coste la reparación o sustitución; si no fuera posible, 
+                te ofreceremos reembolso. Cuando proceda, te facilitaremos una etiqueta de devolución/prepago para recoger el producto.
+                (Esto es independiente del derecho de desistimiento de 14&nbsp;días para compras online, salvo artículos personalizados).
+              </p>
+            </details>
+
+            <details>
+              <summary>Colaboraciones y venta al por mayor</summary>
+              <p>Estamos abiertos a collabs y selecciones muy curadas para retail. Escríbenos por WhatsApp o Instagram con tu propuesta.</p>
+            </details>
+          </section>
+        </div>
+      </div>
+    </section>  
+  </ng-container>
+  <!-- Cuando SÍ es /checkout, solo router-outlet -->
+  <ng-template #routedTpl>
+    <router-outlet></router-outlet>
+  </ng-template>
+</main>
+
+<!-- MODAL PRODUCTO -->
+<div class="modal-backdrop" *ngIf="selected" (click)="selected=null"></div>
+<div class="modal" *ngIf="selected">
+  <div class="modal-body" (click)="$event.stopPropagation()">
+    <!-- ✕ Cerrar modal -->
+    <button id="modalClose" class="close-btn" (click)="closeProduct()" aria-label="Cerrar">✕</button>
+
+    <div class="viewer">
+      <button class="nav prev" (click)="prev()">‹</button>
+      <img
+        [src]="selected?.images?.length ? selected?.images[imgIndex] : FALLBACK_IMG"
+        [alt]="selected?.name || 'Producto'"
+        (error)="onImgErr($event)" />
+      <button class="nav next" (click)="next()">›</button>
+    </div>
+
+    <div class="thumbs-lg">
+      <button
+        *ngFor="let src of (selected?.images || []); let i = index"
+        [class.active]="i===imgIndex"
+        (click)="imgIndex=i">
+        <img [src]="src" [alt]="'thumb-'+i" (error)="onImgErr($event)" />
+      </button>
+    </div>
+
+    <div class="meta">
+      <h3>{{ selected?.name }}</h3>
+      <!-- Selector de color -->
+      <div class="colors" *ngIf="selected?.['colors']?.length">
+        <span class="lbl">Color:</span>
+        <div class="colors-row">
+          <button type="button"
+            *ngFor="let c of selected!['colors']"
+            [class.active]="selectedColor === c"
+            (click)="selectedColor = c"
+            [attr.aria-pressed]="selectedColor === c ? 'true' : 'false'"
+            [title]="c">
+            <!-- Si c es un hex (#fff/#000), pinta un swatch; si no, muestra texto -->
+            <span class="swatch"
+                  [style.background]="(c||'').startsWith('#') ? c : null"
+                  [style.border]="(c||'').startsWith('#') ? '1px solid rgba(0,0,0,.2)' : null"></span>
+            <span class="txt" *ngIf="!(c||'').startsWith('#')">{{ c }}</span>
+          </button>
+        </div>
+      </div>
+      <!-- Selector de tallas -->
+      <div class="sizes" *ngIf="selected?.sizes?.length">
+        <span class="lbl">Talla:</span>
+        <div class="sizes-row">
+          <button type="button"
+            *ngFor="let s of selected.sizes"
+            [class.active]="selectedSize === s"
+            (click)="selectedSize = s"
+            [attr.aria-pressed]="selectedSize === s ? 'true' : 'false'">
+            {{ s }}
+          </button>
+        </div>
+      </div>
+      <!-- CTA -->
+      <button class="cta"
+        [disabled]="selected?.sizes?.length && !selectedSize || (selected?.colors?.length && !selectedColor)"
+        (click)="addFromModal()">
+        Añadir al carrito<span *ngIf="selectedSize"> — {{selectedSize}}</span><span *ngIf="selectedColor"> — {{ colorLabel(selectedColor) }}</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER CARRITO -->
+<div id="drawerCart" class="drawer" [class.open]="cartOpen" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+  <header>
+    <h3 id="cartTitle">Tu carrito</h3>
+    <button id="cartClose" type="button" (click)="cartOpen=false" aria-label="Cerrar carrito">✕</button>
+  </header>
+
+  <div class="content">
+    <div class="item" *ngFor="let it of (cartSvc.items$|async)">
+      <img [src]="it.img || FALLBACK_IMG" alt="thumb" (error)="onImgErr($event)" />
+      <div class="details">
+        <p class="name">
+          {{ it.name }}
+          <span *ngIf="it.size" class="muted">· Talla {{ it.size }}</span>
+          <span *ngIf="it.color" class="muted">· Color {{ it.colorLabel || colorLabel(it.color) }}</span>
+        </p>
+        <p class="muted">{{ it.price | currency:'EUR' }}</p>
+        <div class="qty">
+          <button class="chip" (click)="cartSvc.dec(it.key)" aria-label="Disminuir">−</button>
+          <span class="qty-num">{{ it.qty }}</span>
+          <button class="chip" (click)="cartSvc.inc(it.key)" aria-label="Aumentar">+</button>
+          <button class="clear sm" (click)="cartSvc.remove(it.key)">Eliminar</button>
+        </div>
+      </div>
+    </div>
+    <p class="empty" *ngIf="!(cartSvc.items$|async)?.length">Aún no añadiste productos.</p>
+  </div>
+
+  <footer>
+    <div class="row">
+      <span>Total</span>
+      <strong>{{ cartSvc.total() | currency:'EUR' }}</strong>
+    </div>
+    <div class="row gap">
+      <button class="clear" (click)="cartSvc.clear()">Vaciar</button>
+      <button class="apply" [disabled]="!(cartSvc.items$|async)?.length" (click)="checkoutNow()">Checkout</button>
+    </div>
+  </footer>
+</div>
+

@@ -1,0 +1,55 @@
+<!-- src/app/thanks/thanks.component.html -->
+<section class="thanks container">
+  <header class="head">
+    <h2>¡Gracias por tu compra!</h2>
+    <p class="sub">Sigue estos dos pasos para completar tu pedido.</p>
+  </header>
+
+  <article class="card">
+    <div class="section">
+      <div class="info">
+        <p class="muted" *ngIf="receiptUrl(); else missing">
+          Recibo: <a [href]="receiptUrl()!" target="_blank" rel="noopener">abrir PDF</a>
+        </p>
+        <ng-template #missing>
+          <p class="warn">No se ha encontrado el recibo en esta sesión.</p>
+        </ng-template>
+      </div>
+
+      <ol class="steps">
+        <li class="step">
+          <h4>Paso 1 · Abre y descarga tu recibo</h4>
+          <p>Comprueba tus datos, artículos y total. Si todo está correcto, descárgalo para adjuntarlo en WhatsApp.</p>
+          <div class="actions">
+            <button class="apply" (click)="openPdf()" [disabled]="!receiptUrl()">Abrir recibo (PDF)</button>
+          </div>
+          <p class="hint">Si no se descarga automáticamente, usa el botón “descargar” del visor.</p>
+        </li>
+
+        <li class="step">
+          <h4>Paso 2 · Confirma y paga por WhatsApp</h4>
+          <p>Se abrirá WhatsApp con un mensaje prellenado para confirmar el pedido y pagar por Bizum. Adjunta el PDF descargado en el Paso 1.</p>
+          <div class="actions">
+            <a *ngIf="waHref(); else waMissing"
+              class="apply"
+              [href]="waHref()!"
+              target="_self"
+              rel="noopener">
+              Abrir WhatsApp para pagar
+            </a>
+            <ng-template #waMissing>
+              <button class="apply" disabled title="Configurar WhatsApp del vendedor">
+                Abrir WhatsApp para pagar (no disponible)
+              </button>
+              <p class="warn">No se ha podido generar el enlace de WhatsApp. Contacta con soporte o revisa tu número de vendedor.</p>
+            </ng-template>
+          </div>
+        </li>
+      </ol>
+
+      <div class="more">
+        <button class="ghost" (click)="backToShop()">← Volver a la tienda</button>
+      </div>
+    </div>
+  </article>
+</section>

@@ -1,0 +1,253 @@
+:host{ display:block; }
+
+.checkout{
+  padding: 16px 0 24px;
+  overflow: hidden;
+}
+
+.checkout-header{
+  display:flex; align-items:flex-end; justify-content:space-between; gap:10px;
+  margin-top: 12px;
+}
+
+.back-btn{
+  padding:8px 12px; border-radius:12px; border:1px solid rgba(0,0,0,.1);
+  background:transparent; color:inherit; font-weight:800; cursor:pointer;
+}
+:host-context(.dark) .back-btn{
+  border-color: rgba(255,255,255,.12);
+  background: rgba(255,255,255,.02);
+}
+.back-btn:hover{ background: rgba(0,0,0,.05); }
+:host-context(.dark) .back-btn:hover{ background: rgba(255,255,255,.08); }
+
+.checkout-header h2{
+  margin:0; font-size: clamp(24px, 3vw, 32px); font-weight:900;
+}
+.checkout-sub{ opacity:.8; font-size: 14px; }
+
+.checkout-layout{
+  display:grid;
+  grid-template-columns: 1fr minmax(300px, 380px);
+  gap:20px;
+  margin-top: 12px;
+}
+
+.card{
+  background:rgba(255,255,255,.85);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+  border: 1px solid rgba(0,0,0,.06);
+}
+:host-context(.dark) .card{
+  background:rgba(24,24,27,.92);
+  border-color: rgba(255,255,255,.08);
+}
+
+.card .section{
+  padding: 14px;
+  display: grid; gap: 12px;
+}
+.card .section + .section{
+  border-top: 1px solid rgba(0,0,0,.06);
+}
+:host-context(.dark) .card .section + .section{
+  border-color: rgba(255,255,255,.08);
+}
+
+.form-title, .sum-title{
+  margin:0; font-size:16px; font-weight:800;
+}
+
+/* ====== Form ====== */
+.form-card, .summary-card { min-width: 0; } /* permite encoger dentro del grid */
+.form-grid > * { min-width: 0; } /* evita que el contenido fuerce el ancho */
+
+.form-grid{
+  display:grid; gap:10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 cols fluidas */
+}
+.form-grid .col-1{ grid-column: 1 / -1; }
+
+.field{
+  display:grid; gap:6px;
+  min-width: 0;  /* clave para inputs largos */
+}
+.field label{
+  font-weight:700; font-size:12px; opacity:.85;
+}
+.field input, .field select, .field textarea{
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-height: 42px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.1);
+  background: transparent; color: inherit;
+}
+:host-context(.dark) .field input,
+:host-context(.dark) .field select,
+:host-context(.dark) .field textarea{
+  border-color: rgba(255,255,255,.12);
+  background: rgba(255,255,255,.02);
+}
+
+.actions{
+  display:flex; gap:8px; justify-content:flex-end;
+}
+.btn{
+  padding:10px 14px; border-radius:12px; border:1px solid rgba(0,0,0,.1);
+  background:transparent; color:inherit; font-weight:800; cursor:pointer;
+}
+.btn.primary{ border:none; background:#facc15; color:#000; }
+.btn[disabled]{ opacity:.6; cursor:not-allowed; }
+
+/* ====== Summary (derecha) ====== */
+.summary-card{ position: sticky; top: calc(var(--nav-h) + 12px); }
+
+.list{
+  display:grid; gap:10px;
+}
+.item{
+  display:grid; grid-template-columns: 56px 1fr auto; gap:10px; align-items:center;
+}
+.thumb{
+  width:56px; height:56px; border-radius:10px; object-fit:cover; background:#0b0b0b;
+}
+.name{ font-weight:700; line-height:1.2; }
+.small{ font-size:12px; opacity:.75; }
+
+.totals{
+  display:grid; gap:8px;
+}
+.totals .row{ display:flex; align-items:center; justify-content:space-between; }
+.totals .grand{ font-weight:900; font-size:16px; }
+
+/* ====== Shipping options ====== */
+.ship-list{
+  display:grid; gap:8px;
+}
+.radio{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:10px 12px; border-radius:12px; border:1px solid rgba(0,0,0,.1);
+  background:transparent; cursor:pointer;
+}
+.radio input{ accent-color: #facc15; }
+.radio .left{ display:flex; align-items:center; gap:10px; }
+.radio .svc{ font-size:12px; opacity:.7; }
+.radio.active{ background: rgba(250,204,21,.15); border-color:#facc15; }
+
+/* =========================
+   Responsive (alineado con app.component.scss)
+   ========================= */
+
+/* <= 1200px: pequeños ajustes de ancho */
+@media (max-width: 1200px){
+  .checkout-layout{ gap: 16px; }
+}
+
+/* <= 1024px: 1 columna, sin sticky en el resumen */
+@media (max-width: 1024px){
+  .checkout{ padding: 12px 0 20px; }
+
+  .checkout-layout{
+    grid-template-columns: 1fr;   /* una columna */
+    gap: 16px;
+  }
+
+  .summary-card{
+    position: static;             /* quita sticky */
+    top: auto;
+  }
+
+  /* inputs un poco más cómodos en tablet */
+  .form-grid{
+    grid-template-columns: 1fr; gap: 10px;
+  }
+
+  /* acciones a lo ancho */
+  .actions{ justify-content: stretch; }
+  .btn{ flex: 1 0 auto; }
+}
+
+/* <= 768px: móvil */
+@media (max-width: 768px){
+  .checkout{ padding: 10px 0 18px; }
+
+  .checkout-header{ align-items:center; flex-wrap: wrap; }
+  .back-btn{ min-height: 40px; }
+  .checkout-header h2{
+    font-size: clamp(22px, 4vw, 28px);
+  }
+  .checkout-sub{ font-size: 13px; }
+
+  /* Form en una sola columna */
+  .form-grid{
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .form-grid .col-1{ grid-column: 1 / -1; }
+
+  .field input, .field select, .field textarea{
+    min-height: 42px;
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+
+  /* Tarjetas más compactas */
+  .card .section{ padding: 12px; gap: 10px; }
+  .form-grid{ grid-template-columns: 1fr; }
+
+  /* Lista de artículos */
+  .item{
+    grid-template-columns: 48px 1fr auto;
+    gap: 8px;
+  }
+  .thumb{ width:48px; height:48px; border-radius: 10px; }
+
+  /* Opciones de envío */
+  .radio{
+    padding: 9px 10px;
+    border-radius: 10px;
+  }
+  .radio .svc{ font-size: 11px; }
+
+  /* Totales */
+  .totals .grand{ font-size: 15px; }
+
+  /* Botones primarios a ancho completo */
+  .actions{ gap: 8px; }
+  .btn{ padding: 10px 12px; border-radius: 10px; }
+  .btn.primary{ font-weight: 900; }
+}
+
+/* <= 390px: móviles muy estrechos */
+@media (max-width: 390px){
+  .checkout{ padding: 8px 0 16px; }
+  .back-btn{ padding:7px 10px; border-radius:10px; font-size: 13px; }
+
+  .field input, .field select, .field textarea{
+    min-height: 38px; border-radius: 10px; padding: 9px 10px;
+  }
+
+  .checkout-header h2{ font-size: 22px; }
+  .checkout-sub{ font-size: 12px; }
+
+  .card .section{ padding: 10px; gap: 8px; }
+
+  .item{
+    grid-template-columns: 44px 1fr auto;
+    gap: 8px;
+  }
+  .thumb{ width:44px; height:44px; border-radius: 9px; }
+
+  .radio{ padding: 8px 10px; }
+  .btn{ padding: 9px 10px; border-radius: 9px; }
+
+  .totals .grand{ font-size: 14px; }
+}
+
+.checkout-header{ margin-top: 12px; }

@@ -1,0 +1,4 @@
+/* You can add global styles to this file, and also import other style files */
+html, body { height: 100%; overflow-x: hidden;}
+body { margin: 0; background: transparent; } /* deja que el fondo del :host se vea a pantalla completa */
+body.no-scroll { overflow: hidden; }

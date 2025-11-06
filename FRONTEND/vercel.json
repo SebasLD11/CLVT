@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "framework": "angular",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/FRONTEND/browser",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://bye-k1tty-2ecb3d391bfa.herokuapp.com/api/$1" },
+    { "source": "/(.*)", "destination": "/" }
+  ]
+}

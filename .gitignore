@@ -1,0 +1,23 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Angular/CLI
+.angular/
+dist/
+
+# Backend builds/logs
+*.log
+.out/
+.build/
+
+# Env
+*.env
+*.env.*
+!.env.example
+
+# IDE/OS
+.vscode/
+.DS_Store
+Thumbs.db

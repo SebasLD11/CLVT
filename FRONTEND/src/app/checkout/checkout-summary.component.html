@@ -1,0 +1,130 @@
+<section class="checkout container">
+  <header class="checkout-header">
+    <h2>Resumen de compra</h2>
+    <button type="button" class="back-btn" (click)="backToShop()" title="Volver a la tienda">← Volver a la tienda</button>
+  </header>
+  <p class="checkout-sub">Revisa datos, envío y total antes de finalizar.</p>
+
+  <div class="checkout-layout">
+    <!-- IZQUIERDA: Datos y acciones -->
+    <article class="card form-card">
+      <div class="section">
+        <h3 class="form-title">Datos de envío</h3>
+        <form [formGroup]="form" (ngSubmit)="submitSummary()">
+          <div class="form-grid">
+            <div class="field col-1">
+              <label for="fullName">Nombre completo</label>
+              <input id="fullName" formControlName="fullName" autocomplete="name">
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" formControlName="email" type="email" autocomplete="email">
+            </div>
+            <div class="field">
+              <label for="phone">Teléfono</label>
+              <input id="phone" formControlName="phone" autocomplete="tel">
+            </div>
+            <div class="field col-1">
+              <label for="line1">Dirección</label>
+              <input id="line1" formControlName="line1" autocomplete="address-line1">
+            </div>
+            <div class="field col-1">
+              <label for="line2">Piso/puerta (opcional)</label>
+              <input id="line2" formControlName="line2" autocomplete="address-line2">
+            </div>
+            <div class="field">
+              <label for="city">Ciudad</label>
+              <input id="city" formControlName="city" autocomplete="address-level2">
+            </div>
+            <div class="field">
+              <label for="province">Provincia</label>
+              <input id="province" formControlName="province" autocomplete="address-level1">
+            </div>
+            <div class="field">
+              <label for="postalCode">CP</label>
+              <input id="postalCode" formControlName="postalCode" autocomplete="postal-code">
+            </div>
+            <div class="field">
+              <label for="country">País</label>
+              <input id="country" formControlName="country" autocomplete="country" />
+            </div>
+            <div class="field col-1">
+              <label for="discountCode">Cupón (opcional)</label>
+              <input id="discountCode" formControlName="discountCode" placeholder="Introduce código de descuento">
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn" type="button" (click)="form.reset({country:'ES'})">Limpiar</button>
+            <button class="btn primary" type="submit" [disabled]="loading()">Calcular resumen</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="section" *ngIf="shippingOptions().length">
+        <h3 class="form-title" *ngIf="summary() as s">
+          Envío
+          <small *ngIf="(s.subtotal - s.discountAmount) >= 100">
+            — ¡Gratis a partir de 100€!
+          </small>
+        </h3>
+        <div class="ship-list">
+          <label class="radio"
+                *ngFor="let opt of shippingOptions()"
+                [class.active]="shipping()?.carrier===opt.carrier && shipping()?.service===opt.service">
+            <span class="left">
+              <input type="radio" name="ship" (change)="chooseShipping(opt)">
+              <span>{{opt.carrier}}</span>
+              <span class="svc">· {{opt.service}}</span>
+            </span>
+            <strong>{{ (opt.cost ?? 0) | currency:'EUR' }}</strong>
+          </label>
+        </div>
+      </div>
+
+      <div class="section" *ngIf="summary()">
+        <div class="actions">
+          <button class="btn" type="button" (click)="submitSummary()">Recalcular</button>
+          <button class="btn primary" type="button" (click)="finalize()" [disabled]="!shipping() || loading()">Finalizar compra</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- DERECHA: Carrito y totales -->
+    <aside class="card summary-card" *ngIf="summary() as s">
+      <div class="section">
+        <h3 class="sum-title">Carrito</h3>
+        <div class="list">
+          <div class="item" *ngFor="let it of s.items">
+            <img class="thumb" [src]="it.img || 'assets/img/placeholder.png'" alt="">
+            <div>
+              <div class="name">{{ it.name }} <span *ngIf="it.size" class="small">· Talla {{it.size}}</span><span *ngIf="it.color" class="small">· Color {{ it.colorLabel || colorLabel(it.color) }}</span></div>
+              <div class="small">x{{ it.qty }}</div>
+            </div>
+            <div>{{ it.price | currency:'EUR' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section totals">
+        <div class="row"><span>Subtotal</span><span>{{ s.subtotal | currency:'EUR' }}</span></div>
+        <div class="row" *ngIf="s.discountAmount>0"><span>Descuento</span><span>-{{ s.discountAmount | currency:'EUR' }}</span></div>
+        <!-- 👇 IMPORTANTE: usa s.vatAmount (no summary()...) -->
+        <div class="row">
+          <span>IVA (incl.)</span><span>{{ s.vatAmount | currency:'EUR' }}</span>
+        </div>
+
+        <!-- 👇 IMPORTANTE: default seguro para cost -->
+        <div class="row" *ngIf="shipping() as ship">
+          <span>Envío</span><span>{{ (ship.cost ?? 0) | currency:'EUR' }}</span>
+        </div>
+
+        <!-- 👇 IMPORTANTE: usa el total del backend -->
+        <div class="row grand">
+          <span>Total</span>
+          <span>{{ grandTotal() | currency:'EUR' }}</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
