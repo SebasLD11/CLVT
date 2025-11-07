@@ -567,6 +567,13 @@
 .meta .sizes-row button:hover{ background: rgba(0,0,0,.05); }
 .meta .sizes-row button:active{ transform: translateY(1px); }
 
+/* 🔒 tallas no disponibles: atenuadas y no clicables */
+.meta .sizes-row button[disabled]{
+  opacity: .4;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
 /* Estado seleccionado (por clase o por aria-pressed) */
 .meta .sizes-row button.active,
 .meta .sizes-row button[aria-pressed="true"]{
