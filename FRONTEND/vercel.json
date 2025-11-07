@@ -4,6 +4,8 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/FRONTEND/browser",
   "rewrites": [
+    { "source": "/favicon.ico", "destination": "/favicon.ico" },
+    { "source": "/assets/(.*)", "destination": "/assets/$1" },
     { "source": "/api/(.*)", "destination": "https://clvt-e0a9be82df41.herokuapp.com/$1" },
     { "source": "/(.*)", "destination": "/" }
   ]
