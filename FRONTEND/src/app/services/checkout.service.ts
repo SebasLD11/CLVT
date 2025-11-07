@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
-export interface CheckoutItem { id:string; qty:number; size?:string|null; }
+export interface CheckoutItem { id:string; qty:number; size?:string|null; color?:string|null;}
 export interface Buyer{
   fullName:string; email:string; phone:string; line1:string; line2?:string|null;
   city:string; province:string; postalCode:string; country:string;

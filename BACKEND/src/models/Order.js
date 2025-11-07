@@ -6,6 +6,7 @@ const OrderItemSchema = new Schema({
   price: Number,
   qty: Number,
   size: { type: String, default: null },
+  color: {type: String, default: null},
   img: { type: String, default: null },
 }, { _id: false });
 

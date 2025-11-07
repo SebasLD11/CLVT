@@ -5,6 +5,8 @@ export interface Product {
     tag: 'new'|'best'|'sale'|'drop';
     images: string[]; // hasta 5
     sizes: string[];
+    /** Subconjunto de sizes que está disponible para la compra */
+    availableSizes?: string[];
     /** Colores disponibles (nombre o código). Ej.: 'Negro', 'White', '#000' */
     colors?: string[];
     // 👇 NUEVO

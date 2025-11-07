@@ -5,7 +5,7 @@ const HEX2NAME: Record<string,string> = {
   '#f7a6a1': 'Peachypink',
   '#800080': 'Purple',
   '#ffff00': 'Amarillo',
-  '#ff6a7a': 'Salmon',
+  '#ff6a7a': 'Salmón',
   '#808000' : 'Oliva',
   '#d3d3d3' : 'Gris',
 };

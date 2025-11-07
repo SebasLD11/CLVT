@@ -5,6 +5,7 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { CartService } from '../services/cart.service';
 import { CheckoutService, ShippingSel } from '../services/checkout.service';
 import { Router } from '@angular/router';
+import { colorLabel } from '../utils/color.util';
 
 @Component({
   standalone: true,
@@ -16,6 +17,7 @@ import { Router } from '@angular/router';
 export class CheckoutSummaryComponent {
   cart = inject(CartService);
   api = inject(CheckoutService);
+  colorLabel = colorLabel;
 
   private fb = inject(NonNullableFormBuilder);
   private router = inject(Router);

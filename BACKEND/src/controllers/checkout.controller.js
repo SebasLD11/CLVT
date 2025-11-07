@@ -11,6 +11,7 @@ const itemSchema = z.object({
   id: z.string(),
   qty: z.number().min(1),
   size: z.string().min(1).nullable().optional(),
+  color: z.string().min(1).nullable().optional(),
 });
 const buyerSchema = z.object({
   fullName: z.string().min(2),
@@ -39,7 +40,7 @@ const summarySchema = z.object({
 function applyDiscount(subtotal, code) {
   const normalized = String(code || '').trim().toUpperCase();
   if (!normalized) return { discountCode: null, discountAmount: 0 };
-  if (['BK10', 'BYE10', 'DISCOUNT10'].includes(normalized)) {
+  if (['CLVT10', 'ASC10', 'DISCOUNT10'].includes(normalized)) {
     return { discountCode: normalized, discountAmount: +(subtotal * 0.09).toFixed(2) };
   }
   return { discountCode: normalized, discountAmount: 0 };
