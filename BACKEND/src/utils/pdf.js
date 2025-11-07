@@ -54,7 +54,7 @@ async function generateReceiptPDF(order, { outDir, brandLogoUrl }) {
   doc.font('Helvetica-Bold').text('Vendedor:', col1x, topY, { width: col1w });
   doc.font('Helvetica').text('CLVT (Asociación Cultivate) — NIF/CIF: G10596393', col1x, doc.y, { width: col1w });
   doc.text('C/de Robert Charles Darwin, Cambrils. Tarragona, 43850', col1x, doc.y, { width: col1w });
-  doc.text('Email: aso.cultivate.22@gmail.com · Tel: +34 634 183 862', col1x, doc.y, { width: col1w });
+  doc.text('Email: aso.cultivate.22@gmail.com · Tel: +34 722 331 523', col1x, doc.y, { width: col1w });
   const yVendEnd = doc.y;
 
   // Pedido

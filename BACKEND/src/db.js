@@ -6,10 +6,11 @@ async function connectDB() {
   if (!uri) throw new Error('MONGO_URI missing');
 
   const redacted = uri.replace(/\/\/([^:]+):([^@]+)@/, '//$1:****@');
-  console.log('[DB] connecting to', redacted);
+  const dbName = process.env.MONGO_DB || 'CLVT-BD';
+  console.log('[DB] connecting to', redacted, 'db=', dbName);
 
   await mongoose.connect(uri, {
-    dbName: 'CLVT-BD',
+    dbName,
     maxPoolSize: 10,
     serverSelectionTimeoutMS: 10000
   });
