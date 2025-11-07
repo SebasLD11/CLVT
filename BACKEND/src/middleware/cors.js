@@ -14,6 +14,7 @@ const allowed = [
   // Dominios explícitos (por seguridad, mantenlos aunque pongas envs)
   'https://www.asociacionclvt.com',
   'https://asociacionclvt.com',
+  'https://asociacionclvt.es',
   'https://clvt-vgs-distribution.vercel.app',
 ].filter(Boolean).map(norm);
 
