@@ -5,7 +5,9 @@ const HEX2NAME: Record<string,string> = {
   '#ff0000': 'Rojo',
   '#0000ff': 'Azul',
   '#ffff00': 'Amarillo',
-  '#da70d6': 'Orquídea',
+  '#FF6A7A': 'Salmón',
+  '#808000' : 'Verde Oliva',
+  '#D3D3D3' : 'Gris Claro',
 };
 
 /** Devuelve etiqueta legible del color.
