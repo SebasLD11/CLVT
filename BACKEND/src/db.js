@@ -9,7 +9,7 @@ async function connectDB() {
   console.log('[DB] connecting to', redacted);
 
   await mongoose.connect(uri, {
-    dbName: 'bye-k1tty',
+    dbName: 'CLVT-BD',
     maxPoolSize: 10,
     serverSelectionTimeoutMS: 10000
   });

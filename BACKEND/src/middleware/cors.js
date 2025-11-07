@@ -15,7 +15,7 @@ const allowed = [
   'https://www.asociacionclvt.com',
   'https://asociacionclvt.com',
   'https://asociacionclvt.es',
-  'https://clvt-vgs-distribution.vercel.app',
+  'https://clvt.vercel.app',
 ].filter(Boolean).map(norm);
 
 // Debug útil en Heroku logs
