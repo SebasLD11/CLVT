@@ -12,9 +12,9 @@ const allowed = [
   process.env.FRONT_URL,                     // p.ej. https://www.byek1tty.com
   ...extra,                                  // p.ej. https://byek1tty.com
   // Dominios explícitos (por seguridad, mantenlos aunque pongas envs)
-  'https://www.byek1tty.com',
-  'https://byek1tty.com',
-  'https://bye-k1tty-vgs-distribution.vercel.app',
+  'https://www.asociacionclvt.com',
+  'https://asociacionclvt.com',
+  'https://clvt-vgs-distribution.vercel.app',
 ].filter(Boolean).map(norm);
 
 // Debug útil en Heroku logs

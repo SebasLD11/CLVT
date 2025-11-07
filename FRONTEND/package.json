@@ -1,5 +1,5 @@
 {
-  "name": "bye-k1tty-web",
+  "name": "clvt-web",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
-  "engines": { "node": "20" },
+  "engines": {
+    "node": "20"
+  },
   "dependencies": {
     "@angular/common": "^19.2.0",
     "@angular/compiler": "^19.2.0",
@@ -25,7 +27,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^19.2.15",
-    "@angular/cli": "^19.2.15",
+    "@angular/cli": "^20.3.9",
     "@angular/compiler-cli": "^19.2.0",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.19.13",

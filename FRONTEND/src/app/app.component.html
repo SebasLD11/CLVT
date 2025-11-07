@@ -2,8 +2,8 @@
 <header class="topnav">
   <div class="container nav-bar">
     <div class="brand">
-      <img class="logo-img" src="assets/img/Logo.BK.png" alt="Bye K1tty" />
-      <span class="brand-text">BYE K1TTY</span>
+      <img class="logo-img" src="assets/img/LogoCLVT.png" alt="CLVT" />
+      <span class="brand-text">Tienda CLVT</span>
     </div>
 
     <div class="actions">
@@ -36,7 +36,7 @@
 <main class="container">
   <!-- BANNER DE ENTRADA (full screen) -->
   <section *ngIf="showEntry" class="entry-banner" role="dialog" aria-modal="true">
-    <img class="entry-bg" src="assets/img/BK.ripndip.png" alt="" aria-hidden="true" />
+    <img class="entry-bg" src="assets/img/flyerCLVT.png" alt="" aria-hidden="true" />
     <div class="inner">
       <button class="entry-cta" (click)="enterShop()">Entrar a la tienda</button>
     </div>
@@ -152,7 +152,10 @@
                   <div class="right">
                     <span class="tag">{{ p.tag }}</span>
                     <button class="add"
-                      (click)="(p['sizes']?.length > 1) || (p['colors']?.length) ? openProduct(p) : cartSvc.add(p, null, (p['colors']?.[0] || null))">
+                      [disabled]="p['sizes']?.length && !availableSizesOf(p).length"
+                      (click)="(p['sizes']?.length > 1) || (p['colors']?.length) || (availableSizesOf(p).length !== 1)
+                      ? openProduct(p)
+                      : cartSvc.add(p, availableSizesOf(p)[0] || null, (p['colors']?.[0] || null))">
                       + Añadir
                     </button>
                   </div>
@@ -167,20 +170,19 @@
     <section *ngIf="tab()==='about'" class="about">
       <!-- Hero de bienvenida (ahora en About) -->
       <div class="hero about-hero">
-        <h1>Bienvenido/a a BYE K1TTY</h1>
+        <h1>Bienvenido/a a CLVT</h1>
         <p>
-          Aquí encontrarás al detalle cada pieza exclusiva y colecciones que se lanzan. Espero que disfrutes de la
-          experiencia y el paso por la tienda. Encontrarás diseños originales que no verás en otro lugar, además de encontrar tu favorito
-          y si tienes preguntas, no dudes en contactar.
+          Aquí encontrarás al detalle información sobre nuestros talleres y actividades, además de cada pieza exclusiva y colecciones que se lanzan. Espero que disfrutes de la
+          experiencia y el paso por la tienda. Encontrarás diseños originales que no verás en otro lugar, además de encontrar tu favorito y si tienes preguntas, no dudes en contactar.
         </p>
       </div>
       <header class="about-header">
-        <h2>Sobre Bye K1tty</h2>
+        <h2>Sobre CLVT</h2>
         <p>
-          Diseñador de moda urbana y artista gráfico, especializado en la creación de prendas con mensaje provocador y estética underground.
-          Mi trabajo fusiona el arte, la crítica social y la cultura callejera para dar vida a diseños originales que invitan a la reflexión y la autoexpresión. Además colaboro con la 
-          comunidad <a class="reference" href="https://www.valodigs.com/" target="_blank" rel="noopener">VALODI</a> en el desarrollo de colecciones exclusivas, aportando visión 
-          creativa y compromiso por mantener viva la autenticidad de la moda urbana.
+          La marca CLVT nace de nuestra entidad Asociación CULTIVATE con la que nos dedicamos a la integración social por medio del deporte, en concreto, el skateboard y el scooter.
+          Nuestro trabajo fusiona la enseñanza de estos deportes, con la organización de eventos y venta de nuestros productos de merchandising. Además colaboramos con la comunidad 
+          <a class="reference" href="https://www.valodigs.com/" target="_blank" rel="noopener">VALODI</a> en el desarrollo de talleres, actividades, eventos y productos orignales  
+          aportando visión creativa y compromiso por mantener viva la autenticidad de la cultura urbana relacionada con nuestros deportes y comunidad.
         </p>
       </header>
 
@@ -188,7 +190,7 @@
         <!-- Imagen -->
         <figure class="about-media">
           <!-- Ajusta el nombre del archivo si es distinto -->
-          <img src="assets/img/BK.Vulgar.png" alt="Bye K1tty — retrato" (error)="onImgErr($event)" />
+          <img src="assets/img/LogoCLVT.png" alt="CLVT — LOGO" (error)="onImgErr($event)" />
         </figure>
 
         <!-- Contenido lateral: contacto + FAQ -->
@@ -199,14 +201,14 @@
             <ul class="contact-list">
               <li>
                 <!-- Sustituye 34XXXXXXXXX por tu número en formato internacional -->
-                <a class="contact-card" href="https://wa.me/34634183862" target="_blank" rel="noopener">
+                <a class="contact-card" href="https://wa.me/34722331523" target="_blank" rel="noopener">
                   <img class="icon" src="assets/img/notificacion.png" alt="" />
                   <span>Escríbeme por WhatsApp</span>
                 </a>
               </li>
               <li>
                 <!-- Sustituye el handle por el tuyo -->
-                <a class="contact-card" href="https://www.instagram.com/byekitttty" target="_blank" rel="noopener">
+                <a class="contact-card" href="https://www.instagram.com/asociacionclvt" target="_blank" rel="noopener">
                   <img class="icon" src="assets/img/inst-icon.png" alt="" />
                   <span>Sígueme en Instagram</span>
                 </a>
@@ -332,15 +334,18 @@
           <button type="button"
             *ngFor="let s of selected.sizes"
             [class.active]="selectedSize === s"
-            (click)="selectedSize = s"
+            [disabled]="!isSizeAvailable(selected!, s)"
+            (click)="isSizeAvailable(selected!, s) && (selectedSize = s)"
             [attr.aria-pressed]="selectedSize === s ? 'true' : 'false'">
             {{ s }}
+            <!-- deshabilita y atenúa si no está disponible -->
           </button>
+          <button *ngIf="false"></button>
         </div>
       </div>
       <!-- CTA -->
       <button class="cta"
-        [disabled]="selected?.sizes?.length && !selectedSize || (selected?.colors?.length && !selectedColor)"
+        [disabled]="(selected?.['sizes']?.length && (!selectedSize || !isSizeAvailable(selected!, selectedSize))) || (selected?.['colors']?.length && !selectedColor)"
         (click)="addFromModal()">
         Añadir al carrito<span *ngIf="selectedSize"> — {{selectedSize}}</span><span *ngIf="selectedColor"> — {{ colorLabel(selectedColor) }}</span>
       </button>

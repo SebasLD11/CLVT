@@ -52,9 +52,9 @@ async function generateReceiptPDF(order, { outDir, brandLogoUrl }) {
 
   // Vendedor
   doc.font('Helvetica-Bold').text('Vendedor:', col1x, topY, { width: col1w });
-  doc.font('Helvetica').text('BYE K1TTY — NIF/CIF: 48273903P', col1x, doc.y, { width: col1w });
-  doc.text('C/Ripollès 87, La mora. Tarragona, 43008', col1x, doc.y, { width: col1w });
-  doc.text('Email: aharonbj96@gmail.com · Tel: +34 634 183 862', col1x, doc.y, { width: col1w });
+  doc.font('Helvetica').text('CLVT (Asociación Cultivate) — NIF/CIF: G10596393', col1x, doc.y, { width: col1w });
+  doc.text('C/de Robert Charles Darwin, Cambrils. Tarragona, 43850', col1x, doc.y, { width: col1w });
+  doc.text('Email: aso.cultivate.22@gmail.com · Tel: +34 634 183 862', col1x, doc.y, { width: col1w });
   const yVendEnd = doc.y;
 
   // Pedido
@@ -186,7 +186,7 @@ async function generateReceiptPDF(order, { outDir, brandLogoUrl }) {
   Y(doc.y + 18);
   line(doc.y); Y(doc.y + 10);
   doc.font('Helvetica').fontSize(9).text(
-    'Método de pago: Bizum pendiente de confirmación por el vendedor.\nGracias por tu compra. Cupón -10% para próxima compra: BK10',
+    'Método de pago: Bizum pendiente de confirmación por el vendedor.\nGracias por tu compra. Cupón -10% para próxima compra: CLVT10',
     L, doc.y, { width: pageW }
   );
 

@@ -39,6 +39,26 @@ export class AppComponent {
     colorLabel = colorLabel;
     // (opcional) si usas el swatch con hex
     colorValue = colorValue;
+    // === Helpers de tallas disponibles ===
+    /** Devuelve la lista de tallas disponibles del producto.
+     *  Soporta availableSizes, alias 'Disponibles' o cae a sizes.
+     */
+    availableSizesOf(p: Product): string[] {
+        const anyP: any = p as any;
+        const src = Array.isArray(anyP.availableSizes) ? anyP.availableSizes
+                : (Array.isArray(anyP.Disponibles) ? anyP.Disponibles
+                : (Array.isArray(anyP.sizes) ? anyP.sizes : []));
+        return src.map((s: any) => String(s));
+    }
+    /** ¿La talla s está disponible en p? Si no hay info, se asume disponible. */
+    isSizeAvailable(p: Product, s: string): boolean {
+        const av = this.availableSizesOf(p);
+        return av.length ? av.includes(s) : true;
+    }
+    /** Primera talla disponible o null */
+    firstAvailableSize(p: Product): string | null {
+        const av = this.availableSizesOf(p); return av.length ? av[0] : null;
+    }
     // Muestra el banner solo la primera vez por sesión
     showEntry = !(typeof window !== 'undefined' && sessionStorage.getItem('bk-entry') === '1');
 
@@ -227,7 +247,8 @@ export class AppComponent {
         this.selected = p;
         this.imgIndex = 0;
         // preselecciona primera talla si hay
-        this.selectedSize = Array.isArray(p?.sizes) && p.sizes.length ? p.sizes[0] : null;
+        // ✅ preselecciona la PRIMERA talla DISPONIBLE (o null si no hay)
+        this.selectedSize = this.firstAvailableSize(p);
         this.selectedColor = Array.isArray((p as any)?.colors) && (p as any).colors.length ? (p as any).colors[0] : null;
     }
     closeProduct(){ 
@@ -248,8 +269,11 @@ export class AppComponent {
     }
     addFromModal(){
         if(!this.selected) return;
-
-        const size = (this.selected?.sizes?.length ? this.selectedSize : null) || null;
+        const p: any = this.selected as any;
+        // Si el producto maneja tallas, exige una talla DISPONIBLE
+        const needsSize = Array.isArray(p?.sizes) && p.sizes.length > 0;
+        const size = needsSize ? (this.selectedSize ?? null) : null;
+        if (needsSize && (!size || !this.isSizeAvailable(p, size))) return; // guard-rail
         const color = (this.selected?.colors?.length ? this.selectedColor : null) || null;
 
         // Guarda el foco ANTES de abrir el carrito
