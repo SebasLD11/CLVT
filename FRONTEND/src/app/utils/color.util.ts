@@ -2,10 +2,10 @@
 const HEX2NAME: Record<string,string> = {
   '#000': 'Negro', '#000000': 'Negro',
   '#fff': 'Blanco', '#ffffff': 'Blanco',
-  '#F7A6A1': 'Peachy-Pink',
+  '#F7A6A1': 'PeachyPink',
   '#800080': 'Purple',
   '#ffff00': 'Amarillo',
-  '#FF6A7A': 'Salmón',
+  '#FF6A7A': 'Salmon',
   '#808000' : 'Verde Oliva',
   '#D3D3D3' : 'Gris Claro',
 };
