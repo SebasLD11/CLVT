@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://localhost:5000",
+    "target": "https://clvt-e0a9be82df41.herokuapp.com",
     "secure": false,
     "changeOrigin": true
   }
