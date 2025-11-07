@@ -3,7 +3,15 @@ const PDFDocument = require('pdfkit');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const HEX2NAME = { '#000':'Negro','#000000':'Negro','#fff':'Blanco','#ffffff':'Blanco','#ff0000':'Rojo','#0000ff':'Azul','#ffff00':'Amarillo','#da70d6':'Orquídea' };
+const HEX2NAME = { '#000': 'Negro', '#000000': 'Negro',
+  '#fff': 'Blanco', '#ffffff': 'Blanco',
+  '#f7a6a1': 'Peachypink',
+  '#800080': 'Purple',
+  '#ffff00': 'Amarillo',
+  '#ff6a7a': 'Salmón',
+  '#808000' : 'Oliva',
+  '#d3d3d3' : 'Gris', 
+};
 
 async function bufferFromUrl(url){
   const r = await axios.get(url,{ responseType:'arraybuffer' });

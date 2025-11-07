@@ -12,6 +12,7 @@ const itemSchema = z.object({
   qty: z.number().min(1),
   size: z.string().min(1).nullable().optional(),
   color: z.string().min(1).nullable().optional(),
+  colorLabel: z.string().min(1).nullable().optional(),   // ✅ NUEVO: etiqueta legible
 });
 const buyerSchema = z.object({
   fullName: z.string().min(2),
@@ -75,6 +76,8 @@ async function buildSummary({ items, buyer, discountCode, shipping }) {
       price: Number(p.price),
       qty: Math.max(1, Number(i.qty || 1)),
       size: i.size ?? null,
+      color: i.color ?? null,               // ✅ PROPAGAR color
+      colorLabel: i.colorLabel ?? null,     // ✅ PROPAGAR etiqueta legible
       img: p.images?.[0] || null,
     };
   });
@@ -138,10 +141,11 @@ exports.finalize = async (req, res, next) => {
 
     // Genera PDF
     const outDir = process.env.RECEIPTS_DIR || path.join(__dirname, '../../uploads/receipts');
-    const { filename } = await generateReceiptPDF(order.toObject(), {
-      outDir,
-      brandLogoUrl: process.env.BRAND_LOGO_URL,
-    });
+    const baseOrder = order.toObject ? order.toObject() : order;
+    const { filename } = await generateReceiptPDF(
+      { ...baseOrder, items: s.items },     // ✅ fuerza items con color/colorLabel
+      { outDir, brandLogoUrl: process.env.BRAND_LOGO_URL }
+    );
 
     // URL absoluta al PDF
     const base = `${req.protocol}://${req.get('host')}`;

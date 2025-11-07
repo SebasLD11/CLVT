@@ -825,19 +825,15 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
 
 @media (max-width: 768px){ 
   @supports (height: 100svh){
-    .entry-banner{ min-height: calc(100svh - var(--nav-h)); }
-  }
-  .entry-banner{
-    /* “zoom”: ampliamos el ancho al 170% del contenedor */
-    --bg-zoom: 170% auto;       /* ancho 170%, alto auto */
-    --bg-pos-y: 45%;            /* baja un poco el encuadre */
+    .entry-banner{ min-height: 100svh; } /* sin restar la nav */
   }
   /* usa la ALTURA del viewport para “llenar” más */
   .entry-bg{
-    width: auto;
-    height: 100dvh;         /* llena la altura visible */
+    width: 100vw;
+    height: 100svh;        /* alto real del viewport en móvil */
     max-width: 100vw;
-    object-fit: cover;     /* mantiene SIN recortes */
+    max-height: 100svh;
+    object-fit: contain;   /* ✅ ver completa, sin recortes */
     object-position: center;
   }
   @supports (height: 100svh){
@@ -845,7 +841,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   }
 
   .entry-banner .inner{
-    bottom: clamp(16px, 8vh, 48px);  /* CTA un poco más arriba para no pisar bordes */
+    bottom: clamp(16px, 8vh, 48px);
   }
 
   .entry-banner .entry-cta{
@@ -1091,14 +1087,17 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
 }
 
 @media (max-width: 390px){
+  /* quita “zoom” que forzaba recortes si lo tenías */
   .entry-banner{
-    --bg-zoom: 200% auto;       /* más zoom en pantallas muy estrechas */
-    --bg-pos-y: 47%;            /* microajuste del encuadre */
+    --bg-zoom: 100% auto;
+    --bg-pos-y: 50%;
   }
   .entry-bg{
-    height: 100dvh;
+    width: 100vw;
+    height: 100svh;
     max-width: 100vw;
-    object-fit: cover;      /* NO recorta */
+    max-height: 100svh;
+    object-fit: contain;   /* ✅ sin recortes */
     object-position: center;
   }
   @supports (height: 100svh){

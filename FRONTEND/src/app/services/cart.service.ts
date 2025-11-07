@@ -135,8 +135,14 @@ export class CartService {
 
   snapshot() { return this._items$.value; }
 
-  /** payload para el checkout (shape que espera la API) */
+  /** payload para el checkout (incluye talla y color legible) */
   toCheckoutItems() {
-    return this._items$.value.map(i => ({ id: i.id, qty: i.qty, size: i.size ?? null, color: i.color ?? null, colorLabel: i.colorLabel ?? clabel(i.color) }));
+    return this._items$.value.map(i => ({
+      id: i.id,
+      qty: i.qty,
+      size: i.size ?? null,
+      color: i.color ?? null,                   // ← HEX o null
+      colorLabel: i.colorLabel ?? clabel(i.color) // ← nombre legible
+    }));
   }
 }

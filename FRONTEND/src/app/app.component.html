@@ -368,7 +368,8 @@
         <p class="name">
           {{ it.name }}
           <span *ngIf="it.size" class="muted">· Talla {{ it.size }}</span>
-          <span *ngIf="it.color" class="muted">· Color {{ it.colorLabel || colorLabel(it.color) }}</span>
+          <!-- 👇 NUEVO: color legible -->
+          <span *ngIf="it.color || it.colorLabel" class="muted">· Color {{ it.colorLabel || colorLabel(it.color) }}</span>
         </p>
         <p class="muted">{{ it.price | currency:'EUR' }}</p>
         <div class="qty">
