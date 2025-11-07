@@ -2,12 +2,12 @@
 const HEX2NAME: Record<string,string> = {
   '#000': 'Negro', '#000000': 'Negro',
   '#fff': 'Blanco', '#ffffff': 'Blanco',
-  '#F7A6A1': 'Peachypink',
+  '#f7a6a1': 'Peachypink',
   '#800080': 'Purple',
   '#ffff00': 'Amarillo',
-  '#FF6A7A': 'Salmon',
+  '#ff6a7a': 'Salmon',
   '#808000' : 'Oliva',
-  '#D3D3D3' : 'Gris',
+  '#d3d3d3' : 'Gris',
 };
 
 /** Devuelve etiqueta legible del color.
