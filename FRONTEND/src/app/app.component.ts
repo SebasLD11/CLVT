@@ -16,6 +16,12 @@ import { colorLabel, colorValue } from './utils/color.util';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+    // 👇 deja SOLO estos helpers; elimina _overlays y updateOverlayState()
+  private _lockScroll() { document.body.classList.add('no-scroll'); }
+  private _syncScrollLock() {
+    const anyOpen = !!(this.selected || this.cartOpen || this.filtersOpen);
+    document.body.classList.toggle('no-scroll', anyOpen);
+  } 
   private productSvc = inject(ProductService);
   cartSvc = inject(CartService);
   checkout = inject(CheckoutService);
@@ -44,6 +50,7 @@ export class AppComponent {
 
   // foco previo (para restaurar al cerrar overlays)
   private _lastFocus: HTMLElement | null = null;
+  
 
   // Banner de entrada
   showEntry = !(typeof window !== 'undefined' && sessionStorage.getItem('clvt-entry') === '1');
@@ -110,9 +117,21 @@ export class AppComponent {
       this.filterMin.set(min); this.filterMax.set(max);
     });
 
-    // Solo logging de orden de colecciones (NO tocamos scroll aquí)
+    // ✅ deja el focus management como lo tenías si quieres
     effect(() => {
-      console.log('Orden colecciones →', this.groups().map(g => ({ title: g.title, n: g.items.length })));
+        const main = document.querySelector('main') as HTMLElement | null;
+        const topnav = document.querySelector('.topnav') as HTMLElement | null;
+
+        // ❗️Solo modal o carrito vuelven inerte el fondo. Filtros NO.
+        const inert = !!(this.selected || this.cartOpen);
+        if (main)  (main  as any).inert = inert;
+        if (topnav)(topnav as any).inert = inert;
+
+        queueMicrotask(() => {
+            if (this.cartOpen)      this._focusById('cartClose');
+            else if (this.selected) this._focusById('modalClose');
+            else if (this._lastFocus) { try{ this._lastFocus.focus(); }catch{} this._lastFocus = null; }
+        });
     });
   }
 
@@ -172,59 +191,48 @@ export class AppComponent {
   // ===============================
   //  OVERLAYS (métodos sincrónicos)
   // ===============================
+  // ===== Filtros =====
   openFilters(){
     this._rememberFocus();
     this.filtersOpen = true;
-    this.updateOverlayState();
+    this._lockScroll();          // bloquea scroll del body
   }
   closeFilters(){
     this.filtersOpen = false;
-    this.updateOverlayState();
+    this._syncScrollLock();      // desbloquea si no queda nada abierto
     this._restoreFocusIfNoOverlay();
   }
 
+  // ===== Carrito =====
   openCart(){
     this._rememberFocus();
     this.cartOpen = true;
-    this.updateOverlayState();
-    queueMicrotask(() => this._focusById('cartClose'));
+    this._lockScroll();
   }
   closeCart(){
     this.cartOpen = false;
-    this.updateOverlayState();
+    this._syncScrollLock();
     this._restoreFocusIfNoOverlay();
   }
 
+  // ===== Modal producto =====
   openProduct(p: Product){
     this._rememberFocus();
     this.selected = p;
     this.imgIndex = 0;
-    this.selectedSize = this.firstAvailableSize(p);
+    this.selectedSize  = this.firstAvailableSize(p);
     this.selectedColor = Array.isArray((p as any)?.colors) && (p as any).colors.length ? (p as any).colors[0] : null;
-    this.updateOverlayState();
-    queueMicrotask(() => this._focusById('modalClose'));
+    this._lockScroll();
   }
   closeProduct(){
     this.selected = null;
     this.selectedSize = null;
     this.selectedColor = null;
-    this.updateOverlayState();
+    this._syncScrollLock();
     this._restoreFocusIfNoOverlay();
   }
 
   private anyOverlayOpen(){ return !!(this.selected || this.cartOpen || this.filtersOpen); }
-
-  private updateOverlayState(){
-    const overlayOpen = this.anyOverlayOpen();
-    document.body.classList.toggle('no-scroll', overlayOpen);
-
-    const main = document.querySelector('main') as HTMLElement | null;
-    const topnav = document.querySelector('.topnav') as HTMLElement | null;
-    // Fondo inerte cuando hay modal, carrito o filtros
-    const inert = overlayOpen;
-    if (main) (main as any).inert = inert;
-    if (topnav) (topnav as any).inert = inert;
-  }
 
   private _restoreFocusIfNoOverlay(){
     if (!this.anyOverlayOpen() && this._lastFocus) {
