@@ -31,10 +31,10 @@
           <p>Se abrirá WhatsApp con un mensaje prellenado para confirmar el pedido y pagar por Bizum. Adjunta el PDF descargado en el Paso 1.</p>
           <div class="actions">
             <a *ngIf="waHref(); else waMissing"
-              class="apply"
+              class="apply wa"
               [href]="waHref()!"
-              target="_self"
-              rel="noopener">
+              target="_blank"
+              rel="noopener noreferrer">
               Abrir WhatsApp para pagar
             </a>
             <ng-template #waMissing>

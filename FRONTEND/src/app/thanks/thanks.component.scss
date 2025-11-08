@@ -24,13 +24,21 @@
 
 .actions{
   display:flex; gap:10px; align-items:center; flex-wrap: wrap;
+  width: 100%; /* el contenedor nunca se pasa del ancho */
 }
 .actions p{
-   font-size: 17px;
+  font-size: 17px;
 }
 .apply{
   padding:8px 12px; border-radius:12px; border:none; background:#facc15; color:#000; font-weight:900; cursor:pointer;
   text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
+  max-width: 100%; box-sizing: border-box; /* evita desbordes si le da por crecer */
+}
+.apply.wa{
+  /* por si el texto cambia o el OS añade labels largos: que NUNCA desborde */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .ghost{
   padding:8px 10px; border-radius:12px; border:1px solid transparent; background:transparent; color:inherit; font-weight:800; cursor:pointer;
@@ -48,7 +56,14 @@
 @media (max-width: 768px){
   .section{ padding:12px; gap:14px; }
   .actions{ flex-direction: column; align-items: stretch; }
-  .apply, .ghost{ width:100%; min-height:44px; }
+  .actions .apply, .actions .ghost{
+    display:block; width:100%; max-width:100%; min-height:44px;
+    text-align:center;
+    /* garantía anti-desborde en móviles */
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }  
   .steps{ gap: 14px; }
   .step{ padding: 10px 0; }
   .step h4{ font-size: 16px; line-height: 1.25; }
@@ -56,7 +71,9 @@
 
 /* 390px */
 @media (max-width: 390px){
-  .apply, .ghost{ padding:9px 10px; border-radius:10px; font-size:13px; }
+  .actions .apply, .actions .ghost{
+    padding:10px 12px; border-radius:10px; font-size:14px;
+  }
   .steps{ gap: 12px; }
   .step{ padding: 8px 0; }
   .step h4{ font-size: 15px; }
