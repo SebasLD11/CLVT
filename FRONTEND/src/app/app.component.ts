@@ -170,21 +170,60 @@ export class AppComponent {
   });
 
   // ===============================
-  //  TALLAS DISPONIBLES
+  //  TALLAS DISPONIBLES / SOLD OUT
   // ===============================
+  usesSizes(p: Product): boolean {
+    const any: any = p as any;
+    return Array.isArray(any.sizes) && any.sizes.length > 0;
+  }
+
+  /** ¿hay un array explícito de disponibilidad? (availableSizes | Disponibles) */
+  private hasExplicitAvailArray(p: Product): boolean {
+    const any: any = p as any;
+    return ('availableSizes' in any) || ('Disponibles' in any);
+  }
+
+  /** Devuelve el array de tallas disponibles “real”:
+    * - Si hay availableSizes (o Disponibles), usa ese.
+    * - Si NO hay array explícito de availability pero sí hay tallas, asumimos todas (fallback → sizes).
+  */
   availableSizesOf(p: Product): string[] {
     const any: any = p as any;
-    const src = Array.isArray(any.availableSizes) ? any.availableSizes
-              : (Array.isArray(any.Disponibles) ? any.Disponibles
-              : (Array.isArray(any.sizes) ? any.sizes : []));
-    return src.map((s: any) => String(s));
+    if (Array.isArray(any.availableSizes)) return any.availableSizes.map((s: any) => String(s));
+    if (Array.isArray(any.Disponibles))    return any.Disponibles.map((s: any) => String(s));
+    if (Array.isArray(any.sizes))          return any.sizes.map((s: any) => String(s));
+    return [];
   }
+
+  /** true si el producto está agotado:
+     * - Usa tallas
+     * - Existe array explícito de disponibilidad
+     * - Ese array está vacío
+  */
+  isSoldOut(p: Product): boolean {
+    const any: any = p as any;
+    if (!this.usesSizes(any)) return false;
+    if (!this.hasExplicitAvailArray(any)) return false;
+    return this.availableSizesOf(any).length === 0;
+  }
+
+  /** disponibilidad por talla para el modal */
   isSizeAvailable(p: Product, s: string): boolean {
-    const av = this.availableSizesOf(p);
-    return av.length ? av.includes(s) : true;
+    const any: any = p as any;
+    if (!this.usesSizes(any)) return true; // no usa tallas
+    // Si hay array explícito:
+    if (this.hasExplicitAvailArray(any)) {
+        const av = this.availableSizesOf(any);     // aquí sí respeta vacío = nada disponible
+        return av.includes(s);
+    }
+    // Si NO hay array explícito, todas las sizes listadas se consideran disponibles
+    return true;
   }
+
   firstAvailableSize(p: Product): string | null {
     const av = this.availableSizesOf(p);
+    // Si está sold-out, no preseleccionar nada
+    if (this.isSoldOut(p)) return null;
     return av.length ? av[0] : null;
   }
 
@@ -251,15 +290,39 @@ export class AppComponent {
 
   addFromModal(){
     if(!this.selected) return;
+    if (this.isSoldOut(this.selected)) return;  // ⛔️ no permitir añadir si está agotado
+
     const p: any = this.selected;
-    const needsSize = Array.isArray(p?.sizes) && p.sizes.length > 0;
+    const needsSize = this.usesSizes(p);
     const size = needsSize ? (this.selectedSize ?? null) : null;
     if (needsSize && (!size || !this.isSizeAvailable(p, size))) return;
-    const color = (this.selected?.colors?.length ? this.selectedColor : null) || null;
+
+    const color = (Array.isArray(p?.colors) && p.colors.length ? this.selectedColor : null) || null;
 
     this.cartSvc.add(this.selected, size, color);
     this.closeProduct();
-    this.openCart(); // feedback inmediato
+    this.openCart();
+  }
+
+  onAddClicked(p: Product){
+    // Si está agotado, no hace nada
+    if (this.isSoldOut(p)) return;
+
+    const any: any = p as any;
+    const av = this.availableSizesOf(p);
+
+    const needsChoice =
+        (this.usesSizes(p) && av.length !== 1)   // si hay 0 o más de 1 → abre modal
+        || (Array.isArray(any.colors) && any.colors.length > 0);
+
+    if (needsChoice) {
+        this.openProduct(p);
+    } else {
+        // exactly 1 size disponible, sin colores
+        const only = av[0] || null;
+        this.cartSvc.add(p, only, null);
+        this.openCart();
+    }
   }
 
   checkoutNow(){

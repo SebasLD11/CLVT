@@ -155,10 +155,8 @@
                   <div class="right">
                     <span class="tag">{{ p.tag }}</span>
                     <button class="add"
-                      [disabled]="p['sizes']?.length && !availableSizesOf(p).length"
-                      (click)="(p['sizes']?.length > 1) || (p['colors']?.length) || (availableSizesOf(p).length !== 1)
-                      ? openProduct(p)
-                      : cartSvc.add(p, availableSizesOf(p)[0] || null, (p['colors']?.[0] || null))">
+                      [disabled]="isSoldOut(p)"
+                      (click)="onAddClicked(p)">
                       + Añadir
                     </button>
                   </div>
@@ -317,6 +315,10 @@
 
     <div class="meta">
       <h3>{{ selected?.name }}</h3>
+      <!-- Mensaje de agotado -->
+      <p class="muted" *ngIf="isSoldOut(selected!)" aria-live="polite" style="margin:8px 0 0">
+        Agotado temporalmente
+      </p>
       <!-- Selector de color -->
       <div class="colors" *ngIf="selected?.['colors']?.length">
         <span class="lbl">Color:</span>
@@ -342,8 +344,8 @@
           <button type="button"
             *ngFor="let s of selected!.sizes"
             [class.active]="selectedSize === s"
-            [disabled]="!isSizeAvailable(selected!, s)"
-            (click)="isSizeAvailable(selected!, s) && (selectedSize = s)"
+            [disabled]="isSoldOut(selected!) || !isSizeAvailable(selected!, s)"
+            (click)="!isSoldOut(selected!) && isSizeAvailable(selected!, s) && (selectedSize = s)"
             [attr.aria-pressed]="selectedSize === s ? 'true' : 'false'">
             {{ s }}
           </button>
@@ -351,7 +353,8 @@
       </div>
       <!-- CTA -->
       <button class="cta"
-        [disabled]="(selected?.sizes?.length && (!selectedSize || !isSizeAvailable(selected!, selectedSize))) 
+        [disabled]="isSoldOut(selected!) 
+                    || (selected?.sizes?.length && (!selectedSize || !isSizeAvailable(selected!, selectedSize))) 
                     || (selected?.['colors']?.length && !selectedColor)"
         (click)="addFromModal()">
         Añadir al carrito
