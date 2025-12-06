@@ -6,6 +6,7 @@ const abs = p => /^https?:\/\//i.test(p) ? p : `${FRONT}/${String(p||'').replace
 const serialize = p => ({
   _id: String(p._id),
   name: p.name,
+  description: p.description || '',   // 👈 NUEVO
   price: p.price,
   tag: p.tag,
   images: (Array.isArray(p.images)? p.images:[]).map(abs),

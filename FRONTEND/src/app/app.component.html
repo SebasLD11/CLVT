@@ -315,6 +315,10 @@
 
     <div class="meta">
       <h3>{{ selected?.name }}</h3>
+      <!-- NUEVA DESCRIPCIÓN -->
+      <p class="product-desc" *ngIf="selected?.description">
+        {{ selected.description }}
+      </p>
       <!-- Mensaje de agotado -->
       <p class="muted" *ngIf="isSoldOut(selected!)" aria-live="polite" style="margin:8px 0 0">
         Agotado temporalmente

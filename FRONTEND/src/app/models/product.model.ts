@@ -1,6 +1,7 @@
 export interface Product {
     _id: string;
     name: string;
+    description?: string;  // 👈 NUEVO
     price: number;
     tag: 'new'|'best'|'sale'|'drop';
     images: string[]; // hasta 5

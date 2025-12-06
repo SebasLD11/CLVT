@@ -532,6 +532,14 @@ body.no-scroll {
 .thumbs-lg img{ width:96px; height:64px; object-fit:cover; display:block; border-radius:10px; }
 
 .meta{ padding:16px; overflow:auto; }
+/* Descripción del producto en el modal */
+.meta .product-desc {
+  margin: 6px 0 12px;
+  font-size: 14px;
+  line-height: 1.45;
+  opacity: .85;
+  color: inherit; /* respeta claro/oscuro automáticamente */
+}
 .meta .row{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .meta .price{ font-weight:800; color:#f59e0b; }
 .meta .sizes{
