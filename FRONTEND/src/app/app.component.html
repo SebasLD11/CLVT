@@ -340,9 +340,9 @@
       Asociación sin ánimo de lucro regulada bajo la legalidad española y europea.
     </p>
     <div class="footer-legal-links">
-      <button type="button" (click)="openLegalModal('aviso')">Aviso Legal</button>
-      <button type="button" (click)="openLegalModal('privacidad')">Política de Privacidad</button>
-      <button type="button" (click)="openLegalModal('cookies')">Política de Cookies</button>
+      <button type="button" (click)="openLegalModal('aviso')" (touchstart)="openLegalModal('aviso'); $event.preventDefault()">Aviso Legal</button>
+      <button type="button" (click)="openLegalModal('privacidad')" (touchstart)="openLegalModal('privacidad'); $event.preventDefault()">Política de Privacidad</button>
+      <button type="button" (click)="openLegalModal('cookies')" (touchstart)="openLegalModal('cookies'); $event.preventDefault()">Política de Cookies</button>
     </div>
   </div>
 </footer>
@@ -484,10 +484,10 @@
 </div>
 
 <!-- MODAL LEGAL -->
-<div class="legal-backdrop" *ngIf="activeLegalModal()" (click)="closeLegalModal()"></div>
+<div class="legal-backdrop" *ngIf="activeLegalModal()" (click)="closeLegalModal()" (touchstart)="closeLegalModal(); $event.preventDefault()"></div>
 <div class="legal-modal" *ngIf="activeLegalModal()">
   <div class="legal-modal-body" (click)="$event.stopPropagation()">
-    <button class="close-btn" (click)="closeLegalModal()" aria-label="Cerrar modal legal">✕</button>
+    <button class="close-btn" (click)="closeLegalModal()" (touchstart)="closeLegalModal(); $event.preventDefault()" aria-label="Cerrar modal legal">✕</button>
     
     <div class="legal-content" [ngSwitch]="activeLegalModal()">
       
@@ -584,11 +584,11 @@
 <div class="cookie-banner" *ngIf="showCookiesBanner()">
   <div class="cookie-banner-content">
     <p>
-      Utilizamos cookies técnicas e indispensables para asegurar que el carrito y tus preferencias de tema funcionen correctamente. Al seguir navegando, aceptas su uso. Puedes leer todos los detalles en nuestra <a href="javascript:void(0)" class="link-btn" (click)="openLegalModal('cookies'); $event.preventDefault()">Política de Cookies</a>.
+      Utilizamos cookies técnicas e indispensables para asegurar que el carrito y tus preferencias de tema funcionen correctamente. Al seguir navegando, aceptas su uso. Puedes leer todos los detalles en nuestra <a href="javascript:void(0)" class="link-btn" (click)="openLegalModal('cookies'); $event.preventDefault()" (touchstart)="openLegalModal('cookies'); $event.preventDefault()">Política de Cookies</a>.
     </p>
     <div class="cookie-banner-actions">
-      <button class="cookie-btn cookie-decline" (click)="declineCookies()">Rechazar</button>
-      <button class="cookie-btn cookie-accept" (click)="acceptCookies()">Aceptar</button>
+      <button class="cookie-btn cookie-decline" (click)="declineCookies()" (touchstart)="declineCookies(); $event.preventDefault()">Rechazar</button>
+      <button class="cookie-btn cookie-accept" (click)="acceptCookies()" (touchstart)="acceptCookies(); $event.preventDefault()">Aceptar</button>
     </div>
   </div>
 </div>

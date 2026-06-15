@@ -2305,11 +2305,20 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   }
   
   .legal-modal {
-    max-height: 94vh;
+    height: 85vh; /* Evita el colapso de flexbox en iOS Safari */
+    max-height: 90dvh;
     width: min(95vw, 540px);
+    display: flex;
+    flex-direction: column;
   }
   .legal-modal-body {
     padding: 20px 16px;
+    flex: 1; /* Permite estirarse y llenar el alto del modal */
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Clave en flexbox para habilitar overflow interno */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     .close-btn {
       top: 14px;
       right: 14px;
