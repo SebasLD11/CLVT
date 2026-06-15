@@ -460,7 +460,7 @@ body.no-scroll {
 .about{
   display: grid;
   gap: 20px;
-  padding: 24px 0;
+  padding: 24px 0 12px;
   isolation: isolate;            /* evita solapes con la imagen */
 }
 
@@ -1402,7 +1402,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
 
 .contact-section-card, .faq-section-card {
@@ -1561,7 +1561,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   background: hsl(var(--card-bg));
   border-top: 1px solid var(--glass-border);
   padding: 60px 0 30px 0;
-  margin-top: 60px;
+  margin-top: 36px;
 }
 
 .footer-grid {
@@ -2024,6 +2024,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   .about-grid-bottom {
     grid-template-columns: 1fr;
     gap: 24px;
+    margin-bottom: 16px;
   }
   .footer-grid {
     grid-template-columns: 1fr 1fr;
@@ -2062,7 +2063,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   
   .main-footer {
     padding: 40px 0 24px 0;
-    margin-top: 40px;
+    margin-top: 24px;
   }
   .footer-grid {
     grid-template-columns: 1fr;
@@ -2354,7 +2355,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   }
 
   .about{
-    padding: 16px 0 24px;          /* un poco más compacto */
+    padding: 16px 0 8px;          /* un poco más compacto */
     isolation: isolate;
   }
   .membership-cta-card {
