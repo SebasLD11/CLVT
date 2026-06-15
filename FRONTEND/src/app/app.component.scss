@@ -1824,6 +1824,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
     max-height: 60vh;
     overflow-y: auto;
     padding-right: 12px;
+    text-align: justify;
 
     &::-webkit-scrollbar {
       width: 6px;
