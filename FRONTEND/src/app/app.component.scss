@@ -2079,13 +2079,17 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
     align-items: center;
     text-align: center;
     .brand-logo-row {
+      flex-direction: column; /* Apila logo arriba y texto abajo para centrado perfecto */
+      align-items: center;
       justify-content: center;
+      gap: 8px;
       .logo-img {
         width: 40px;
         height: 40px;
       }
       .brand-text {
         font-size: 20px;
+        text-align: center;
       }
     }
     .brand-desc {
