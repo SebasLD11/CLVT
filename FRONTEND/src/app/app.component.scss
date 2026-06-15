@@ -1674,6 +1674,30 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   }
 }
 
+@media (min-width: 769px) {
+  .footer-bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    flex-wrap: wrap;
+    gap: 20px;
+    
+    .copyright {
+      flex: 0 1 auto;
+    }
+    .legal-disclaimer {
+      flex: 1 1 auto;
+      text-align: center;
+    }
+    .footer-legal-links {
+      flex: 0 1 auto;
+      justify-content: flex-end;
+      margin-top: 0;
+    }
+  }
+}
+
 /* Modales de Textos Legales */
 .legal-backdrop {
   position: fixed;
@@ -1969,8 +1993,11 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
     gap: 24px;
   }
   .footer-grid {
-    grid-template-columns: 1fr;
-    gap: 32px;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px 20px;
+  }
+  .footer-brand {
+    grid-column: 1 / -1;
   }
 }
 
