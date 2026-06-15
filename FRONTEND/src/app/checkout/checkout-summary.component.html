@@ -73,7 +73,7 @@
                 *ngFor="let opt of shippingOptions()"
                 [class.active]="shipping()?.carrier===opt.carrier && shipping()?.service===opt.service">
             <span class="left">
-              <input type="radio" name="ship" (change)="chooseShipping(opt)">
+              <input type="radio" name="ship" (change)="chooseShipping(opt)" [checked]="shipping()?.carrier===opt.carrier && shipping()?.service===opt.service">
               <span>{{opt.carrier}}</span>
               <span class="svc">· {{opt.service}}</span>
             </span>
@@ -91,14 +91,15 @@
     </article>
 
     <!-- DERECHA: Carrito y totales -->
-    <aside class="card summary-card" *ngIf="summary() as s">
+    <aside class="card summary-card">
       <div class="section">
         <h3 class="sum-title">Carrito</h3>
         <div class="list">
-          <div class="item" *ngFor="let it of s.items">
+          <div class="item" *ngFor="let it of (summary() ? summary().items : cart.snapshot())">
             <img class="thumb" [src]="it.img || 'assets/img/placeholder.png'" alt="">
             <div>
-              <div class="name">{{ it.name }} 
+              <div class="name">
+                {{ it.name }}
                 <span *ngIf="it.size" class="small">· Talla {{it.size}}</span>
                 <span *ngIf="it.color || it.colorLabel" class="muted">· Color {{ it.colorLabel || colorLabel(it.color) }}</span>
               </div>
@@ -110,22 +111,34 @@
       </div>
 
       <div class="section totals">
-        <div class="row"><span>Subtotal</span><span>{{ s.subtotal | currency:'EUR' }}</span></div>
-        <div class="row" *ngIf="s.discountAmount>0"><span>Descuento</span><span>-{{ s.discountAmount | currency:'EUR' }}</span></div>
-        <!-- 👇 IMPORTANTE: usa s.vatAmount (no summary()...) -->
         <div class="row">
-          <span>IVA (incl.)</span><span>{{ s.vatAmount | currency:'EUR' }}</span>
+          <span>Subtotal</span>
+          <span>{{ (summary() ? summary().subtotal : cart.total()) | currency:'EUR' }}</span>
+        </div>
+        
+        <div class="row" *ngIf="summary() && summary().discountAmount > 0">
+          <span>Descuento</span>
+          <span>-{{ summary().discountAmount | currency:'EUR' }}</span>
+        </div>
+        
+        <div class="row" *ngIf="summary()">
+          <span>IVA (incl.)</span>
+          <span>{{ summary().vatAmount | currency:'EUR' }}</span>
+        </div>
+        
+        <div class="row" *ngIf="!summary()">
+          <span>IVA (incl.)</span>
+          <span>{{ (cart.total() - (cart.total() / 1.21)) | currency:'EUR' }}</span>
         </div>
 
-        <!-- 👇 IMPORTANTE: default seguro para cost -->
         <div class="row" *ngIf="shipping() as ship">
-          <span>Envío</span><span>{{ (ship.cost ?? 0) | currency:'EUR' }}</span>
+          <span>Envío</span>
+          <span>{{ (ship.cost ?? 0) | currency:'EUR' }}</span>
         </div>
 
-        <!-- 👇 IMPORTANTE: usa el total del backend -->
         <div class="row grand">
           <span>Total</span>
-          <span>{{ grandTotal() | currency:'EUR' }}</span>
+          <span>{{ (summary() ? grandTotal() : cart.total()) | currency:'EUR' }}</span>
         </div>
       </div>
     </aside>

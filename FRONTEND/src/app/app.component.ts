@@ -147,18 +147,18 @@ export class AppComponent {
 
       if (isR) {
         if (this.router.url.startsWith('/checkout')) {
-          this.titleSvc.setTitle('Pasarela de Pago | CLVT Brand');
-          this.metaSvc.updateTag({ name: 'description', content: 'Finaliza tu compra de forma segura con Bizum o transferencia en CLVT Brand.' });
+          this.titleSvc.setTitle('Pasarela de Pago | CLVT');
+          this.metaSvc.updateTag({ name: 'description', content: 'Finaliza tu compra de forma segura con Bizum o transferencia en CLVT.' });
         } else if (this.router.url.startsWith('/thanks')) {
-          this.titleSvc.setTitle('¡Gracias por tu compra! | CLVT Brand');
+          this.titleSvc.setTitle('¡Gracias por tu compra! | CLVT');
           this.metaSvc.updateTag({ name: 'description', content: 'Tu pedido se ha procesado con éxito. Ponte en contacto por WhatsApp para finalizar los detalles.' });
         }
         return;
       }
 
       if (p) {
-        const titleStr = `${p.name} — CLVT Brand`;
-        const descStr = p.description || `Compra ${p.name} en la tienda oficial CLVT Brand. Ropa urbana exclusiva, edición limitada.`;
+        const titleStr = `${p.name} — CLVT`;
+        const descStr = p.description || `Compra ${p.name} en la tienda oficial CLVT. Ropa urbana exclusiva, edición limitada.`;
         this.titleSvc.setTitle(titleStr);
         this.metaSvc.updateTag({ name: 'description', content: descStr });
 
@@ -180,16 +180,16 @@ export class AppComponent {
           },
           'brand': {
             '@type': 'Brand',
-            'name': 'CLVT Brand'
+            'name': 'CLVT'
           }
         };
         this.updateJsonLd(productSchema);
       } else {
         if (currentTab === 'shop') {
-          this.titleSvc.setTitle('CLVT Brand | Tienda de Ropa Streetwear & Comunidad Skate/Scooter');
-          this.metaSvc.updateTag({ name: 'description', content: 'Asociación CULTIVATE - Tienda Oficial CLVT Brand. Descubre sudaderas, camisetas y accesorios urbanos exclusivos.' });
+          this.titleSvc.setTitle('CLVT | Tienda de Ropa Streetwear & Comunidad de Skate/Scooter');
+          this.metaSvc.updateTag({ name: 'description', content: 'Asociación CULTIVATE - Tienda Oficial CLVT. Descubre sudaderas, camisetas y accesorios urbanos exclusivos.' });
         } else if (currentTab === 'about') {
-          this.titleSvc.setTitle('Sobre Nosotros — Asociación CULTIVATE | CLVT Brand');
+          this.titleSvc.setTitle('Sobre Nosotros — Asociación CULTIVATE | CLVT');
           this.metaSvc.updateTag({ name: 'description', content: 'Conoce la Asociación CULTIVATE, nuestro compromiso con la integración social a través del deporte urbano como el skate y scooter.' });
         }
 
@@ -197,10 +197,10 @@ export class AppComponent {
         const storeSchema = {
           '@context': 'https://schema.org',
           '@type': 'OnlineStore',
-          'name': 'CLVT Brand',
+          'name': 'CLVT',
           'url': 'https://www.asociacionclvt.com/',
           'logo': 'https://www.asociacionclvt.com/assets/img/LogoCLVT.png',
-          'description': 'Tienda Oficial de CLVT Brand (Asociación CULTIVATE). Ropa urbana exclusiva, sudaderas, camisetas y cultura de skate/scooter.',
+          'description': 'Tienda Oficial de CLVT (Asociación CULTIVATE). Ropa urbana exclusiva, sudaderas, camisetas y cultura de skate/scooter.',
           'sameAs': [
             'https://www.instagram.com/asociacion_clvt'
           ],
@@ -213,6 +213,11 @@ export class AppComponent {
         this.updateJsonLd(storeSchema);
       }
     });
+
+    if (typeof window !== 'undefined') {
+      const accepted = localStorage.getItem('clvt-cookies-accepted');
+      this.showCookiesBanner.set(!accepted);
+    }
   }
 
   private updateJsonLd(schema: any) {
@@ -493,6 +498,7 @@ export class AppComponent {
   }
 
   activeLegalModal = signal<'aviso'|'privacidad'|'cookies'|null>(null);
+  showCookiesBanner = signal<boolean>(false);
   
   openLegalModal(type: 'aviso'|'privacidad'|'cookies') {
     this.activeLegalModal.set(type);
@@ -500,6 +506,20 @@ export class AppComponent {
 
   closeLegalModal() {
     this.activeLegalModal.set(null);
+  }
+
+  acceptCookies() {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('clvt-cookies-accepted', 'true');
+    }
+    this.showCookiesBanner.set(false);
+  }
+
+  declineCookies() {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('clvt-cookies-accepted', 'false');
+    }
+    this.showCookiesBanner.set(false);
   }
 
   scrollToTop() {

@@ -25,12 +25,12 @@ export class CheckoutSummaryComponent {
   form = this.fb.group({
     fullName: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required]],
-    line1: ['', [Validators.required]],
+    phone: ['', [Validators.required, Validators.minLength(6)]],
+    line1: ['', [Validators.required, Validators.minLength(3)]],
     line2: [''],
-    city: ['', [Validators.required]],
-    province: ['', [Validators.required]],
-    postalCode: ['', [Validators.required]],
+    city: ['', [Validators.required, Validators.minLength(2)]],
+    province: ['', [Validators.required, Validators.minLength(2)]],
+    postalCode: ['', [Validators.required, Validators.minLength(3)]],
     country: ['ES', [Validators.required]],
     discountCode: ['']
   });
@@ -42,7 +42,13 @@ export class CheckoutSummaryComponent {
   summary = signal<any|null>(null);
 
   items = computed(() =>
-    this.cart.snapshot().map(i => ({ id:i.id, qty:i.qty, size: i.size ?? null }))
+    this.cart.snapshot().map(i => ({
+      id: i.id,
+      qty: i.qty,
+      size: (i.size && i.size.trim()) ? i.size.trim() : null,
+      color: (i.color && i.color.trim()) ? i.color.trim() : null,
+      colorLabel: (i.colorLabel && i.colorLabel.trim()) ? i.colorLabel.trim() : null
+    }))
   );
 
   readonly grandTotal = computed(() => {
@@ -52,7 +58,11 @@ export class CheckoutSummaryComponent {
   });
 
   submitSummary() {
-    if (!this.items().length || this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    if (!this.items().length) return;
     this.loading.set(true);
     const buyer = this.form.getRawValue();
 
@@ -62,7 +72,16 @@ export class CheckoutSummaryComponent {
           this.orderId.set(res.orderId);
           this.summary.set(res);
           this.shippingOptions.set(res.shippingOptions || []);
-          if (res.shipping) this.shipping.set(res.shipping);
+          if (res.shipping) {
+            this.shipping.set(res.shipping);
+          } else if (res.shippingOptions && res.shippingOptions.length) {
+            this.shipping.set(res.shippingOptions[0]);
+          }
+          this.loading.set(false);
+        },
+        error: err => {
+          console.error('Error al calcular el resumen de compra:', err);
+          this.loading.set(false);
         },
         complete: () => this.loading.set(false)
       });

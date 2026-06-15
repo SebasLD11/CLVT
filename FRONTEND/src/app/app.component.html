@@ -36,10 +36,10 @@
 <main class="container">
   <!-- BANNER DE ENTRADA (full screen) -->
   <section *ngIf="showEntry" class="entry-banner" role="dialog" aria-modal="true">
-    <img class="entry-bg" src="assets/img/COL.COLORS.png" alt="CLVT Brand Campaign" aria-hidden="true" />
+    <img class="entry-bg" src="assets/img/COL.COLORS.png" alt="Campaña CLVT" aria-hidden="true" />
     <div class="entry-overlay-grid">
       <div class="brand-badge-top">ASOCIACIÓN CULTIVATE</div>
-      <h1 class="entry-title">CLVT BRAND</h1>
+      <h1 class="entry-title">CLVT</h1>
       <p class="entry-subtitle">CLOTHING & STREET CULTURE • EST. 2026</p>
       <div class="inner">
         <button class="entry-cta" (click)="enterShop()">ENTRAR A LA TIENDA</button>
@@ -200,8 +200,8 @@
         <!-- Columna Derecha: Imagen destacada / Collage de comunidad -->
         <div class="about-image-column">
           <div class="collage-container">
-            <img class="collage-img main-logo" src="assets/img/LogoCLVT.png" alt="CLVT Brand Logo" (error)="onImgErr($event)" />
-            <div class="collage-caption">CULTIVATE ASSOCIATION • STREET CULTURE</div>
+            <img class="collage-img main-logo" src="assets/img/LogoCLVT.png" alt="Logo de CLVT" (error)="onImgErr($event)" />
+            <div class="collage-caption">ASOCIACIÓN CULTIVATE • CULTURA DE CALLE</div>
           </div>
         </div>
       </div>
@@ -293,7 +293,7 @@
         <div class="footer-col footer-brand">
           <div class="brand-logo-row">
             <img class="logo-img" src="assets/img/LogoCLVT.png" alt="CLVT Logo" />
-            <span class="brand-text">CLVT Brand</span>
+            <span class="brand-text">Asociación CLVT</span>
           </div>
           <p class="brand-desc">
             Asociación CULTIVATE. Fusión de cultura de calle y compromiso social mediante el deporte urbano y el streetwear.
@@ -325,7 +325,7 @@
       <!-- Faja inferior de legalidad y copyright -->
       <div class="footer-bottom">
         <p class="copyright">
-          &copy; 2026 Asociación CULTIVATE (CLVT Brand). Todos los derechos reservados.
+          &copy; 2026 Asociación CULTIVATE (CLVT). Todos los derechos reservados.
         </p>
         <p class="legal-disclaimer">
           Asociación sin ánimo de lucro regulada bajo la legalidad española y europea.
@@ -503,7 +503,7 @@
           </ul>
           
           <p><strong>2. OBJETO Y ÁMBITO DE APLICACIÓN</strong></p>
-          <p>El presente aviso legal regula las condiciones generales de acceso y uso del sitio web oficial de la Asociación CULTIVATE (en adelante, CLVT Brand). El uso del sitio web atribuye la condición de usuario e implica la aceptación total de estas disposiciones.</p>
+          <p>El presente aviso legal regula las condiciones generales de acceso y uso del sitio web oficial de la Asociación CULTIVATE (en adelante, CLVT). El uso del sitio web atribuye la condición de usuario e implica la aceptación total de estas disposiciones.</p>
           
           <p><strong>3. PROPIEDAD INTELECTUAL E INDUSTRIAL</strong></p>
           <p>Todos los derechos de propiedad intelectual e industrial sobre el diseño, logotipos, textos, ilustraciones, imágenes y código fuente de este sitio web corresponden a la Asociación CULTIVATE o a sus licenciantes. Queda prohibida cualquier reproducción, distribución o comunicación pública no autorizada por escrito.</p>
@@ -573,6 +573,19 @@
         </div>
       </div>
       
+    </div>
+  </div>
+</div>
+
+<!-- BANNER DE COOKIES -->
+<div class="cookie-banner" *ngIf="showCookiesBanner()">
+  <div class="cookie-banner-content">
+    <p>
+      Utilizamos cookies técnicas e indispensables para asegurar que el carrito y tus preferencias de tema funcionen correctamente. Al seguir navegando, aceptas su uso. Puedes leer todos los detalles en nuestra <button type="button" class="link-btn" (click)="openLegalModal('cookies')">Política de Cookies</button>.
+    </p>
+    <div class="cookie-banner-actions">
+      <button class="cookie-btn cookie-decline" (click)="declineCookies()">Rechazar</button>
+      <button class="cookie-btn cookie-accept" (click)="acceptCookies()">Aceptar</button>
     </div>
   </div>
 </div>
