@@ -165,6 +165,7 @@ body.no-scroll {
   display: grid;
   place-items: center;
   overflow: hidden;
+  background: #000;
 }
 
 .entry-bg {
@@ -174,10 +175,9 @@ body.no-scroll {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  background: #000;
   z-index: 0;
   transform: scale(1.02);
-  filter: brightness(0.85);
+  filter: brightness(0.65);
   transition: filter 0.5s ease;
 }
 
@@ -198,27 +198,31 @@ body.no-scroll {
 
 .brand-badge-top {
   font-family: var(--font-body);
-  font-size: clamp(10px, 2vw, 13px);
-  font-weight: 800;
+  font-size: clamp(18px, 3.8vw, 30px);
+  font-weight: 900;
   letter-spacing: 0.45em;
-  margin-bottom: 24px;
-  opacity: 0.9;
+  margin-bottom: 28px;
+  opacity: 1;
   text-transform: uppercase;
   color: hsl(var(--accent));
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 1), 0 2px 8px rgba(0, 0, 0, 0.95);
   animation: fadeInDown 0.8s ease forwards;
 }
 
 .entry-title {
-  font-family: var(--font-display);
-  font-size: clamp(2.8rem, 10vw, 7.5rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 0.95;
   margin: 0;
-  text-transform: uppercase;
-  text-align: center;
-  color: #fff;
   animation: fadeInUp 0.9s ease forwards;
+}
+
+.entry-logo-img {
+  max-height: clamp(100px, 25vh, 260px);
+  max-width: min(85vw, 680px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: invert(1) brightness(1.2);
+  display: block;
+  margin: 12px auto;
 }
 
 .entry-subtitle {
@@ -227,9 +231,10 @@ body.no-scroll {
   font-weight: 500;
   letter-spacing: 0.3em;
   margin: 20px 0 40px;
-  opacity: 0.8;
+  opacity: 0.9;
   text-transform: uppercase;
   text-align: center;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.9);
   animation: fadeInUp 1s ease forwards;
 }
 
