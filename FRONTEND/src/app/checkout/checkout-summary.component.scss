@@ -11,7 +11,7 @@
 }
 
 .back-btn{
-  padding:8px 12px; border-radius:12px; border:1px solid rgba(0,0,0,.1);
+  padding:8px 12px; border-radius:var(--radius-sm); border:1px solid rgba(0,0,0,.1);
   background:transparent; color:inherit; font-weight:800; cursor:pointer;
 }
 :host-context(.dark) .back-btn{
@@ -84,7 +84,7 @@
   box-sizing: border-box;
   min-height: 42px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   border: 1px solid rgba(0,0,0,.1);
   background: transparent; color: inherit;
 }
@@ -108,7 +108,7 @@
   display:flex; gap:12px; justify-content:flex-end;
 }
 .btn{
-  padding:12px 18px; border-radius:12px; border:1px solid hsl(var(--border-subtle));
+  padding:12px 18px; border-radius:var(--radius-sm); border:1px solid hsl(var(--border-subtle));
   background:transparent; color:inherit; font-family: var(--font-body); font-weight:800; cursor:pointer;
   transition: all 0.2s ease;
 }
@@ -156,7 +156,7 @@
 }
 .radio{
   display:flex; align-items:center; justify-content:space-between; gap:10px;
-  padding:12px 14px; border-radius:12px; border:1px solid hsl(var(--border-subtle));
+  padding:12px 14px; border-radius:var(--radius-sm); border:1px solid hsl(var(--border-subtle));
   background:transparent; cursor:pointer;
   transition: all 0.2s ease;
 }
@@ -219,7 +219,7 @@
   .field input, .field select, .field textarea{
     min-height: 42px;
     padding: 10px 12px;
-    border-radius: 10px;
+    border-radius: 12px;
   }
 
   /* Tarjetas más compactas */
@@ -231,12 +231,12 @@
     grid-template-columns: 48px 1fr auto;
     gap: 8px;
   }
-  .thumb{ width:48px; height:48px; border-radius: 10px; }
+  .thumb{ width:48px; height:48px; border-radius: 12px; }
 
   /* Opciones de envío */
   .radio{
     padding: 9px 10px;
-    border-radius: 10px;
+    border-radius: 12px;
   }
   .radio .svc{ font-size: 11px; }
 
@@ -245,17 +245,17 @@
 
   /* Botones primarios a ancho completo */
   .actions{ gap: 8px; }
-  .btn{ padding: 10px 12px; border-radius: 10px; }
+  .btn{ padding: 10px 12px; border-radius: 12px; }
   .btn.primary{ font-weight: 900; }
 }
 
 /* <= 390px: móviles muy estrechos */
 @media (max-width: 390px){
   .checkout{ padding: 8px 0 16px; }
-  .back-btn{ padding:7px 10px; border-radius:10px; font-size: 13px; }
+  .back-btn{ padding:7px 10px; border-radius:12px; font-size: 13px; }
 
   .field input, .field select, .field textarea{
-    min-height: 38px; border-radius: 10px; padding: 9px 10px;
+    min-height: 38px; border-radius: 12px; padding: 9px 10px;
   }
 
   .checkout-header h2{ font-size: 22px; }
@@ -267,10 +267,10 @@
     grid-template-columns: 44px 1fr auto;
     gap: 8px;
   }
-  .thumb{ width:44px; height:44px; border-radius: 9px; }
+  .thumb{ width:44px; height:44px; border-radius: 12px; }
 
   .radio{ padding: 8px 10px; }
-  .btn{ padding: 9px 10px; border-radius: 9px; }
+  .btn{ padding: 9px 10px; border-radius: 12px; }
 
   .totals .grand{ font-size: 14px; }
 }

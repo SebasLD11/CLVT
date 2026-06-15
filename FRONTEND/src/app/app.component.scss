@@ -131,7 +131,7 @@ body.no-scroll {
 }
 .actions button{
   padding:6px 10px;
-  border-radius:12px;
+  border-radius:var(--radius-sm);
   border:1px solid transparent;
   background:transparent;
   color:inherit; font-weight:600; cursor:pointer;
@@ -299,12 +299,12 @@ body.no-scroll {
 .right-actions{ display:flex; align-items:center; gap:12px; }
 .tags{ display:flex; gap:8px; flex-wrap:wrap; }
 .tags span{
-  padding:6px 10px; border-radius:12px; background:rgba(250,204,21,.2); color:#a16207; font-size:12px;
+  padding:6px 10px; border-radius:var(--radius-sm); background:rgba(250,204,21,.2); color:#a16207; font-size:12px;
 }
 
 .shop .filters-toggle{
   display:none; /* visible en móvil */
-  padding:8px 12px; border:none; border-radius:12px; cursor:pointer;
+  padding:8px 12px; border:none; border-radius:var(--radius-sm); cursor:pointer;
   background:#e5e7eb; color:inherit; font-weight:600;
 }
 :host.dark .shop .filters-toggle{ background:#1f2937; }
@@ -348,7 +348,7 @@ body.no-scroll {
 .filters-group label{ font-weight:700; font-size:12px; opacity:.8; }
 .filters-group input[type="search"],
 .filters-group input[type="number"]{
-  width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(0,0,0,.08);
+  width:100%; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid rgba(0,0,0,.08);
   background:transparent; color:inherit;
 }
 
@@ -364,11 +364,11 @@ body.no-scroll {
 
 .filters-actions{ display:flex; gap:8px; margin-top:4px; }
 .filters-actions .clear{
-  padding:8px 12px; border-radius:12px; border:1px solid rgba(0,0,0,.1);
+  padding:8px 12px; border-radius:var(--radius-sm); border:1px solid rgba(0,0,0,.1);
   background:transparent; color:inherit; cursor:pointer;
 }
 .filters-actions .apply{
-  padding:8px 12px; border-radius:12px; border:none; background:#facc15; color:#000; font-weight:800; cursor:pointer;
+  padding:8px 12px; border-radius:var(--radius-sm); border:none; background:#facc15; color:#000; font-weight:800; cursor:pointer;
 }
 
 /* Backdrop de filtros: Angular lo añade/quita con *ngIf */
@@ -537,7 +537,7 @@ body.no-scroll {
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   text-decoration: none;
   color: inherit;
   background: rgba(0,0,0,.05);
@@ -554,7 +554,7 @@ body.no-scroll {
 }
 .faq details{
   border: 1px solid rgba(0,0,0,.08);
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   padding: 10px 12px;
   background: rgba(0,0,0,.03);
 }
@@ -907,7 +907,7 @@ body.no-scroll {
 .colors-row button {
   min-height: 38px;
   padding: 6px 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   border: 1px solid hsl(var(--border-subtle));
   background: transparent;
   color: inherit;
@@ -948,7 +948,7 @@ body.no-scroll {
   min-width: 44px;
   min-height: 38px;
   padding: 8px 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   border: 1px solid hsl(var(--border-subtle));
   background: transparent;
   color: inherit;
@@ -1040,6 +1040,10 @@ position: fixed;
 
   /* un poco de cariño para notch / iOS */
   padding-bottom: env(safe-area-inset-bottom);
+  
+  border-top-left-radius: var(--radius);
+  border-bottom-left-radius: var(--radius);
+  overflow: hidden;
 }
 :host.dark .drawer{ --bg2:#0b0b0b; }
 .drawer.open{ transform: translateX(0); }
@@ -1064,7 +1068,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
 }
 .drawer .qty .chip{
   padding:6px 10px;
-  border-radius:12px;
+  border-radius:var(--radius-sm);
   border:1px solid rgba(0,0,0,.1);
   background:transparent;
   color:inherit; cursor:pointer; font-weight:800;
@@ -1079,20 +1083,20 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
 
 /* Botón “Eliminar” versión pequeña */
 .drawer .qty .clear.sm{
-  padding:6px 10px; border-radius:12px; border:1px solid rgba(0,0,0,.1);
+  padding:6px 10px; border-radius:var(--radius-sm); border:1px solid rgba(0,0,0,.1);
   background:transparent; color:inherit; cursor:pointer; font-weight:700;
 }
 :host.dark .drawer .qty .clear.sm{ border-color: rgba(255,255,255,.12); }
 
 /* Footer: mismos estilos de filtros */
 .drawer footer .clear{
-  padding:8px 12px; border-radius:12px; border:1px solid rgba(0,0,0,.1);
+  padding:8px 12px; border-radius:var(--radius-sm); border:1px solid rgba(0,0,0,.1);
   background:transparent; color:inherit; cursor:pointer; font-weight:700;
 }
 :host.dark .drawer footer .clear{ border-color: rgba(255,255,255,.12); }
 
 .drawer footer .apply{
-  padding:8px 12px; border-radius:12px; border:none;
+  padding:8px 12px; border-radius:var(--radius-sm); border:none;
   background:#facc15; color:#000; font-weight:800; cursor:pointer;
 }
 .drawer footer .apply[disabled]{ opacity:.6; cursor:not-allowed; }
@@ -1114,7 +1118,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   width: 100%;
   text-align: left;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   border: 1px solid rgba(0,0,0,.08);
   background: rgba(0,0,0,.04);
   color: inherit; font-weight: 900; letter-spacing: .01em;
@@ -1551,7 +1555,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
 
   h4 {
     font-family: var(--font-display);
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 800;
     text-transform: uppercase;
     color: hsl(var(--text-primary));
@@ -1573,7 +1577,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
       padding: 0;
       font: inherit;
       color: hsl(var(--text-muted));
-      font-size: 15px;
+      font-size: 17px;
       cursor: pointer;
       text-align: left;
       transition: color 0.2s ease;
@@ -1585,7 +1589,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
 
     a {
       color: hsl(var(--text-muted));
-      font-size: 15px;
+      font-size: 17px;
       text-decoration: none;
       transition: color 0.2s ease;
 
@@ -1617,7 +1621,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   }
 
   .brand-desc {
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.6;
     color: hsl(var(--text-muted));
     margin: 0;
@@ -1634,13 +1638,13 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   gap: 12px;
 
   .copyright {
-    font-size: 14px;
+    font-size: 16px;
     color: hsl(var(--text-muted));
     margin: 0;
   }
 
   .legal-disclaimer {
-    font-size: 13px;
+    font-size: 15px;
     color: hsl(var(--text-muted));
     opacity: 0.8;
     margin: 0;
@@ -1658,7 +1662,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
     background: none;
     border: none;
     color: hsl(var(--text-muted));
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     text-decoration: underline;
@@ -1717,6 +1721,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  border-radius: inherit;
 
   .close-btn {
     position: absolute;
@@ -1809,7 +1814,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   width: min(92vw, 880px);
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   box-shadow: var(--card-shadow), 0 20px 40px rgba(0,0,0,0.15);
   backdrop-filter: blur(16px);
   padding: 20px 24px;
@@ -1870,7 +1875,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 10px 20px;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
     min-width: 100px;
@@ -2087,6 +2092,8 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    border-radius: var(--radius);
+    -webkit-overflow-scrolling: touch;
   }
   .modal-grid-layout {
     display: flex;
@@ -2095,6 +2102,10 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   .modal-gallery-column {
     border-right: none;
     border-bottom: 1px solid hsl(var(--border-subtle));
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
   }
   .viewer {
     min-height: 300px;
@@ -2106,6 +2117,10 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   }
   .modal-meta-column {
     padding: 20px;
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
   }
   .catalog, .catalog .grid, .card, .media, .media img {
     z-index: auto !important;    /* neutraliza z-index accidentales en móvil */
@@ -2211,7 +2226,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
     width: 100%;
     min-height: 44px;         /* área táctil recomendada */
     padding: 10px 12px;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     border: 1px solid rgba(0,0,0,.1);
     background: transparent;
     font-weight: 800;
@@ -2226,7 +2241,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
     min-height: 44px;
     padding: 10px 12px;
     border: none;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     background: #facc15;
     color: #000;
     font-weight: 900;
@@ -2260,7 +2275,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   .entry-banner .inner{ bottom: clamp(12px, 9vh, 40px); }
   .entry-banner .entry-cta{
     padding: 11px 14px;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     font-size: 14px;
   }
   /* 1) Quita la columna fantasma: una sola columna en móvil */
@@ -2317,7 +2332,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   .meta .sizes-row, .meta .colors-row{ gap: 6px; }
   .meta .sizes-row button, .meta .colors-row button{
     padding: 9px 10px;
-    border-radius: 9px;
+    border-radius: 12px;
   }
   /* Color swatch un pelín mayor en móviles muy estrechos */
   .meta .colors-row .swatch{
@@ -2328,7 +2343,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
 
   .collection-title{
     padding: 9px 10px;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     font-size: 20px;
   }
   /* si vas muy justo de espacio, oculta el contador */
@@ -2341,7 +2356,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
     min-width: 36px;
     min-height: 30px;
     padding: 5px 8px;
-    border-radius: 10px;
+    border-radius: 12px;
     font-weight: 800;
   }
 
@@ -2353,19 +2368,19 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
 
   .drawer .qty .clear.sm{
     padding: 6px 8px;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 12px;
   }
 
   .drawer footer .clear{
     padding: 8px 10px;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 13px;
   }
 
   .drawer footer .apply{
     padding: 8px 10px;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 13px;
   }
 
@@ -2374,5 +2389,5 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   /* opcional: compactar cabecera y miniaturas del item */
   .drawer header{ padding: 10px; }
   .drawer .content{ padding: 10px; }
-  .drawer .item img{ width: 56px; height: 56px; border-radius: 10px; }
+  .drawer .item img{ width: 56px; height: 56px; border-radius: 12px; }
 }

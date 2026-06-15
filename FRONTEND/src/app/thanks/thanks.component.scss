@@ -31,7 +31,7 @@
   font-family: var(--font-body);
 }
 .apply{
-  padding:12px 18px; border-radius:12px; border:none; background:hsl(var(--accent)); color:#000; font-family: var(--font-display); font-weight:900; cursor:pointer;
+  padding:12px 18px; border-radius:var(--radius-sm); border:none; background:hsl(var(--accent)); color:#000; font-family: var(--font-display); font-weight:900; cursor:pointer;
   text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
   max-width: 100%; box-sizing: border-box;
   box-shadow: 0 4px 14px rgba(250, 204, 21, 0.25);
@@ -47,7 +47,7 @@
   word-break: break-word;
 }
 .ghost{
-  padding:12px 16px; border-radius:12px; border:1px solid hsl(var(--border-subtle)); background:transparent; color:inherit; font-family: var(--font-body); font-weight:800; cursor:pointer;
+  padding:12px 16px; border-radius:var(--radius-sm); border:1px solid hsl(var(--border-subtle)); background:transparent; color:inherit; font-family: var(--font-body); font-weight:800; cursor:pointer;
   transition: all 0.2s ease;
 }
 .ghost:hover{
@@ -85,7 +85,7 @@
 /* 390px */
 @media (max-width: 390px){
   .actions .apply, .actions .ghost{
-    padding:10px 12px; border-radius:10px; font-size:14px;
+    padding:10px 12px; border-radius:12px; font-size:14px;
   }
   .steps{ gap: 12px; }
   .step{ padding: 8px 0; }
