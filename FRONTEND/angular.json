@@ -21,7 +21,9 @@
               { "glob": "**/*", "input": "public/assets", "output": "assets" },
               { "glob": "favicon.ico", "input": "public", "output": "." },
               { "glob": "apple-touch-icon.png", "input": "public", "output": "." },
-              { "glob": "site.webmanifest", "input": "public", "output": "." }
+              { "glob": "site.webmanifest", "input": "public", "output": "." },
+              { "glob": "robots.txt", "input": "public", "output": "." },
+              { "glob": "sitemap.xml", "input": "public", "output": "." }
             ],
             "styles": ["src/styles.scss"],
             "inlineStyleLanguage": "scss",
@@ -33,7 +35,7 @@
               "outputHashing": "all",
               "budgets": [
                 { "type": "initial", "maximumWarning": "500kb", "maximumError": "2mb" },
-                { "type": "anyComponentStyle", "maximumWarning": "12kb", "maximumError": "24kb" }
+                { "type": "anyComponentStyle", "maximumWarning": "40kb", "maximumError": "80kb" }
               ]
             },
             "development": {

@@ -1,5 +1,6 @@
 import { Component, HostBinding, HostListener, inject, signal, computed, effect  } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { Title, Meta } from '@angular/platform-browser';
 import { Router, RouterOutlet, NavigationEnd  } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { ProductService } from './services/product.service';
@@ -16,10 +17,14 @@ import { colorLabel, colorValue } from './utils/color.util';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-    // 👇 deja SOLO estos helpers; elimina _overlays y updateOverlayState()
+  private document = inject(DOCUMENT);
+  private titleSvc = inject(Title);
+  private metaSvc = inject(Meta);
+
+  // 👇 deja SOLO estos helpers; elimina _overlays y updateOverlayState()
   private _lockScroll() { document.body.classList.add('no-scroll'); }
   private _syncScrollLock() {
-    const anyOpen = !!(this.selected || this.cartOpen || this.filtersOpen);
+    const anyOpen = !!(this.selected() || this.cartOpen || this.filtersOpen);
     document.body.classList.toggle('no-scroll', anyOpen);
   } 
   private productSvc = inject(ProductService);
@@ -37,7 +42,7 @@ export class AppComponent {
   // Estado UI
   tab = signal<'home'|'shop'|'about'>('shop');
   products = signal<Product[]>([]);
-  selected: Product | null = null;
+  selected = signal<Product | null>(null);
   imgIndex = 0;
   cartOpen = false;
   filtersOpen = false;                // ← sigue siendo boolean (usamos métodos open/close)
@@ -123,16 +128,103 @@ export class AppComponent {
         const topnav = document.querySelector('.topnav') as HTMLElement | null;
 
         // ❗️Solo modal o carrito vuelven inerte el fondo. Filtros NO.
-        const inert = !!(this.selected || this.cartOpen);
+        const inert = !!(this.selected() || this.cartOpen);
         if (main)  (main  as any).inert = inert;
         if (topnav)(topnav as any).inert = inert;
 
         queueMicrotask(() => {
             if (this.cartOpen)      this._focusById('cartClose');
-            else if (this.selected) this._focusById('modalClose');
+            else if (this.selected()) this._focusById('modalClose');
             else if (this._lastFocus) { try{ this._lastFocus.focus(); }catch{} this._lastFocus = null; }
         });
     });
+
+    // Dynamic SEO, Title, Meta and JSON-LD Structured Data
+    effect(() => {
+      const isR = this.isRouted();
+      const p = this.selected();
+      const currentTab = this.tab();
+
+      if (isR) {
+        if (this.router.url.startsWith('/checkout')) {
+          this.titleSvc.setTitle('Pasarela de Pago | CLVT Brand');
+          this.metaSvc.updateTag({ name: 'description', content: 'Finaliza tu compra de forma segura con Bizum o transferencia en CLVT Brand.' });
+        } else if (this.router.url.startsWith('/thanks')) {
+          this.titleSvc.setTitle('¡Gracias por tu compra! | CLVT Brand');
+          this.metaSvc.updateTag({ name: 'description', content: 'Tu pedido se ha procesado con éxito. Ponte en contacto por WhatsApp para finalizar los detalles.' });
+        }
+        return;
+      }
+
+      if (p) {
+        const titleStr = `${p.name} — CLVT Brand`;
+        const descStr = p.description || `Compra ${p.name} en la tienda oficial CLVT Brand. Ropa urbana exclusiva, edición limitada.`;
+        this.titleSvc.setTitle(titleStr);
+        this.metaSvc.updateTag({ name: 'description', content: descStr });
+
+        // Schema.org Product
+        const image = p.images?.[0] ? (p.images[0].startsWith('http') ? p.images[0] : `https://www.asociacionclvt.com/${p.images[0]}`) : '';
+        const productSchema = {
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          'name': p.name,
+          'image': image,
+          'description': descStr,
+          'offers': {
+            '@type': 'Offer',
+            'url': 'https://www.asociacionclvt.com/',
+            'priceCurrency': 'EUR',
+            'price': p.price,
+            'itemCondition': 'https://schema.org/NewCondition',
+            'availability': this.isSoldOut(p) ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock'
+          },
+          'brand': {
+            '@type': 'Brand',
+            'name': 'CLVT Brand'
+          }
+        };
+        this.updateJsonLd(productSchema);
+      } else {
+        if (currentTab === 'shop') {
+          this.titleSvc.setTitle('CLVT Brand | Tienda de Ropa Streetwear & Comunidad Skate/Scooter');
+          this.metaSvc.updateTag({ name: 'description', content: 'Asociación CULTIVATE - Tienda Oficial CLVT Brand. Descubre sudaderas, camisetas y accesorios urbanos exclusivos.' });
+        } else if (currentTab === 'about') {
+          this.titleSvc.setTitle('Sobre Nosotros — Asociación CULTIVATE | CLVT Brand');
+          this.metaSvc.updateTag({ name: 'description', content: 'Conoce la Asociación CULTIVATE, nuestro compromiso con la integración social a través del deporte urbano como el skate y scooter.' });
+        }
+
+        // Schema.org OnlineStore
+        const storeSchema = {
+          '@context': 'https://schema.org',
+          '@type': 'OnlineStore',
+          'name': 'CLVT Brand',
+          'url': 'https://www.asociacionclvt.com/',
+          'logo': 'https://www.asociacionclvt.com/assets/img/LogoCLVT.png',
+          'description': 'Tienda Oficial de CLVT Brand (Asociación CULTIVATE). Ropa urbana exclusiva, sudaderas, camisetas y cultura de skate/scooter.',
+          'sameAs': [
+            'https://www.instagram.com/asociacion_clvt'
+          ],
+          'contactPoint': {
+            '@type': 'ContactPoint',
+            'telephone': '+34722331523',
+            'contactType': 'customer service'
+          }
+        };
+        this.updateJsonLd(storeSchema);
+      }
+    });
+  }
+
+  private updateJsonLd(schema: any) {
+    if (typeof window === 'undefined') return;
+    let script = this.document.getElementById('clvt-jsonld') as HTMLScriptElement;
+    if (!script) {
+      script = this.document.createElement('script') as HTMLScriptElement;
+      script.id = 'clvt-jsonld';
+      script.type = 'application/ld+json';
+      this.document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(schema);
   }
 
   // ===============================
@@ -257,21 +349,21 @@ export class AppComponent {
   // ===== Modal producto =====
   openProduct(p: Product){
     this._rememberFocus();
-    this.selected = p;
+    this.selected.set(p);
     this.imgIndex = 0;
     this.selectedSize  = this.firstAvailableSize(p);
     this.selectedColor = Array.isArray((p as any)?.colors) && (p as any).colors.length ? (p as any).colors[0] : null;
     this._lockScroll();
   }
   closeProduct(){
-    this.selected = null;
+    this.selected.set(null);
     this.selectedSize = null;
     this.selectedColor = null;
     this._syncScrollLock();
     this._restoreFocusIfNoOverlay();
   }
 
-  private anyOverlayOpen(){ return !!(this.selected || this.cartOpen || this.filtersOpen); }
+  private anyOverlayOpen(){ return !!(this.selected() || this.cartOpen || this.filtersOpen); }
 
   private _restoreFocusIfNoOverlay(){
     if (!this.anyOverlayOpen() && this._lastFocus) {
@@ -289,17 +381,18 @@ export class AppComponent {
   }
 
   addFromModal(){
-    if(!this.selected) return;
-    if (this.isSoldOut(this.selected)) return;  // ⛔️ no permitir añadir si está agotado
+    const current = this.selected();
+    if(!current) return;
+    if (this.isSoldOut(current)) return;  // ⛔️ no permitir añadir si está agotado
 
-    const p: any = this.selected;
+    const p: any = current;
     const needsSize = this.usesSizes(p);
     const size = needsSize ? (this.selectedSize ?? null) : null;
     if (needsSize && (!size || !this.isSizeAvailable(p, size))) return;
 
     const color = (Array.isArray(p?.colors) && p.colors.length ? this.selectedColor : null) || null;
 
-    this.cartSvc.add(this.selected, size, color);
+    this.cartSvc.add(current, size, color);
     this.closeProduct();
     this.openCart();
   }
@@ -357,8 +450,8 @@ export class AppComponent {
   // ===============================
   //  Viewer / navegación
   // ===============================
-  next(){ if(this.selected) this.imgIndex = (this.imgIndex + 1) % this.selected.images.length; }
-  prev(){ if(this.selected) this.imgIndex = (this.imgIndex - 1 + this.selected.images.length) % this.selected.images.length; }
+  next(){ const current = this.selected(); if(current) this.imgIndex = (this.imgIndex + 1) % current.images.length; }
+  prev(){ const current = this.selected(); if(current) this.imgIndex = (current.images.length - 1 + this.imgIndex) % current.images.length; }
 
   private _rememberFocus() { this._lastFocus = (document.activeElement as HTMLElement) ?? null; }
   private _focusById(id: string) { const el = document.getElementById(id) as HTMLElement | null; if (el) el.focus(); }
@@ -375,7 +468,8 @@ export class AppComponent {
   // Accesos rápidos
   @HostListener('window:keydown', ['$event'])
   handleKey(e: KeyboardEvent){
-    if (this.selected) {
+    const current = this.selected();
+    if (current) {
       if (e.key === 'ArrowRight') this.next();
       if (e.key === 'ArrowLeft') this.prev();
       if (e.key === 'Escape') this.closeProduct();

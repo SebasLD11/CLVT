@@ -4,44 +4,57 @@
   display:grid; gap:6px; margin-top:12px;
 }
 .head h2{
-  margin:0; font-size: clamp(22px, 3vw, 36px); font-weight:900;
+  margin:0; font-size: clamp(24px, 3.5vw, 40px); font-weight:900; font-family: var(--font-display);
 }
-.sub{ margin:0; opacity:.85; }
+.sub{ margin:0; opacity:.85; font-family: var(--font-body); }
 
 .card{
-  margin-top: 12px;
-  background: rgba(255,255,255,.85);
-  border-radius: 20px;
+  margin-top: 16px;
+  background: hsl(var(--card-bg));
+  border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  box-shadow: var(--card-shadow);
+  border: 1px solid hsl(var(--border-subtle));
 }
-:host-context(.dark) .card{ background: rgba(24,24,27,.92); }
-.section{ padding: 14px; display:grid; gap: 16px; }
+.section{ padding: 18px; display:grid; gap: 16px; }
 
 .info .muted{ opacity:.8; }
-.warn{ color:#b91c1c; font-weight:700; }
+.warn{ color:#dc2626; font-weight:700; }
 .hint{ font-size:14px; opacity:.75; }
 
 .actions{
-  display:flex; gap:10px; align-items:center; flex-wrap: wrap;
-  width: 100%; /* el contenedor nunca se pasa del ancho */
+  display:flex; gap:12px; align-items:center; flex-wrap: wrap;
+  width: 100%;
 }
 .actions p{
   font-size: 17px;
+  font-family: var(--font-body);
 }
 .apply{
-  padding:8px 12px; border-radius:12px; border:none; background:#facc15; color:#000; font-weight:900; cursor:pointer;
+  padding:12px 18px; border-radius:12px; border:none; background:hsl(var(--accent)); color:#000; font-family: var(--font-display); font-weight:900; cursor:pointer;
   text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
-  max-width: 100%; box-sizing: border-box; /* evita desbordes si le da por crecer */
+  max-width: 100%; box-sizing: border-box;
+  box-shadow: 0 4px 14px rgba(250, 204, 21, 0.25);
+  transition: all 0.2s ease;
+}
+.apply:hover{
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(250, 204, 21, 0.4);
 }
 .apply.wa{
-  /* por si el texto cambia o el OS añade labels largos: que NUNCA desborde */
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 .ghost{
-  padding:8px 10px; border-radius:12px; border:1px solid transparent; background:transparent; color:inherit; font-weight:800; cursor:pointer;
+  padding:12px 16px; border-radius:12px; border:1px solid hsl(var(--border-subtle)); background:transparent; color:inherit; font-family: var(--font-body); font-weight:800; cursor:pointer;
+  transition: all 0.2s ease;
+}
+.ghost:hover{
+  background: rgba(0, 0, 0, 0.04);
+}
+:host-context(.dark) .ghost:hover{
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .more{ display:flex; justify-content:flex-start; }

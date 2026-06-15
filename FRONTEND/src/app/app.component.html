@@ -36,9 +36,14 @@
 <main class="container">
   <!-- BANNER DE ENTRADA (full screen) -->
   <section *ngIf="showEntry" class="entry-banner" role="dialog" aria-modal="true">
-    <img class="entry-bg" src="assets/img/COL.COLORS.png" alt="" aria-hidden="true" />
-    <div class="inner">
-      <button class="entry-cta" (click)="enterShop()">Entrar a la tienda</button>
+    <img class="entry-bg" src="assets/img/COL.COLORS.png" alt="CLVT Brand Campaign" aria-hidden="true" />
+    <div class="entry-overlay-grid">
+      <div class="brand-badge-top">ASOCIACIÓN CULTIVATE</div>
+      <h1 class="entry-title">CLVT BRAND</h1>
+      <p class="entry-subtitle">CLOTHING & STREET CULTURE • EST. 2026</p>
+      <div class="inner">
+        <button class="entry-cta" (click)="enterShop()">ENTRAR A LA TIENDA</button>
+      </div>
     </div>
   </section>
   <!-- Cuando NO es /checkout, muestro Shop/About -->
@@ -289,82 +294,96 @@
 </main>
 
 <!-- MODAL PRODUCTO -->
-<div class="modal-backdrop" *ngIf="selected" (click)="closeProduct()"></div>
-<div class="modal" *ngIf="selected">
+<div class="modal-backdrop" *ngIf="selected()" (click)="closeProduct()"></div>
+<div class="modal" *ngIf="selected()">
   <div class="modal-body" (click)="$event.stopPropagation()">
     <!-- ✕ Cerrar modal -->
-    <button id="modalClose" class="close-btn" (click)="closeProduct()" aria-label="Cerrar">✕</button>
+    <button id="modalClose" class="close-btn" (click)="closeProduct()" aria-label="Cerrar modal">✕</button>
 
-    <div class="viewer">
-      <button class="nav prev" (click)="prev()">‹</button>
-      <img
-        [src]="selected?.images?.length ? selected?.images[imgIndex] : FALLBACK_IMG"
-        [alt]="selected?.name || 'Producto'"
-        (error)="onImgErr($event)" />
-      <button class="nav next" (click)="next()">›</button>
-    </div>
+    <div class="modal-grid-layout">
+      <!-- Columna izquierda: Galería de imágenes -->
+      <div class="modal-gallery-column">
+        <div class="viewer">
+          <button class="nav prev" (click)="prev()" aria-label="Imagen anterior">‹</button>
+          <img
+            [src]="selected()?.images?.length ? selected()?.images[imgIndex] : FALLBACK_IMG"
+            [alt]="selected()?.name || 'Producto'"
+            (error)="onImgErr($event)" />
+          <button class="nav next" (click)="next()" aria-label="Siguiente imagen">›</button>
+        </div>
 
-    <div class="thumbs-lg">
-      <button
-        *ngFor="let src of (selected?.images || []); let i = index"
-        [class.active]="i===imgIndex"
-        (click)="imgIndex=i">
-        <img [src]="src" [alt]="'thumb-'+i" (error)="onImgErr($event)" />
-      </button>
-    </div>
-
-    <div class="meta">
-      <h3>{{ selected?.name }}</h3>
-      <!-- NUEVA DESCRIPCIÓN -->
-      <p class="product-desc" *ngIf="selected?.description">
-        {{ selected.description }}
-      </p>
-      <!-- Mensaje de agotado -->
-      <p class="muted" *ngIf="isSoldOut(selected!)" aria-live="polite" style="margin:8px 0 0">
-        Agotado temporalmente
-      </p>
-      <!-- Selector de color -->
-      <div class="colors" *ngIf="selected?.['colors']?.length">
-        <span class="lbl">Color:</span>
-        <div class="colors-row">
-          <button type="button"
-            *ngFor="let c of selected!['colors']"
-            [class.active]="selectedColor === c"
-            (click)="selectedColor = c"
-            [attr.aria-pressed]="selectedColor === c ? 'true' : 'false'"
-            [title]="c">
-            <!-- Si c es un hex (#fff/#000), pinta un swatch; si no, muestra texto -->
-            <span class="swatch"
-                  [style.background]="(c||'').startsWith('#') ? c : null"
-                  [style.border]="(c||'').startsWith('#') ? '1px solid rgba(0,0,0,.2)' : null"></span>
-            <span class="txt" *ngIf="!(c||'').startsWith('#')">{{ c }}</span>
+        <div class="thumbs-lg" *ngIf="(selected()?.images?.length ?? 0) > 1">
+          <button
+            *ngFor="let src of (selected()?.images || []); let i = index"
+            [class.active]="i===imgIndex"
+            (click)="imgIndex=i"
+            [attr.aria-label]="'Ver imagen ' + (i + 1)">
+            <img [src]="src" [alt]="'Miniatura ' + (i + 1)" (error)="onImgErr($event)" />
           </button>
         </div>
       </div>
-      <!-- Selector de tallas -->
-      <div class="sizes" *ngIf="selected?.sizes?.length">
-        <span class="lbl">Talla:</span>
-        <div class="sizes-row">
-          <button type="button"
-            *ngFor="let s of selected!.sizes"
-            [class.active]="selectedSize === s"
-            [disabled]="isSoldOut(selected!) || !isSizeAvailable(selected!, s)"
-            (click)="!isSoldOut(selected!) && isSizeAvailable(selected!, s) && (selectedSize = s)"
-            [attr.aria-pressed]="selectedSize === s ? 'true' : 'false'">
-            {{ s }}
-          </button>
+
+      <!-- Columna derecha: Detalles de producto -->
+      <div class="modal-meta-column">
+        <span class="modal-product-tag" *ngIf="selected()?.tag">#{{ selected()?.tag | uppercase }}</span>
+        <h3 class="modal-product-title">{{ selected()?.name }}</h3>
+        
+        <p class="modal-product-price">{{ selected()?.price | currency:'EUR' }}</p>
+        
+        <!-- DESCRIPCIÓN -->
+        <p class="product-desc" *ngIf="selected()?.description">
+          {{ selected()?.description }}
+        </p>
+
+        <!-- Mensaje de agotado -->
+        <p class="sold-out-badge" *ngIf="isSoldOut(selected()!)" aria-live="polite">
+          Agotado temporalmente
+        </p>
+
+        <!-- Selector de color -->
+        <div class="colors" *ngIf="selected()?.['colors']?.length">
+          <span class="lbl">Color:</span>
+          <div class="colors-row">
+            <button type="button"
+              *ngFor="let c of selected()!['colors']"
+              [class.active]="selectedColor === c"
+              (click)="selectedColor = c"
+              [attr.aria-pressed]="selectedColor === c ? 'true' : 'false'"
+              [title]="c">
+              <span class="swatch"
+                    [style.background]="(c||'').startsWith('#') ? c : null"
+                    [style.border]="(c||'').startsWith('#') ? '1px solid rgba(255,255,255,.15)' : null"></span>
+              <span class="txt" *ngIf="!(c||'').startsWith('#')">{{ c }}</span>
+            </button>
+          </div>
         </div>
+
+        <!-- Selector de tallas -->
+        <div class="sizes" *ngIf="selected()?.sizes?.length">
+          <span class="lbl">Talla:</span>
+          <div class="sizes-row">
+            <button type="button"
+              *ngFor="let s of selected()!.sizes"
+              [class.active]="selectedSize === s"
+              [disabled]="isSoldOut(selected()!) || !isSizeAvailable(selected()!, s)"
+              (click)="!isSoldOut(selected()!) && isSizeAvailable(selected()!, s) && (selectedSize = s)"
+              [attr.aria-pressed]="selectedSize === s ? 'true' : 'false'">
+              {{ s }}
+            </button>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <button class="cta"
+          [disabled]="isSoldOut(selected()!) 
+                      || (selected()?.sizes?.length && (!selectedSize || !isSizeAvailable(selected()!, selectedSize))) 
+                      || (selected()?.['colors']?.length && !selectedColor)"
+          (click)="addFromModal()">
+          Añadir al carrito
+          <span *ngIf="selectedSize"> — {{selectedSize}}</span>
+          <span *ngIf="selectedColor"> — {{ colorLabel(selectedColor) }}</span>
+        </button>
       </div>
-      <!-- CTA -->
-      <button class="cta"
-        [disabled]="isSoldOut(selected!) 
-                    || (selected?.sizes?.length && (!selectedSize || !isSizeAvailable(selected!, selectedSize))) 
-                    || (selected?.['colors']?.length && !selectedColor)"
-        (click)="addFromModal()">
-        Añadir al carrito
-        <span *ngIf="selectedSize"> — {{selectedSize}}</span>
-        <span *ngIf="selectedColor"> — {{ colorLabel(selectedColor) }}</span>
-      </button>
     </div>
   </div>
 </div>
