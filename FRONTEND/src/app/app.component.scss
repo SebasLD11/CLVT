@@ -2,6 +2,10 @@
    Variables & base
    ========================= */
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :host{
   --nav-h: 68px;
   --container: clamp(320px, 95vw, 1400px);
@@ -20,6 +24,8 @@
   --font-body: 'Outfit', sans-serif;
 
   display:block;
+  width: 100%;
+  max-width: 100%;
   min-height:100vh;
   font-family: var(--font-body);
   
@@ -1593,6 +1599,8 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
       cursor: pointer;
       text-align: left;
       transition: color 0.2s ease;
+      white-space: normal;
+      word-break: break-word;
 
       &:hover {
         color: hsl(var(--accent));
@@ -1604,6 +1612,8 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
       font-size: 17px;
       text-decoration: none;
       transition: color 0.2s ease;
+      white-space: normal;
+      word-break: break-word;
 
       &:hover {
         color: hsl(var(--accent));
@@ -1679,6 +1689,8 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
     cursor: pointer;
     text-decoration: underline;
     transition: color 0.2s ease;
+    white-space: normal;
+    word-break: break-word;
 
     &:hover {
       color: hsl(var(--accent));
@@ -2017,6 +2029,27 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   @supports (height: 100svh){
     .entry-banner{ min-height: 100svh; } /* sin restar la nav */
   }
+  
+  .brand-badge-top {
+    font-size: clamp(14px, 4.5vw, 20px);
+    letter-spacing: 0.18em;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .entry-subtitle {
+    font-size: clamp(11px, 3.2vw, 14px);
+    letter-spacing: 0.12em;
+    margin: 12px 0 24px;
+    text-align: center;
+  }
+  
+  .actions {
+    gap: 4px;
+  }
+  .actions button {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
   /* usa la ALTURA del viewport para “llenar” más */
   .entry-bg{
     width: 100vw;
@@ -2168,6 +2201,17 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   .about{
     padding: 16px 0 24px;          /* un poco más compacto */
     isolation: isolate;
+  }
+  .membership-cta-card {
+    padding: 24px 16px;
+    margin-bottom: 30px;
+  }
+  .contact-section-card, .faq-section-card {
+    padding: 20px 16px;
+  }
+  .contact-text-block {
+    min-width: 0;
+    word-break: break-word;
   }
   .about .hero--welcome{
     padding: 10px 0 6px;
@@ -2351,8 +2395,22 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   
   .logo-img{ width:32px; height:32px; }
   .brand-text{ font-size: 13px; max-width: 26vw; }
+  .actions {
+    gap: 3px;
+  }
+  .actions button {
+    padding: 5px 6px;
+    font-size: 12px;
+  }
   .about{
     padding: 12px 0 20px;          /* aún más recogido */
+  }
+  .membership-cta-card {
+    padding: 20px 12px;
+    margin-bottom: 24px;
+  }
+  .contact-section-card, .faq-section-card {
+    padding: 16px 12px;
   }
   .about .about-hero h1{ font-size: 22px; }
   .about .about-hero p{ font-size: 15px; }

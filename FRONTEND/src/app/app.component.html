@@ -288,63 +288,64 @@
       </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer class="main-footer">
-      <div class="container footer-grid">
-        <!-- Col 1: Marca y Misión -->
-        <div class="footer-col footer-brand">
-          <div class="brand-logo-row">
-            <img class="logo-img" src="assets/img/LogoCLVT.png" alt="CLVT Logo" />
-            <span class="brand-text">Asociación CLVT</span>
-          </div>
-          <p class="brand-desc">
-            Asociación CULTIVATE. Fusión de cultura de calle y compromiso social mediante el deporte urbano y el streetwear.
-          </p>
-        </div>
-        
-        <!-- Col 2: Enlaces Rápidos -->
-        <div class="footer-col footer-links">
-          <h4>Navegación</h4>
-          <ul>
-            <li><button type="button" (click)="tab.set('shop'); scrollToTop()">Tienda</button></li>
-            <li><button type="button" (click)="goToAbout()">Sobre Nosotros</button></li>
-            <li><button type="button" (click)="goToContact()">Contacto</button></li>
-            <li><a href="https://forms.gle/dXfzUpQ2ZEFfjhyD7" target="_blank" rel="noopener">Asociarse</a></li>
-          </ul>
-        </div>
-        
-        <!-- Col 3: Redes / Soporte -->
-        <div class="footer-col footer-support">
-          <h4>Comunidad</h4>
-          <ul>
-            <li><a href="https://wa.me/34722331523" target="_blank" rel="noopener">WhatsApp Directo</a></li>
-            <li><a href="https://www.instagram.com/asociacion_clvt" target="_blank" rel="noopener">Instagram</a></li>
-            <li><a href="https://www.valodigs.com/" target="_blank" rel="noopener">Comunidad VALODI</a></li>
-          </ul>
-        </div>
-      </div>
-      
-      <!-- Faja inferior de legalidad y copyright -->
-      <div class="container footer-bottom">
-        <p class="copyright">
-          &copy; 2026 Asociación CULTIVATE (CLVT). Todos los derechos reservados.
-        </p>
-        <p class="legal-disclaimer">
-          Asociación sin ánimo de lucro regulada bajo la legalidad española y europea.
-        </p>
-        <div class="footer-legal-links">
-          <button type="button" (click)="openLegalModal('aviso')">Aviso Legal</button>
-          <button type="button" (click)="openLegalModal('privacidad')">Política de Privacidad</button>
-          <button type="button" (click)="openLegalModal('cookies')">Política de Cookies</button>
-        </div>
-      </div>
-    </footer>  
   </ng-container>
   <!-- Cuando SÍ es /checkout, solo router-outlet -->
   <ng-template #routedTpl>
     <router-outlet></router-outlet>
   </ng-template>
 </main>
+
+<!-- FOOTER -->
+<footer class="main-footer" *ngIf="!isRouted()">
+  <div class="container footer-grid">
+    <!-- Col 1: Marca y Misión -->
+    <div class="footer-col footer-brand">
+      <div class="brand-logo-row">
+        <img class="logo-img" src="assets/img/LogoCLVT.png" alt="CLVT Logo" />
+        <span class="brand-text">Asociación CLVT</span>
+      </div>
+      <p class="brand-desc">
+        Asociación CULTIVATE. Fusión de cultura de calle y compromiso social mediante el deporte urbano y el streetwear.
+      </p>
+    </div>
+    
+    <!-- Col 2: Enlaces Rápidos -->
+    <div class="footer-col footer-links">
+      <h4>Navegación</h4>
+      <ul>
+        <li><button type="button" (click)="tab.set('shop'); scrollToTop()">Tienda</button></li>
+        <li><button type="button" (click)="goToAbout()">Sobre Nosotros</button></li>
+        <li><button type="button" (click)="goToContact()">Contacto</button></li>
+        <li><a href="https://forms.gle/dXfzUpQ2ZEFfjhyD7" target="_blank" rel="noopener">Asociarse</a></li>
+      </ul>
+    </div>
+    
+    <!-- Col 3: Redes / Soporte -->
+    <div class="footer-col footer-support">
+      <h4>Comunidad</h4>
+      <ul>
+        <li><a href="https://wa.me/34722331523" target="_blank" rel="noopener">WhatsApp Directo</a></li>
+        <li><a href="https://www.instagram.com/asociacion_clvt" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://www.valodigs.com/" target="_blank" rel="noopener">Comunidad VALODI</a></li>
+      </ul>
+    </div>
+  </div>
+  
+  <!-- Faja inferior de legalidad y copyright -->
+  <div class="container footer-bottom">
+    <p class="copyright">
+      &copy; 2026 Asociación CULTIVATE (CLVT). Todos los derechos reservados.
+    </p>
+    <p class="legal-disclaimer">
+      Asociación sin ánimo de lucro regulada bajo la legalidad española y europea.
+    </p>
+    <div class="footer-legal-links">
+      <button type="button" (click)="openLegalModal('aviso')">Aviso Legal</button>
+      <button type="button" (click)="openLegalModal('privacidad')">Política de Privacidad</button>
+      <button type="button" (click)="openLegalModal('cookies')">Política de Cookies</button>
+    </div>
+  </div>
+</footer>
 
 <!-- MODAL PRODUCTO -->
 <div class="modal-backdrop" *ngIf="selected()" (click)="closeProduct()"></div>
