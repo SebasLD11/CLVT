@@ -614,6 +614,18 @@ body.no-scroll {
   overflow: hidden;
   box-sizing: border-box;
   animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Force GPU rendering for clipping rounded corners in WebKit browsers */
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  isolation: isolate;
+}
+
+@media (min-width: 769px) {
+  .modal-body {
+    height: min(720px, 80vh);
+  }
 }
 
 .close-btn {
@@ -652,6 +664,13 @@ body.no-scroll {
   min-height: 500px;
 }
 
+@media (min-width: 769px) {
+  .modal-grid-layout {
+    height: 100%;
+    min-height: 100%;
+  }
+}
+
 @media (max-width: 768px) {
   .modal-grid-layout {
     grid-template-columns: 1fr;
@@ -666,9 +685,18 @@ body.no-scroll {
   justify-content: space-between;
   border-right: 1px solid hsl(var(--border-subtle));
   position: relative;
+  
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
 }
 :host.dark .modal-gallery-column {
   background: hsl(0, 0%, 3%);
+}
+
+@media (min-width: 769px) {
+  .modal-gallery-column {
+    height: 100%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -687,6 +715,13 @@ body.no-scroll {
   flex: 1 1 auto;
 }
 
+@media (min-width: 769px) {
+  .viewer {
+    height: 0;
+    min-height: 0;
+  }
+}
+
 .viewer img {
   max-width: 100%;
   max-height: 450px;
@@ -696,6 +731,13 @@ body.no-scroll {
   display: block;
   transition: opacity 0.3s ease;
   padding: 24px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 769px) {
+  .viewer img {
+    max-height: 100%;
+  }
 }
 
 .nav {
@@ -771,6 +813,30 @@ body.no-scroll {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+@media (min-width: 769px) {
+  .modal-meta-column {
+    height: 100%;
+    overflow-y: auto;
+    justify-content: flex-start;
+    border-top-right-radius: inherit;
+    border-bottom-right-radius: inherit;
+    box-sizing: border-box;
+  }
+  .modal-meta-column::-webkit-scrollbar {
+    width: 6px;
+  }
+  .modal-meta-column::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .modal-meta-column::-webkit-scrollbar-thumb {
+    background: hsl(var(--border-subtle));
+    border-radius: 3px;
+  }
+  .modal-meta-column::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--text-muted));
+  }
 }
 
 .modal-product-tag {

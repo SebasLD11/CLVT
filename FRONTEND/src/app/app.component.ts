@@ -24,7 +24,7 @@ export class AppComponent {
   // 👇 deja SOLO estos helpers; elimina _overlays y updateOverlayState()
   private _lockScroll() { document.body.classList.add('no-scroll'); }
   private _syncScrollLock() {
-    const anyOpen = !!(this.selected() || this.cartOpen || this.filtersOpen);
+    const anyOpen = !!(this.selected() || this.cartOpen() || this.filtersOpen());
     document.body.classList.toggle('no-scroll', anyOpen);
   } 
   private productSvc = inject(ProductService);
@@ -44,8 +44,8 @@ export class AppComponent {
   products = signal<Product[]>([]);
   selected = signal<Product | null>(null);
   imgIndex = 0;
-  cartOpen = false;
-  filtersOpen = false;                // ← sigue siendo boolean (usamos métodos open/close)
+  cartOpen = signal(false);
+  filtersOpen = signal(false);
   selectedSize: string | null = null;
   selectedColor: string | null = null;
 
@@ -128,12 +128,12 @@ export class AppComponent {
         const topnav = document.querySelector('.topnav') as HTMLElement | null;
 
         // ❗️Solo modal o carrito vuelven inerte el fondo. Filtros NO.
-        const inert = !!(this.selected() || this.cartOpen);
+        const inert = !!(this.selected() || this.cartOpen());
         if (main)  (main  as any).inert = inert;
         if (topnav)(topnav as any).inert = inert;
 
         queueMicrotask(() => {
-            if (this.cartOpen)      this._focusById('cartClose');
+            if (this.cartOpen())      this._focusById('cartClose');
             else if (this.selected()) this._focusById('modalClose');
             else if (this._lastFocus) { try{ this._lastFocus.focus(); }catch{} this._lastFocus = null; }
         });
@@ -325,11 +325,11 @@ export class AppComponent {
   // ===== Filtros =====
   openFilters(){
     this._rememberFocus();
-    this.filtersOpen = true;
+    this.filtersOpen.set(true);
     this._lockScroll();          // bloquea scroll del body
   }
   closeFilters(){
-    this.filtersOpen = false;
+    this.filtersOpen.set(false);
     this._syncScrollLock();      // desbloquea si no queda nada abierto
     this._restoreFocusIfNoOverlay();
   }
@@ -337,11 +337,11 @@ export class AppComponent {
   // ===== Carrito =====
   openCart(){
     this._rememberFocus();
-    this.cartOpen = true;
+    this.cartOpen.set(true);
     this._lockScroll();
   }
   closeCart(){
-    this.cartOpen = false;
+    this.cartOpen.set(false);
     this._syncScrollLock();
     this._restoreFocusIfNoOverlay();
   }
@@ -363,7 +363,7 @@ export class AppComponent {
     this._restoreFocusIfNoOverlay();
   }
 
-  private anyOverlayOpen(){ return !!(this.selected() || this.cartOpen || this.filtersOpen); }
+  private anyOverlayOpen(){ return !!(this.selected() || this.cartOpen() || this.filtersOpen()); }
 
   private _restoreFocusIfNoOverlay(){
     if (!this.anyOverlayOpen() && this._lastFocus) {
@@ -473,7 +473,7 @@ export class AppComponent {
       if (e.key === 'ArrowRight') this.next();
       if (e.key === 'ArrowLeft') this.prev();
       if (e.key === 'Escape') this.closeProduct();
-    } else if (this.cartOpen && e.key === 'Escape') {
+    } else if (this.cartOpen() && e.key === 'Escape') {
       this.closeCart();
     }
   }
