@@ -1689,7 +1689,7 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
   justify-content: center;
   margin-top: 8px;
 
-  button {
+  button, a {
     background: none;
     border: none;
     color: hsl(var(--text-muted));
@@ -1700,6 +1700,9 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
     transition: color 0.2s ease;
     white-space: normal;
     word-break: break-word;
+    display: inline-block;
+    padding: 8px 12px; /* Aumenta el área de toque táctil */
+    margin: -4px -6px; /* Compensa el padding para mantener la alineación */
 
     &:hover {
       color: hsl(var(--accent));
