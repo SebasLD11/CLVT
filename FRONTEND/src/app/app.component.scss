@@ -324,40 +324,37 @@ body.no-scroll {
 :host.dark .shop .filters-toggle{ background:#1f2937; }
 
 .shop-layout{
-  display:grid;
-  grid-template-columns: 300px 1fr;
-  gap:20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   margin-top: 16px;
 }
 .shop { position: relative; }
 /* =========================
-   ASIDE filtros
+   Filtros Horizontales (Desktop)
    ========================= */
 .filters{
-  position: sticky;
-  top: calc(var(--nav-h) + 12px);
-  height: fit-content;
-  background: rgba(255,255,255,.92);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  box-shadow: 0 10px 30px rgba(0,0,0,.08);
-  padding: 14px;
+  padding: 18px 24px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 24px;
+  width: 100%;
 }
 
 :host.dark .filters{ background: rgba(24,24,27,.92); }
 
 .filters-head{
-  display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;
+  display: none; /* oculto en desktop */
 }
-.filters-head h3{ margin:0; font-size:16px; }
-.filters-close{
-  display:none; /* solo móvil */
-  width:32px; height:32px; border:none; border-radius:999px; cursor:pointer;
-  background:rgba(0,0,0,.06); color:inherit;
-}
-:host.dark .filters-close{ background:rgba(255,255,255,.08); }
 
 .filters-group{
-  display:flex; flex-direction:column; gap:8px; margin:12px 0;
+  display:flex; flex-direction:column; gap:8px; margin: 0;
+  flex: 1 1 220px;
 }
 .filters-group label{ font-weight:700; font-size:12px; opacity:.8; }
 .filters-group input[type="search"],
@@ -376,13 +373,21 @@ body.no-scroll {
 }
 .chip.active{ background:#facc15; color:#000; border-color:#facc15; }
 
-.filters-actions{ display:flex; gap:8px; margin-top:4px; }
+.filters-actions{
+  display:flex; gap:12px; align-self:flex-end;
+  margin-left: auto;
+  flex-shrink: 0;
+}
 .filters-actions .clear{
-  padding:8px 12px; border-radius:var(--radius-sm); border:1px solid rgba(0,0,0,.1);
-  background:transparent; color:inherit; cursor:pointer;
+  padding:10px 18px; border-radius:var(--radius-sm); border: 1px solid rgba(0, 0, 0, 0.1);
+  background:transparent; color:inherit; cursor:pointer; font-weight: 800;
+  min-height: 42px;
+}
+:host.dark .filters-actions .clear {
+  border-color: rgba(255, 255, 255, 0.12);
 }
 .filters-actions .apply{
-  padding:8px 12px; border-radius:var(--radius-sm); border:none; background:#facc15; color:#000; font-weight:800; cursor:pointer;
+  display: none; /* oculto en desktop */
 }
 
 /* Backdrop de filtros: Angular lo añade/quita con *ngIf */
@@ -2151,19 +2156,39 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
       16px
       calc(max(12px, env(safe-area-inset-bottom)))
       16px;
+
+    /* REINTEGRADO: Layout vertical en móviles */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
   }
   :host.dark .filters{ background: rgba(24,24,27,.98); }
 
   .filters.open{ transform: translate3d(0,0,0); }
 
+  /* Asegurar que el backdrop tape todo pero por debajo de la hoja lateral */
+  .filters-backdrop {
+    z-index: 2147483646 !important;
+  }
+
   /* Header pegajoso para que el ✕ siempre esté visible */
   .filters-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     position: sticky; top: 0;
     background: inherit;
     margin: -4px -16px 8px -16px;
     padding: 8px 16px 10px 16px;
     border-bottom: 1px solid rgba(0,0,0,.06);
     z-index: 1;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+    }
   }
   :host.dark .filters-head{ border-color: rgba(255,255,255,.08); }
 
@@ -2173,6 +2198,66 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
     background: rgba(0,0,0,.06); color: inherit; cursor: pointer;
   }
   :host.dark .filters-close{ background: rgba(255,255,255,.08); }
+
+  /* Reset de grupos de filtros en móvil */
+  .filters-group {
+    flex: 0 0 auto;
+    margin-bottom: 4px;
+
+    input[type="search"],
+    input[type="number"] {
+      min-height: 44px; /* Touch target */
+    }
+
+    .chip {
+      min-height: 38px; /* Touch target */
+      padding: 8px 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  /* Reset de acciones en móvil para mostrar Limpiar y Aplicar */
+  .filters-actions {
+    display: flex;
+    gap: 8px;
+    align-self: stretch;
+    margin-left: 0;
+    margin-top: auto; /* Empuja las acciones al final */
+    padding-top: 16px;
+    width: 100%;
+
+    .clear, .apply {
+      flex: 1;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .clear {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .apply {
+      display: inline-flex; /* Sobrescribe el display: none de desktop */
+      border: none;
+      background: #facc15;
+      color: #000;
+      cursor: pointer;
+    }
+  }
+  :host.dark .filters-actions .clear {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
 
   .modal-body{
     width: min(100vw - 24px, 480px);
