@@ -2064,12 +2064,45 @@ button[disabled]{ opacity:.5; cursor:not-allowed; }
     padding: 40px 0 24px 0;
     margin-top: 40px;
   }
-  .footer-brand .brand-logo-row .logo-img {
-    width: 40px;
-    height: 40px;
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    text-align: center;
   }
-  .footer-brand .brand-logo-row .brand-text {
-    font-size: 20px;
+  .footer-brand {
+    align-items: center;
+    text-align: center;
+    .brand-logo-row {
+      justify-content: center;
+      .logo-img {
+        width: 40px;
+        height: 40px;
+      }
+      .brand-text {
+        font-size: 20px;
+      }
+    }
+    .brand-desc {
+      text-align: center;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+  }
+  .footer-col {
+    align-items: center;
+    text-align: center;
+    h4 {
+      text-align: center;
+      width: 100%;
+    }
+    ul {
+      align-items: center;
+      width: 100%;
+      button, a {
+        text-align: center;
+        width: 100%;
+      }
+    }
   }
   /* usa la ALTURA del viewport para “llenar” más */
   .entry-bg{
