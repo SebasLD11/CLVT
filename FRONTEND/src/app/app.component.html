@@ -171,121 +171,172 @@
           </div>
         </section>
       </div>
-    </section>      
-    <!-- ABOUT -->
+    </section>
+     <!-- ABOUT -->
     <section *ngIf="tab()==='about'" class="about">
-      <!-- Hero de bienvenida (ahora en About) -->
-      <div class="hero about-hero">
-        <h1>Bienvenido/a a CLVT</h1>
-        <p>
-          Aquí encontrarás al detalle información sobre cada pieza exclusiva y colecciones que se lanzan. Esperamos que disfrutes de la experiencia y el paso por la tienda. 
-          Encontrarás diseños originales que no verás en otro lugar, además de encontrar tu favorito y si tienes preguntas, no dudes en contactar.
+      <!-- Hero de bienvenida -->
+      <div class="about-hero-section">
+        <h1 class="about-display-title">BIENVENIDO A CLVT</h1>
+        <p class="about-display-text">
+          Explora la fusión de la cultura urbana, prendas exclusivas de edición limitada y nuestro compromiso social. Diseños urbanos auténticos elaborados con dedicación.
         </p>
       </div>
-      <header class="about-header">
-        <h2>Sobre CLVT</h2>
-        <p>
-          La marca CLVT nace de nuestra entidad <strong>Asociación CULTIVATE</strong> con la que nos dedicamos a la integración social por medio del deporte, en concreto, el skateboard y el scooter.
-          Nuestro trabajo fusiona la enseñanza de estos deportes, con la organización de eventos y venta de nuestros productos de merchandising. Además colaboramos con la comunidad 
-          <a class="reference" href="https://www.valodigs.com/" target="_blank" rel="noopener">VALODI</a> en el desarrollo de talleres, actividades, eventos y productos orignales  
-          aportando visión creativa y compromiso por mantener viva la autenticidad de la cultura urbana relacionada con nuestros deportes y comunidad.
-        </p>
-        <p>
-          Si inicias o ya llevas tiempo en el mundo del skate y/o scooter y quieres ser parte de una comunidad en crecimiento y expansión, puedes asociarte hoy mismo a través del 
-          formulario. Beneficios, sesiones gratuitas, eventos, salidas, descuentos y mucho más te esperan al unirte a nuestra entidad. 
-          <a class="reference" href="https://forms.gle/dXfzUpQ2ZEFfjhyD7" target="_blank" rel="noopener">¡REGISTRATÉ COMO MIEMBRO CLVT AHORA!</a>.
-        </p>
-      </header>
 
-      <div class="about-grid">
-        <!-- Imagen -->
-        <figure class="about-media">
-          <!-- Ajusta el nombre del archivo si es distinto -->
-          <img src="assets/img/LogoCLVT.png" alt="CLVT — LOGO" (error)="onImgErr($event)" />
-        </figure>
+      <div class="about-editorial-grid">
+        <!-- Columna Izquierda: Historia y Misión -->
+        <div class="about-text-column">
+          <h2 class="section-title-editorial">SOBRE NOSOTROS</h2>
+          <p>
+            La marca <strong>CLVT</strong> nace de nuestra entidad <strong>Asociación CULTIVATE</strong>, con la que nos dedicamos a la integración social por medio de deportes de acción urbanos, en concreto, el <strong>skateboard</strong> y el <strong>scooter</strong>.
+          </p>
+          <p>
+            Nuestro trabajo diario fusiona la enseñanza práctica de estas disciplinas, la dinamización del espacio público mediante la organización de eventos deportivos y la venta de nuestros propios productos exclusivos de merchandising.
+          </p>
+          <p>
+            En colaboración activa con la comunidad <a class="reference" href="https://www.valodigs.com/" target="_blank" rel="noopener">VALODI</a>, desarrollamos talleres educativos, actividades comunitarias y productos originales que promueven la visión creativa y el compromiso social por mantener viva la autenticidad de la cultura de calle.
+          </p>
+        </div>
 
-        <!-- Contenido lateral: contacto + FAQ -->
-        <div class="about-content">
-          <!-- Contacto -->
-          <section class="contact">
-            <h3>Contacto</h3>
-            <ul class="contact-list">
-              <li>
-                <!-- Sustituye 34XXXXXXXXX por tu número en formato internacional -->
-                <a class="contact-card" href="https://wa.me/34722331523" target="_blank" rel="noopener">
+        <!-- Columna Derecha: Imagen destacada / Collage de comunidad -->
+        <div class="about-image-column">
+          <div class="collage-container">
+            <img class="collage-img main-logo" src="assets/img/LogoCLVT.png" alt="CLVT Brand Logo" (error)="onImgErr($event)" />
+            <div class="collage-caption">CULTIVATE ASSOCIATION • STREET CULTURE</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner de Membresía / Únete a la Asociación -->
+      <div class="membership-cta-card">
+        <div class="membership-content">
+          <span class="cta-tag">BE PART OF CULTIVATE</span>
+          <h3>ASÓCIATE A LA ENTIDAD HOY MISMO</h3>
+          <p>
+            Tanto si estás empezando como si ya tienes experiencia en el mundo del skate o scooter, únete a nuestra entidad en crecimiento. Disfruta de beneficios como sesiones de entrenamiento gratuitas, viajes, eventos exclusivos, descuentos especiales y mucho más.
+          </p>
+          <a class="membership-btn" href="https://forms.gle/dXfzUpQ2ZEFfjhyD7" target="_blank" rel="noopener">
+            REGISTRARME COMO MIEMBRO CLVT
+          </a>
+        </div>
+      </div>
+
+      <!-- Sección de Contacto e FAQ -->
+      <div class="about-grid-bottom" id="contactSection">
+        <!-- Contacto -->
+        <div class="contact-section-card">
+          <h3 class="section-title-editorial">CONTACTO</h3>
+          <p class="contact-intro">¿Tienes alguna pregunta sobre tallas, pedidos o sobre cómo participar en los talleres? Contáctanos a través de nuestras redes o mensajería directa.</p>
+          <ul class="contact-list">
+            <li>
+              <a class="contact-card-premium" href="https://wa.me/34722331523" target="_blank" rel="noopener">
+                <div class="icon-circle">
                   <img class="icon" src="assets/img/notificacion.png" alt="" />
-                  <span>Escríbenos por WhatsApp</span>
-                </a>
-              </li>
-              <li>
-                <!-- Sustituye el handle por el tuyo -->
-                <a class="contact-card" href="https://www.instagram.com/asociacion_clvt" target="_blank" rel="noopener">
+                </div>
+                <div class="contact-text-block">
+                  <span class="lbl">WhatsApp</span>
+                  <span class="val">Escríbenos directamente</span>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a class="contact-card-premium" href="https://www.instagram.com/asociacion_clvt" target="_blank" rel="noopener">
+                <div class="icon-circle">
                   <img class="icon" src="assets/img/inst-icon.png" alt="" />
-                  <span>Síguenos en Instagram</span>
-                </a>
-              </li>
-            </ul>
-          </section>
+                </div>
+                <div class="contact-text-block">
+                  <span class="lbl">Instagram</span>
+                  <span class="val">Síguenos en &#64;asociacion_clvt</span>
+                </div>
+              </a>
+            </li>
+          </ul>
+        </div>
 
-          <!-- FAQ -->
-          <section class="faq">
-            <h3>FAQ</h3>
-
+        <!-- FAQ -->
+        <div class="faq-section-card">
+          <h3 class="section-title-editorial">PREGUNTAS FRECUENTES</h3>
+          
+          <div class="faq-list">
             <details>
               <summary>¿Qué tallas tenéis?</summary>
-              <p>Normalmente S–XL. Cada prenda indica las tallas en la ficha. Si dudas entre dos tallas, elige la mayor para un fit oversize.</p>
+              <p>Normalmente de la S a la XL. Cada prenda indica las medidas en su ficha. Si dudas entre dos tallas, te recomendamos elegir la mayor para lograr un estilo holgado / oversize.</p>
             </details>
 
             <details>
               <summary>¿Cuánto tarda el envío?</summary>
-              <p>España peninsular: 48–72h laborables. Islas/UE: 4–7 días. Recibirás tracking cuando el pedido salga del taller.</p>
+              <p>España peninsular: 48–72 horas laborables. Islas Baleares, Canarias y UE: de 4 a 7 días. Recibirás un enlace de seguimiento una vez que el transportista recoja el paquete.</p>
             </details>
 
             <details>
-              <summary>¿Aceptais cambios o devoluciones?</summary>
-              <p>Dispones de 14 días desde la recepción. La prenda debe estar sin usar y con etiquetas. Escribe por WhatsApp para gestionar el caso.</p>
+              <summary>¿Aceptáis cambios o devoluciones?</summary>
+              <p>Dispones de un plazo de 14 días naturales desde la recepción para desistir o cambiar el artículo. El producto debe devolverse sin usar, en perfectas condiciones y con sus etiquetas. Contacta por WhatsApp para tramitar el proceso.</p>
             </details>
 
             <details>
               <summary>¿Cómo cuido mis prendas?</summary>
-              <p>Lavar del revés con agua fría, programa suave, sin secadora. No planchar directamente el estampado.</p>
+              <p>Recomendamos lavar las prendas del revés, con agua fría y programa suave. Evita la secadora para preservar la calidad del algodón y no planches directamente sobre los estampados.</p>
             </details>
 
             <details>
-              <summary>¿Qué métodos de pago aceptais?</summary>
-              <p>Por el momento los pagos se confirman por medio de WhatsApp y se procesan por Bizum, siempre con tu recibo de compra. Estamos trabajando para habilitar el 
-                método <a class="reference" href="https://stripe.com/es" target="_blank" rel="noopener">Stripe</a> con pasarela cifrada.
-              </p>
+              <summary>¿Qué métodos de pago aceptáis?</summary>
+              <p>Por el momento los pagos se confirman por WhatsApp y se procesan de forma segura mediante Bizum o transferencia bancaria directa. Te facilitamos tu recibo oficial de compra de inmediato.</p>
             </details>
-
-            <details>
-              <summary>¿Cómo funcionan los impuestos y aduanas (Canarias, Ceuta/Melilla y fuera de la UE)?</summary>
-              <p>
-                Península y Baleares: los precios incluyen IVA. <br>
-                Canarias, Ceuta y Melilla: el precio no incluye IGIC/IPSI ni gastos de gestión/DUA. 
-                Estos pueden exigirse en la entrega por el transportista y corren a cargo del cliente. <br>
-                Por el momento nuestro alcance de envio se centra en España y estamos trabajando para llegar a otros lugares dentro y fuera de la UE.
-              </p>
-            </details>
-
-            <details>
-              <summary>Mi pedido ha llegado dañado o incorrecto, ¿qué hago?</summary>
-              <p>
-                Escríbenos dentro de las 48&nbsp;h desde la recepción con fotos del embalaje y de la prenda. 
-                Según la ley de consumidores, gestionaremos sin coste la reparación o sustitución; si no fuera posible, 
-                te ofreceremos reembolso. Cuando proceda, te facilitaremos una etiqueta de devolución/prepago para recoger el producto.
-                (Esto es independiente del derecho de desistimiento de 14&nbsp;días para compras online, salvo artículos personalizados).
-              </p>
-            </details>
-
-            <details>
-              <summary>Colaboraciones y venta al por mayor</summary>
-              <p>Estamos abiertos a collabs y selecciones muy curadas para retail. Escríbenos por WhatsApp o Instagram con tu propuesta.</p>
-            </details>
-          </section>
+          </div>
         </div>
       </div>
-    </section>  
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+      <div class="footer-grid">
+        <!-- Col 1: Marca y Misión -->
+        <div class="footer-col footer-brand">
+          <div class="brand-logo-row">
+            <img class="logo-img" src="assets/img/LogoCLVT.png" alt="CLVT Logo" />
+            <span class="brand-text">CLVT Brand</span>
+          </div>
+          <p class="brand-desc">
+            Asociación CULTIVATE. Fusión de cultura de calle y compromiso social mediante el deporte urbano y el streetwear.
+          </p>
+        </div>
+        
+        <!-- Col 2: Enlaces Rápidos -->
+        <div class="footer-col footer-links">
+          <h4>Navegación</h4>
+          <ul>
+            <li><button type="button" (click)="tab.set('shop'); scrollToTop()">Tienda</button></li>
+            <li><button type="button" (click)="goToAbout()">Sobre Nosotros</button></li>
+            <li><button type="button" (click)="goToContact()">Contacto</button></li>
+            <li><a href="https://forms.gle/dXfzUpQ2ZEFfjhyD7" target="_blank" rel="noopener">Asociarse</a></li>
+          </ul>
+        </div>
+        
+        <!-- Col 3: Redes / Soporte -->
+        <div class="footer-col footer-support">
+          <h4>Comunidad</h4>
+          <ul>
+            <li><a href="https://wa.me/34722331523" target="_blank" rel="noopener">WhatsApp Directo</a></li>
+            <li><a href="https://www.instagram.com/asociacion_clvt" target="_blank" rel="noopener">Instagram</a></li>
+            <li><a href="https://www.valodigs.com/" target="_blank" rel="noopener">Comunidad VALODI</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Faja inferior de legalidad y copyright -->
+      <div class="footer-bottom">
+        <p class="copyright">
+          &copy; 2026 Asociación CULTIVATE (CLVT Brand). Todos los derechos reservados.
+        </p>
+        <p class="legal-disclaimer">
+          Asociación sin ánimo de lucro regulada bajo la legalidad española y europea.
+        </p>
+        <div class="footer-legal-links">
+          <button type="button" (click)="openLegalModal('aviso')">Aviso Legal</button>
+          <button type="button" (click)="openLegalModal('privacidad')">Política de Privacidad</button>
+          <button type="button" (click)="openLegalModal('cookies')">Política de Cookies</button>
+        </div>
+      </div>
+    </footer>  
   </ng-container>
   <!-- Cuando SÍ es /checkout, solo router-outlet -->
   <ng-template #routedTpl>
@@ -427,5 +478,102 @@
       <button class="apply" [disabled]="!(cartSvc.items$|async)?.length" (click)="checkoutNow()">Checkout</button>
     </div>
   </footer>
+</div>
+
+<!-- MODAL LEGAL -->
+<div class="legal-backdrop" *ngIf="activeLegalModal()" (click)="closeLegalModal()"></div>
+<div class="legal-modal" *ngIf="activeLegalModal()">
+  <div class="legal-modal-body" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="closeLegalModal()" aria-label="Cerrar modal legal">✕</button>
+    
+    <div class="legal-content" [ngSwitch]="activeLegalModal()">
+      
+      <!-- AVISO LEGAL -->
+      <div *ngSwitchCase="'aviso'">
+        <h2>AVISO LEGAL</h2>
+        <div class="legal-scrollable">
+          <p><strong>1. DATOS IDENTIFICATIVOS</strong></p>
+          <p>En cumplimiento con el deber de información recogido en artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico (LSSI-CE), se reflejan los siguientes datos:</p>
+          <ul>
+            <li><strong>Denominación Social:</strong> Asociación CULTIVATE</li>
+            <li><strong>NIF/CIF:</strong> G-10596393</li>
+            <li><strong>Domicilio Social:</strong> Av. de Robert Charles Darwin (Skatepark de Cambrils), 43850 Cambrils, Tarragona, España</li>
+            <li><strong>Correo Electrónico:</strong> aso.cultivate.22&#64;gmail.com</li>
+            <li><strong>WhatsApp / Teléfono:</strong> +34 722 331 523</li>
+          </ul>
+          
+          <p><strong>2. OBJETO Y ÁMBITO DE APLICACIÓN</strong></p>
+          <p>El presente aviso legal regula las condiciones generales de acceso y uso del sitio web oficial de la Asociación CULTIVATE (en adelante, CLVT Brand). El uso del sitio web atribuye la condición de usuario e implica la aceptación total de estas disposiciones.</p>
+          
+          <p><strong>3. PROPIEDAD INTELECTUAL E INDUSTRIAL</strong></p>
+          <p>Todos los derechos de propiedad intelectual e industrial sobre el diseño, logotipos, textos, ilustraciones, imágenes y código fuente de este sitio web corresponden a la Asociación CULTIVATE o a sus licenciantes. Queda prohibida cualquier reproducción, distribución o comunicación pública no autorizada por escrito.</p>
+          
+          <p><strong>4. EXCLUSIÓN DE RESPONSABILIDAD</strong></p>
+          <p>Asociación CULTIVATE no se hace responsable de los daños o perjuicios que pudieran derivarse de interferencias, omisiones, interrupciones, virus informáticos o desconexiones en el funcionamiento operativo de este sistema electrónico, motivadas por causas ajenas.</p>
+          
+          <p><strong>5. LEGISLACIÓN APLICABLE Y JURISDICCIÓN</strong></p>
+          <p>La relación entre la Asociación CULTIVATE y el usuario se regirá por la normativa española vigente. Cualquier controversia se someterá a los Juzgados y Tribunales de Tarragona, España.</p>
+        </div>
+      </div>
+      
+      <!-- POLÍTICA DE PRIVACIDAD -->
+      <div *ngSwitchCase="'privacidad'">
+        <h2>POLÍTICA DE PRIVACIDAD (RGPD)</h2>
+        <div class="legal-scrollable">
+          <p><strong>1. RESPONSABLE DEL TRATAMIENTO DE SUS DATOS</strong></p>
+          <p>El responsable del tratamiento de los datos personales recogidos en este sitio web es:</p>
+          <ul>
+            <li><strong>Entidad:</strong> Asociación CULTIVATE</li>
+            <li><strong>CIF:</strong> G-10596393</li>
+            <li><strong>Domicilio:</strong> Av. de Robert Charles Darwin (Skatepark de Cambrils), 43850 Cambrils, Tarragona, España</li>
+            <li><strong>Contacto Protección de Datos:</strong> aso.cultivate.22&#64;gmail.com</li>
+          </ul>
+
+          <p><strong>2. FINALIDAD DEL TRATAMIENTO DE DATOS</strong></p>
+          <p>Los datos que nos proporciona voluntariamente (a través de WhatsApp, formularios de contacto o registro de miembros) se tratarán únicamente para las siguientes finalidades:</p>
+          <ul>
+            <li>Gestionar el envío de pedidos del merchandising oficial y emitir los recibos de compra correspondientes.</li>
+            <li>Tramitar el registro como miembro de la asociación (cuando se realice mediante el formulario enlazado).</li>
+            <li>Atender consultas, incidencias o solicitudes de información sobre nuestros talleres de skate y scooter.</li>
+          </ul>
+
+          <p><strong>3. LEGITIMACIÓN DEL TRATAMIENTO</strong></p>
+          <p>La base jurídica que legitima el tratamiento es el consentimiento expreso otorgado por el usuario al ponerse en contacto o tramitar una solicitud de compra, así como la ejecución de las relaciones contractuales o precontractuales básicas.</p>
+
+          <p><strong>4. PLAZOS DE CONSERVACIÓN</strong></p>
+          <p>Los datos se conservarán durante el tiempo estrictamente necesario para cumplir con la finalidad para la que fueron recabados y para determinar las posibles responsabilidades que se pudieran derivar de dicha finalidad y del tratamiento de los datos.</p>
+
+          <p><strong>5. DERECHOS DEL USUARIO</strong></p>
+          <p>El usuario podrá ejercitar sus derechos de acceso, rectificación, supresión, limitación del tratamiento, portabilidad y oposición enviando un escrito acompañado de una copia de su documento de identidad a aso.cultivate.22&#64;gmail.com.</p>
+        </div>
+      </div>
+      
+      <!-- POLÍTICA DE COOKIES -->
+      <div *ngSwitchCase="'cookies'">
+        <h2>POLÍTICA DE COOKIES</h2>
+        <div class="legal-scrollable">
+          <p><strong>1. ¿QUÉ SON LAS COOKIES?</strong></p>
+          <p>Una cookie es un pequeño fichero que se descarga en su ordenador o dispositivo al acceder a determinadas páginas web. Las cookies permiten a una página web, entre otras cosas, almacenar y recuperar información sobre los hábitos de navegación de un usuario o de su equipo.</p>
+
+          <p><strong>2. TIPOS DE COOKIES QUE UTILIZA ESTE SITIO WEB</strong></p>
+          <ul>
+            <li><strong>Cookies Técnicas y Funcionales:</strong> Son aquellas necesarias para el correcto funcionamiento del sitio web, como recordar los artículos guardados en el carrito de compra durante la sesión o guardar su preferencia de tema (oscuro o claro).</li>
+            <li><strong>Cookies de Personalización:</strong> Permiten al usuario acceder al servicio con algunas características de carácter general predefinidas (como la selección del idioma).</li>
+          </ul>
+          <p>Este sitio web no realiza de forma autónoma el uso de cookies de seguimiento de terceros destinadas a elaborar perfiles de navegación de los usuarios.</p>
+
+          <p><strong>3. CÓMO CONFIGURAR O DESACTIVAR SUS COOKIES</strong></p>
+          <p>Puede usted permitir, bloquear o eliminar las cookies instaladas en su equipo mediante la configuración de las opciones del navegador instalado en su ordenador:</p>
+          <ul>
+            <li>Google Chrome: Configuración -> Privacidad y seguridad -> Cookies y otros datos de sitios.</li>
+            <li>Mozilla Firefox: Ajustes -> Privacidad & Seguridad -> Cookies y datos del sitio.</li>
+            <li>Safari: Preferencias -> Privacidad.</li>
+          </ul>
+          <p>Tenga en cuenta que si bloquea o desactiva la instalación de cookies técnicas, es posible que ciertas funcionalidades de la tienda (como el carrito de compra) no se ejecuten correctamente.</p>
+        </div>
+      </div>
+      
+    </div>
+  </div>
 </div>
 

@@ -491,4 +491,37 @@ export class AppComponent {
     this.filterMin.set(this.priceMin());
     this.filterMax.set(this.priceMax());
   }
+
+  activeLegalModal = signal<'aviso'|'privacidad'|'cookies'|null>(null);
+  
+  openLegalModal(type: 'aviso'|'privacidad'|'cookies') {
+    this.activeLegalModal.set(type);
+  }
+
+  closeLegalModal() {
+    this.activeLegalModal.set(null);
+  }
+
+  scrollToTop() {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  goToAbout() {
+    this.tab.set('about');
+    this.scrollToTop();
+  }
+
+  goToContact() {
+    this.tab.set('about');
+    if (typeof window !== 'undefined') {
+      setTimeout(() => {
+        const target = document.getElementById('contactSection');
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 80);
+    }
+  }
 }
