@@ -1,4 +1,4 @@
-﻿import { Component, inject, signal, OnInit, computed } from '@angular/core';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -28,7 +28,7 @@ export class AdminComponent implements OnInit {
   private base = environment.apiUrl.replace(/\/$/, '');
 
   // Navigation tab
-  activeTab = signal<'analytics' | 'catalog' | 'restock' | 'users'>('analytics');
+  activeTab = signal<'analytics' | 'catalog' | 'restock' | 'users' | 'coupons'>('analytics');
 
   // Data signals
   analyticsData = signal<any>(null);
@@ -135,7 +135,7 @@ export class AdminComponent implements OnInit {
   }
 
   // --- Tab Control ---
-  setTab(tab: 'analytics' | 'catalog' | 'restock' | 'users') {
+  setTab(tab: 'analytics' | 'catalog' | 'restock' | 'users' | 'coupons') {
     this.activeTab.set(tab);
     this.errorMessage.set(null);
     this.successMessage.set(null);
@@ -481,68 +481,23 @@ export class AdminComponent implements OnInit {
   goHome() {
     this.router.navigate(['/']);
   }
-}
 
-     i n i t C o u p o n F o r m ( )   { 
-         t h i s . c o u p o n F o r m   =   t h i s . f b . g r o u p ( { 
-             c o d e :   [ " " ,   V a l i d a t o r s . r e q u i r e d ] , 
-             d i s c o u n t P e r c e n t :   [ 1 0 ,   V a l i d a t o r s . r e q u i r e d ] , 
-             i s A c t i v e :   [ t r u e ] , 
-             v a l i d U n t i l :   [ " " ] 
-         } ) ; 
-     } 
-     o p e n A d d C o u p o n ( )   { 
-         t h i s . e d i t i n g C o u p o n . s e t ( n u l l ) ; 
-         i f   ( ! t h i s . c o u p o n F o r m )   t h i s . i n i t C o u p o n F o r m ( ) ; 
-         e l s e   t h i s . c o u p o n F o r m . r e s e t ( {   d i s c o u n t P e r c e n t :   1 0 ,   i s A c t i v e :   t r u e   } ) ; 
-         t h i s . s h o w C o u p o n M o d a l . s e t ( t r u e ) ; 
-     } 
-     o p e n E d i t C o u p o n ( c :   a n y )   { 
-         t h i s . e d i t i n g C o u p o n . s e t ( c ) ; 
-         i f   ( ! t h i s . c o u p o n F o r m )   t h i s . i n i t C o u p o n F o r m ( ) ; 
-         t h i s . c o u p o n F o r m . p a t c h V a l u e ( { 
-             c o d e :   c . c o d e , 
-             d i s c o u n t P e r c e n t :   c . d i s c o u n t P e r c e n t , 
-             i s A c t i v e :   c . i s A c t i v e , 
-             v a l i d U n t i l :   c . v a l i d U n t i l   ?   n e w   D a t e ( c . v a l i d U n t i l ) . t o I S O S t r i n g ( ) . s p l i t ( " T " ) [ 0 ]   :   " " 
-         } ) ; 
-         t h i s . s h o w C o u p o n M o d a l . s e t ( t r u e ) ; 
-     } 
-     s a v e C o u p o n ( )   { 
-         i f   ( t h i s . c o u p o n F o r m . i n v a l i d )   r e t u r n ; 
-         c o n s t   d a t a   =   t h i s . c o u p o n F o r m . v a l u e ; 
-         c o n s t   c   =   t h i s . e d i t i n g C o u p o n ( ) ; 
-         c o n s t   r e q   =   c   ?   t h i s . h t t p . p u t ( ` $ { t h i s . b a s e } / a p i / a d m i n / c o u p o n s / $ { c . _ i d } ` ,   d a t a )   
-                                     :   t h i s . h t t p . p o s t ( ` $ { t h i s . b a s e } / a p i / a d m i n / c o u p o n s ` ,   d a t a ) ; 
-         r e q . s u b s c r i b e ( { 
-             n e x t :   ( )   = >   { 
-                 t h i s . f e t c h C o u p o n s ( ) ; 
-                 t h i s . s h o w C o u p o n M o d a l . s e t ( f a l s e ) ; 
-                 t h i s . s u c c e s s M e s s a g e . s e t ( " C u p ó n   g u a r d a d o . " ) ; 
-             } , 
-             e r r o r :   e r r   = >   t h i s . e r r o r M e s s a g e . s e t ( e r r . e r r o r ? . e r r o r   | |   " E r r o r   g u a r d a n d o   c u p ó n " ) 
-         } ) ; 
-     } 
-     d e l e t e C o u p o n ( i d :   s t r i n g )   { 
-         i f ( ! c o n f i r m ( " ¿ E l i m i n a r   c u p ó n ? " ) )   r e t u r n ; 
-         t h i s . h t t p . d e l e t e ( ` $ { t h i s . b a s e } / a p i / a d m i n / c o u p o n s / $ { i d } ` ) . s u b s c r i b e ( { 
-             n e x t :   ( )   = >   {   t h i s . f e t c h C o u p o n s ( ) ;   t h i s . s u c c e s s M e s s a g e . s e t ( " C u p ó n   e l i m i n a d o . " ) ;   } , 
-             e r r o r :   e r r   = >   t h i s . e r r o r M e s s a g e . s e t ( e r r . e r r o r ? . e r r o r   | |   " E r r o r   a l   e l i m i n a r " ) 
-         } ) ; 
-       initCouponForm() {
+  initCouponForm() {
     this.couponForm = this.fb.group({
-      code: ['', Validators.required],
+      code: ["", Validators.required],
       discountPercent: [10, Validators.required],
       isActive: [true],
-      validUntil: ['']
+      validUntil: [""]
     });
   }
+
   openAddCoupon() {
     this.editingCoupon.set(null);
     if (!this.couponForm) this.initCouponForm();
     else this.couponForm.reset({ discountPercent: 10, isActive: true });
     this.showCouponModal.set(true);
   }
+
   openEditCoupon(c: any) {
     this.editingCoupon.set(c);
     if (!this.couponForm) this.initCouponForm();
@@ -550,30 +505,32 @@ export class AdminComponent implements OnInit {
       code: c.code,
       discountPercent: c.discountPercent,
       isActive: c.isActive,
-      validUntil: c.validUntil ? new Date(c.validUntil).toISOString().split('T')[0] : ''
+      validUntil: c.validUntil ? new Date(c.validUntil).toISOString().split("T")[0] : ""
     });
     this.showCouponModal.set(true);
   }
+
   saveCoupon() {
     if (this.couponForm.invalid) return;
     const data = this.couponForm.value;
     const c = this.editingCoupon();
-    const req = c ? this.http.put(${this.base}/api/admin/coupons/, data) 
-                  : this.http.post(${this.base}/api/admin/coupons, data);
+    const req = c ? this.http.put(`${this.base}/api/admin/coupons/${c._id}`, data) 
+                  : this.http.post(`${this.base}/api/admin/coupons`, data);
     req.subscribe({
       next: () => {
         this.fetchCoupons();
         this.showCouponModal.set(false);
-        this.successMessage.set('Cupón guardado.');
+        this.successMessage.set("Cupón guardado.");
       },
-      error: err => this.errorMessage.set(err.error?.error || 'Error guardando cupón')
+      error: err => this.errorMessage.set(err.error?.error || "Error guardando cupón")
     });
   }
+
   deleteCoupon(id: string) {
-    if(!confirm('¿Eliminar cupón?')) return;
-    this.http.delete(${this.base}/api/admin/coupons/).subscribe({
-      next: () => { this.fetchCoupons(); this.successMessage.set('Cupón eliminado.'); },
-      error: err => this.errorMessage.set(err.error?.error || 'Error al eliminar')
+    if(!confirm("¿Eliminar cupón?")) return;
+    this.http.delete(`${this.base}/api/admin/coupons/${id}`).subscribe({
+      next: () => { this.fetchCoupons(); this.successMessage.set("Cupón eliminado."); },
+      error: err => this.errorMessage.set(err.error?.error || "Error al eliminar")
     });
   }
 }
