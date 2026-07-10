@@ -432,12 +432,12 @@
 
         <!-- Case: Both sizes and colors -->
         <ng-container *ngIf="enteredSizes().length > 0 && enteredColors().length > 0">
-          <div class="grid-row-input" *ngFor="let s of enteredSizes()">
-            <div class="grid-row-input-sub" *ngFor="let c of enteredColors()">
+          <ng-container *ngFor="let s of enteredSizes()">
+            <div class="grid-row-input" *ngFor="let c of enteredColors()">
               <span class="row-label">Talla: <strong>{{ s }}</strong> · Color: <strong>{{ c }}</strong></span>
               <input type="number" min="0" [value]="getVariantStock(s, c)" (change)="setVariantStock(s, c, $event)" />
             </div>
-          </div>
+          </ng-container>
         </ng-container>
       </div>
     </div>

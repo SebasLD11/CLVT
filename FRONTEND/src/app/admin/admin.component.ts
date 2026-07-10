@@ -419,7 +419,10 @@ export class AdminComponent implements OnInit {
   }
 
   getLiveVariantStock(req: any): number {
-    const product = req.productId;
+    const productId = req.productId?._id || req.productId;
+    if (!productId) return req.currentStock;
+
+    const product = this.products().find((p: any) => String(p._id) === String(productId));
     if (!product || !Array.isArray(product.variants)) {
       return req.currentStock;
     }
