@@ -167,6 +167,26 @@ export class AdminComponent implements OnInit {
     });
   }
 
+  createManualAlert(alert: any) {
+    if(!confirm('¿Crear alerta manual para este producto?')) return;
+    const payload = {
+      productId: alert.productId,
+      size: alert.size,
+      color: alert.color,
+      currentStock: alert.stock
+    };
+    this.http.post(`${this.base}/api/admin/restock-requests/manual`, payload).subscribe({
+      next: (res: any) => {
+        if(res.ok) {
+          this.successMessage.set('Alerta creada correctamente.');
+        } else {
+          this.errorMessage.set(res.message || 'La alerta ya existe.');
+        }
+      },
+      error: err => this.errorMessage.set(err.error?.error || 'Error al crear alerta')
+    });
+  }
+
   private initProductForm() {
     this.productForm = this.fb.group({
       name: ['', Validators.required],

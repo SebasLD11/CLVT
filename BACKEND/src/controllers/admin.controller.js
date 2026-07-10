@@ -379,3 +379,17 @@ exports.generateRestockAlerts = async (req, res, next) => {
     res.json({ ok: true, generated });
   } catch (error) { next(error); }
 };
+
+// POST /api/admin/restock-requests/manual
+exports.createManualRestockAlert = async (req, res, next) => {
+  try {
+    const { productId, size, color, currentStock } = req.body;
+    const RestockRequest = require('../models/RestockRequest');
+    const exist = await RestockRequest.findOne({ productId, size: size || '', color: color || '', status: 'pending' });
+    if (!exist) {
+      const alert = await RestockRequest.create({ productId, size: size || '', color: color || '', currentStock });
+      return res.json({ ok: true, alert });
+    }
+    return res.json({ ok: false, message: 'La alerta ya existe' });
+  } catch (error) { next(error); }
+};

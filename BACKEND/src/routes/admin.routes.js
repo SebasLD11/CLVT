@@ -29,6 +29,7 @@ router.get('/users', ctrl.getUsers);
 router.put('/users/:id', ctrl.updateUser);
 router.get('/restock-requests', ctrl.getRestockRequests);
 router.post('/restock-requests/generate', ctrl.generateRestockAlerts);
+router.post('/restock-requests/manual', ctrl.createManualRestockAlert);
 router.put('/restock-requests/:id', ctrl.updateRestockRequest);
 router.post('/products', ctrl.addProduct);
 router.put('/products/:id', ctrl.updateProduct);

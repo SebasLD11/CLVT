@@ -58,21 +58,25 @@
           <div class="table-wrapper">
             <table *ngIf="analyticsData()?.lowStockAlerts?.length > 0; else noAlerts">
               <thead>
-                <tr>
-                  <th>Producto</th>
-                  <th>Variante</th>
-                  <th>Stock Actual</th>
-                </tr>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Variante</th>
+                    <th>Stock Actual</th>
+                    <th>Acción</th>
+                  </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let alert of paginatedCriticalStock()">
-                  <td>{{ alert.name }}</td>
-                  <td>
-                    <span class="spec-pill size" *ngIf="alert.size">{{ alert.size }}</span>
-                    <span class="spec-pill color" *ngIf="alert.color">{{ alert.color }}</span>
-                  </td>
-                  <td class="critical-text">{{ alert.stock }} unidades</td>
-                </tr>
+                  <tr *ngFor="let alert of paginatedCriticalStock()">
+                    <td>{{ alert.name }}</td>
+                    <td>
+                      <span class="spec-pill size" *ngIf="alert.size">{{ alert.size }}</span>
+                      <span class="spec-pill color" *ngIf="alert.color">{{ alert.color }}</span>
+                    </td>
+                    <td class="critical-text">{{ alert.stock }} unidades</td>
+                    <td>
+                      <button class="secondary-btn" (click)="createManualAlert(alert)" style="padding: 4px 8px; font-size: 0.8rem;">Crear Alerta</button>
+                    </td>
+                  </tr>
               </tbody>
             </table>
             <ng-template #noAlerts>
