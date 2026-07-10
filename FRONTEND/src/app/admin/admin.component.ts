@@ -32,8 +32,21 @@ export class AdminComponent implements OnInit {
 
   // Data signals
   analyticsData = signal<any>(null);
+  criticalStockPage = signal(0);
+  paginatedCriticalStock = computed(() => {
+    const all = this.analyticsData()?.lowStockAlerts || [];
+    const start = this.criticalStockPage() * 10;
+    return all.slice(start, start + 10);
+  });
   productSvc = inject(ProductService);
   products = computed(() => this.productSvc.products());
+  productsPage = signal(0);
+  paginatedProducts = computed(() => {
+    const all = this.products() || [];
+    const start = this.productsPage() * 10;
+    return all.slice(start, start + 10);
+  });
+  
   users = signal<any[]>([]);
   coupons = signal<any[]>([]);
   restockRequests = signal<any[]>([]);

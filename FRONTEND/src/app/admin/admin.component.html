@@ -65,7 +65,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let alert of analyticsData()?.lowStockAlerts">
+                <tr *ngFor="let alert of paginatedCriticalStock()">
                   <td>{{ alert.name }}</td>
                   <td>
                     <span class="spec-pill size" *ngIf="alert.size">{{ alert.size }}</span>
@@ -78,6 +78,11 @@
             <ng-template #noAlerts>
               <div class="empty-state">✅ Todo el inventario está por encima del nivel crítico.</div>
             </ng-template>
+          </div>
+          <div class="pagination-controls" style="margin-top:16px; display:flex; justify-content:center; gap:16px;" *ngIf="analyticsData()?.lowStockAlerts?.length > 10">
+            <button class="secondary-btn" [disabled]="criticalStockPage() === 0" (click)="criticalStockPage.set(criticalStockPage() - 1)">Anterior</button>
+            <span>Página {{ criticalStockPage() + 1 }}</span>
+            <button class="secondary-btn" [disabled]="(criticalStockPage() + 1) * 10 >= (analyticsData()?.lowStockAlerts?.length || 0)" (click)="criticalStockPage.set(criticalStockPage() + 1)">Siguiente</button>
           </div>
         </div>
 
@@ -142,7 +147,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let p of products()">
+            <tr *ngFor="let p of paginatedProducts()">
               <td class="product-td">
                 <img [src]="p.images?.[0] || 'assets/img/placeholder.png'" alt="thumb" />
                 <div class="details">
@@ -174,6 +179,11 @@
             </tr>
           </tbody>
         </table>
+        <div class="pagination-controls" style="margin-top:16px; display:flex; justify-content:center; gap:16px;" *ngIf="products().length > 10">
+          <button class="secondary-btn" [disabled]="productsPage() === 0" (click)="productsPage.set(productsPage() - 1)">Anterior</button>
+          <span>Página {{ productsPage() + 1 }}</span>
+          <button class="secondary-btn" [disabled]="(productsPage() + 1) * 10 >= products().length" (click)="productsPage.set(productsPage() + 1)">Siguiente</button>
+        </div>
       </div>
 
       <!-- TRANSACTION HISTORY -->
