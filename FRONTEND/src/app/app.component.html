@@ -7,8 +7,9 @@
     </div>
 
     <div class="actions">
-      <button type="button" [class.active]="tab()==='shop'" (click)="tab.set('shop')">Shop</button>
-      <button type="button" [class.active]="tab()==='about'" (click)="tab.set('about')">About</button>
+      <button type="button" [class.active]="tab()==='shop' && !isRouted()" (click)="showShop()">Shop</button>
+      <button type="button" [class.active]="tab()==='about' && !isRouted()" (click)="showAbout()">About</button>
+      <button type="button" [class.active]="isAccountActive()" (click)="goToAccount()">Cuenta</button>
 
       <button
         type="button"
@@ -401,7 +402,8 @@
             <button type="button"
               *ngFor="let c of selected()!['colors']"
               [class.active]="selectedColor === c"
-              (click)="selectedColor = c"
+              [disabled]="!isColorAvailable(selected()!, c)"
+              (click)="isColorAvailable(selected()!, c) && (selectedColor = c)"
               [attr.aria-pressed]="selectedColor === c ? 'true' : 'false'"
               [title]="c">
               <span class="swatch"
@@ -437,6 +439,18 @@
           <span *ngIf="selectedSize"> — {{selectedSize}}</span>
           <span *ngIf="selectedColor"> — {{ colorLabel(selectedColor) }}</span>
         </button>
+
+        <!-- Recomendaciones "También te podría gustar" -->
+        <div class="recommendations" *ngIf="getRecommendedProducts(selected()!).length > 0">
+          <h3>También te podría gustar</h3>
+          <div class="recs-grid">
+            <button type="button" class="rec-item" *ngFor="let rec of getRecommendedProducts(selected()!)" (click)="selectRecommended(rec)">
+              <img [src]="rec.images?.[0] || FALLBACK_IMG" alt="rec-thumb" (error)="onImgErr($event)" />
+              <span class="rec-name">{{ rec.name }}</span>
+              <span class="rec-price">{{ rec.price | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

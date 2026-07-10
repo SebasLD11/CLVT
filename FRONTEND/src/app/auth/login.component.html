@@ -1,0 +1,163 @@
+<div class="auth-container">
+  <div class="glow-sphere"></div>
+  <div class="auth-card">
+    <button class="back-link" (click)="goBack()">
+      ← Volver a la tienda
+    </button>
+
+    <div class="auth-header">
+      <img class="logo-img" src="assets/img/LOGO-VECTORITZAT-CLVT.png" alt="CLVT Logo" />
+      <h2>Miembros CLVT</h2>
+      <p class="subtitle">Acceso exclusivo a asociados y creadores</p>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs-header">
+      <button 
+        [class.active]="isLoginTab()" 
+        (click)="toggleTab(true)">
+        Iniciar Sesión
+      </button>
+      <button 
+        [class.active]="!isLoginTab()" 
+        (click)="toggleTab(false)">
+        Registrarse
+      </button>
+    </div>
+
+    <!-- ALERT MESSAGES -->
+    <div class="alert error" *ngIf="errorMessage()">
+      <span>⚠️</span> {{ errorMessage() }}
+    </div>
+    <div class="alert success" *ngIf="successMessage()">
+      <span>✅</span> {{ successMessage() }}
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" *ngIf="isLoginTab()">
+      <div class="form-group">
+        <label for="loginEmail">Correo Electrónico</label>
+        <input 
+          type="email" 
+          id="loginEmail" 
+          formControlName="email" 
+          placeholder="ejemplo@clvt.com"
+          autocomplete="email"
+          required />
+      </div>
+
+      <div class="form-group">
+        <label for="loginPassword">Contraseña</label>
+        <input 
+          type="password" 
+          id="loginPassword" 
+          formControlName="password" 
+          placeholder="••••••••"
+          autocomplete="current-password"
+          required />
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="loginForm.invalid || isLoading()">
+        {{ isLoading() ? 'Accediendo...' : 'Iniciar Sesión' }}
+      </button>
+    </form>
+
+    <!-- REGISTER FORM -->
+    <form [formGroup]="registerForm" (ngSubmit)="onRegister()" *ngIf="!isLoginTab()">
+      <div class="form-group">
+        <label for="regName">Nombre Completo</label>
+        <input 
+          type="text" 
+          id="regName" 
+          formControlName="fullName" 
+          placeholder="Juan Pérez"
+          required />
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="regEmail">Correo Electrónico</label>
+          <input 
+            type="email" 
+            id="regEmail" 
+            formControlName="email" 
+            placeholder="juan@clvt.com"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="regPhone">Teléfono</label>
+          <input 
+            type="tel" 
+            id="regPhone" 
+            formControlName="phone" 
+            placeholder="+34 600 000 000" />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="regPassword">Contraseña</label>
+          <input 
+            type="password" 
+            id="regPassword" 
+            formControlName="password" 
+            placeholder="Mín. 6 caracteres"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="regMemberId">Nº de Asociado (Si tienes)</label>
+          <input 
+            type="text" 
+            id="regMemberId" 
+            formControlName="memberId" 
+            placeholder="CLVT-1234" />
+        </div>
+      </div>
+
+      <!-- ADDRESS BLOCK -->
+      <div class="address-section" formGroupName="address">
+        <h3>Dirección de Envío (Opcional)</h3>
+        
+        <div class="form-group">
+          <label for="addrLine1">Calle, Número, Piso</label>
+          <input type="text" id="addrLine1" formControlName="line1" placeholder="Calle Mayor 12, 2ºB" />
+        </div>
+
+        <div class="form-group">
+          <label for="addrLine2">Indicaciones Adicionales</label>
+          <input type="text" id="addrLine2" formControlName="line2" placeholder="Urbanización, Portero..." />
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="addrCity">Ciudad</label>
+            <input type="text" id="addrCity" formControlName="city" placeholder="Madrid" />
+          </div>
+          <div class="form-group">
+            <label for="addrProvince">Provincia</label>
+            <input type="text" id="addrProvince" formControlName="province" placeholder="Madrid" />
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="addrZip">Código Postal</label>
+            <input type="text" id="addrZip" formControlName="postalCode" placeholder="28001" />
+          </div>
+          <div class="form-group">
+            <label for="addrCountry">País</label>
+            <select id="addrCountry" formControlName="country">
+              <option value="ES">España</option>
+              <option value="PT">Portugal</option>
+              <option value="FR">Francia</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="registerForm.invalid || isLoading()">
+        {{ isLoading() ? 'Registrando...' : 'Crear Cuenta de Socio' }}
+      </button>
+    </form>
+  </div>
+</div>

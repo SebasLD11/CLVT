@@ -8,6 +8,7 @@ import { CartService } from './services/cart.service';
 import { CheckoutService } from './services/checkout.service';
 import { Product } from './models/product.model';
 import { colorLabel, colorValue } from './utils/color.util';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +32,7 @@ export class AppComponent {
   cartSvc = inject(CartService);
   checkout = inject(CheckoutService);
   router = inject(Router);
+  authSvc = inject(AuthService);
 
   // Ruta /checkout | /thanks
   isRouted = signal(false);
@@ -307,6 +309,13 @@ export class AppComponent {
   /** disponibilidad por talla para el modal */
   isSizeAvailable(p: Product, s: string): boolean {
     const any: any = p as any;
+    if (any.variants && any.variants.length > 0) {
+      return any.variants.some((v: any) => 
+        v.size === s && 
+        (!this.selectedColor || v.color === this.selectedColor) && 
+        v.stock > 0
+      );
+    }
     if (!this.usesSizes(any)) return true; // no usa tallas
     // Si hay array explícito:
     if (this.hasExplicitAvailArray(any)) {
@@ -317,11 +326,70 @@ export class AppComponent {
     return true;
   }
 
+  isColorAvailable(p: Product, c: string): boolean {
+    const any: any = p as any;
+    if (any.variants && any.variants.length > 0) {
+      return any.variants.some((v: any) => 
+        v.color === c && 
+        (!this.selectedSize || v.size === this.selectedSize) && 
+        v.stock > 0
+      );
+    }
+    return true;
+  }
+
   firstAvailableSize(p: Product): string | null {
     const av = this.availableSizesOf(p);
     // Si está sold-out, no preseleccionar nada
     if (this.isSoldOut(p)) return null;
     return av.length ? av[0] : null;
+  }
+
+  showShop() {
+    this.tab.set('shop');
+    this.router.navigate(['/']);
+  }
+
+  showAbout() {
+    this.tab.set('about');
+    this.router.navigate(['/']);
+  }
+
+  isAccountActive() {
+    return this.isRouted() && (
+      this.router.url.startsWith('/login') || 
+      this.router.url.startsWith('/profile') || 
+      this.router.url.startsWith('/admin')
+    );
+  }
+
+  goToAccount() {
+    const token = this.authSvc.getToken();
+    if (token) {
+      const user = this.authSvc.currentUser();
+      if (user?.role === 'admin') {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/profile']);
+      }
+    } else {
+      this.router.navigate(['/login']);
+    }
+  }
+
+  getRecommendedProducts(current: Product | null): Product[] {
+    if (!current) return [];
+    return this.products().filter(p => 
+      p._id !== current._id && 
+      (p.collectionTitle === current.collectionTitle || p.tag === current.tag)
+    ).slice(0, 3);
+  }
+
+  selectRecommended(p: Product) {
+    this.selected.set(p);
+    this.selectedSize = null;
+    this.selectedColor = null;
+    this.imgIndex = 0;
   }
 
   // ===============================

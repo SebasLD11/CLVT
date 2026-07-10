@@ -1,0 +1,229 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: #0c0d0f;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Outfit', sans-serif;
+  color: #f3f4f6;
+
+  .glow-sphere {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(235, 94, 40, 0.08) 0%, rgba(0,0,0,0) 70%);
+    top: -100px;
+    right: -100px;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+.auth-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 580px;
+  background: rgba(20, 22, 26, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+
+  .back-link {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 24px;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #eb5e28;
+    }
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+
+    .logo-img {
+      height: 48px;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #9ca3af;
+      margin: 0;
+    }
+  }
+
+  .tabs-header {
+    display: flex;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 32px;
+
+    button {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #9ca3af;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s ease;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: transparent;
+        transition: background-color 0.2s ease;
+      }
+
+      &.active {
+        color: #ffffff;
+        &::after {
+          background-color: #eb5e28;
+        }
+      }
+    }
+  }
+
+  .alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &.error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    &.success {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #9ca3af;
+    }
+
+    input, select {
+      background-color: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      color: #ffffff;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.2s, background-color 0.2s;
+
+      &:focus {
+        outline: none;
+        border-color: #eb5e28;
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      &::placeholder {
+        color: #4b5563;
+      }
+    }
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+
+    @media (max-width: 500px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .address-section {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 20px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+      color: #ffffff;
+    }
+  }
+
+  .submit-btn {
+    background-color: #eb5e28;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    margin-top: 12px;
+
+    &:hover:not(:disabled) {
+      background-color: #f17e52;
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    &:disabled {
+      background-color: #374151;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+  }
+}

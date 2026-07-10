@@ -1,0 +1,472 @@
+<div class="admin-container">
+  <!-- HEADER BAR -->
+  <div class="admin-header-bar">
+    <div class="brand">
+      <img src="assets/img/LOGO-VECTORITZAT-CLVT.png" alt="CLVT" />
+      <span>Panel de Control</span>
+    </div>
+    <div class="header-actions">
+      <button class="nav-btn" (click)="goHome()">Tienda</button>
+      <button class="nav-btn" (click)="this.router.navigate(['/profile'])">Mi Cuenta</button>
+      <button class="logout-btn" (click)="auth.logout()">Cerrar Sesión</button>
+    </div>
+  </div>
+
+  <!-- NAVIGATION TABS -->
+  <div class="admin-tabs">
+    <button [class.active]="activeTab() === 'analytics'" (click)="setTab('analytics')">📊 Analíticas</button>
+    <button [class.active]="activeTab() === 'catalog'" (click)="setTab('catalog')">👕 Catálogo & Inventario</button>
+    <button [class.active]="activeTab() === 'restock'" (click)="setTab('restock')">📦 Pedidos Proveedores</button>
+    <button [class.active]="activeTab() === 'users'" (click)="setTab('users')">👥 Auditoría de Socios</button>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="alert error" *ngIf="errorMessage()">
+    <span>⚠️</span> {{ errorMessage() }}
+  </div>
+  <div class="alert success" *ngIf="successMessage()">
+    <span>✅</span> {{ successMessage() }}
+  </div>
+
+  <div class="admin-content">
+    <!-- ================= ANALYTICS TAB ================= -->
+    <div class="tab-panel" *ngIf="activeTab() === 'analytics'">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="label">Ventas Totales</div>
+          <div class="value">{{ (analyticsData()?.totalSales || 0) | currency:'EUR':'symbol':'1.2-2' }}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">Pedidos Totales</div>
+          <div class="value">{{ analyticsData()?.totalOrders || 0 }}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">Ticket Medio</div>
+          <div class="value">{{ (analyticsData()?.averageOrderValue || 0) | currency:'EUR':'symbol':'1.2-2' }}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">Socios Activos</div>
+          <div class="value">{{ analyticsData()?.totalMembers || 0 }}</div>
+        </div>
+      </div>
+
+      <div class="analytics-grid">
+        <!-- LOW STOCK ALERT PANEL -->
+        <div class="grid-card alerts-panel">
+          <h2>⚠️ Variantes con Stock Crítico (≤ 5)</h2>
+          <div class="table-wrapper">
+            <table *ngIf="analyticsData()?.lowStockAlerts?.length > 0; else noAlerts">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Variante</th>
+                  <th>Stock Actual</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let alert of analyticsData()?.lowStockAlerts">
+                  <td>{{ alert.name }}</td>
+                  <td>
+                    <span class="spec-pill size" *ngIf="alert.size">{{ alert.size }}</span>
+                    <span class="spec-pill color" *ngIf="alert.color">{{ alert.color }}</span>
+                  </td>
+                  <td class="critical-text">{{ alert.stock }} unidades</td>
+                </tr>
+              </tbody>
+            </table>
+            <ng-template #noAlerts>
+              <div class="empty-state">✅ Todo el inventario está por encima del nivel crítico.</div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- RECENT ORDERS PANEL -->
+        <div class="grid-card orders-panel">
+          <h2>📦 Pedidos Recientes</h2>
+          <div class="table-wrapper">
+            <table *ngIf="analyticsData()?.recentOrders?.length > 0; else noRecentOrders">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Comprador</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let order of analyticsData()?.recentOrders">
+                  <td>{{ order.createdAt | date:'dd/MM HH:mm' }}</td>
+                  <td>{{ order.buyer?.fullName }}</td>
+                  <td>{{ order.total | currency:'EUR':'symbol':'1.2-2' }}</td>
+                  <td>
+                    <span class="status-pill" [ngClass]="order.status">
+                      {{ order.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="action-btn ship" *ngIf="order.status === 'paid'" (click)="openShipModal(order)">
+                      Marcar Envío
+                    </button>
+                    <span *ngIf="order.status === 'shipped'" class="shipped-badge">Enviado</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <ng-template #noRecentOrders>
+              <div class="empty-state">No se han realizado compras todavía.</div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= CATALOG TAB ================= -->
+    <div class="tab-panel" *ngIf="activeTab() === 'catalog'">
+      <div class="panel-header">
+        <h2>Catálogo de Productos</h2>
+        <button class="add-btn" (click)="openAddProduct()">＋ Añadir Producto</button>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Colección</th>
+              <th>Precio</th>
+              <th>Variantes & Stock</th>
+              <th>Etiqueta</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of products()">
+              <td class="product-td">
+                <img [src]="p.images?.[0] || 'assets/img/placeholder.png'" alt="thumb" />
+                <div class="details">
+                  <span class="name">{{ p.name }}</span>
+                  <span class="desc">{{ p.description }}</span>
+                </div>
+              </td>
+              <td>{{ p.collectionTitle }}</td>
+              <td>{{ p.price | currency:'EUR':'symbol':'1.2-2' }}</td>
+              <td>
+                <div class="variants-list">
+                  <div class="variant-item" *ngFor="let v of p.variants">
+                    <span class="variant-specs">
+                      {{ v.size || 'Única' }} - {{ v.color || 'Único' }}
+                    </span>
+                    <span class="variant-stock" [class.low]="v.stock <= 5">
+                      {{ v.stock }} ud.
+                    </span>
+                  </div>
+                </div>
+              </td>
+              <td><span class="tag-label" [ngClass]="p.tag">{{ p.tag }}</span></td>
+              <td>
+                <div class="row-actions">
+                  <button class="row-btn edit" (click)="openEditProduct(p)">Editar</button>
+                  <button class="row-btn delete" (click)="deleteProduct(p._id)">Eliminar</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- TRANSACTION HISTORY -->
+      <div class="transactions-section">
+        <h2>📜 Historial de Ajustes e Incidencias de Stock</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Producto</th>
+                <th>Talla</th>
+                <th>Color</th>
+                <th>Ajuste</th>
+                <th>Motivo</th>
+                <th>Administrador</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let tx of stockTransactions()">
+                <td>{{ tx.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ tx.productId?.name }}</td>
+                <td>{{ tx.size || 'Única' }}</td>
+                <td>{{ tx.color || 'Único' }}</td>
+                <td [class.positive]="tx.quantityChange > 0" [class.negative]="tx.quantityChange < 0">
+                  {{ tx.quantityChange > 0 ? '+' : '' }}{{ tx.quantityChange }} unidades
+                </td>
+                <td>
+                  {{ 
+                    tx.reason === 'purchase' ? 'Compra de socio' : 
+                    tx.reason === 'supplier_restock' ? 'Recepción de proveedor' : 
+                    tx.reason === 'manual_adjustment' ? 'Ajuste de inventario' : tx.reason
+                  }}
+                </td>
+                <td>{{ tx.performedBy?.fullName || 'Sistema (Compra)' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= RESTOCK TAB ================= -->
+    <div class="tab-panel" *ngIf="activeTab() === 'restock'">
+      <div class="panel-header">
+        <h2>Lista de Pedidos a Proveedores</h2>
+      </div>
+
+      <div class="table-wrapper">
+        <table *ngIf="restockRequests().length > 0; else noRestocks">
+          <thead>
+            <tr>
+              <th>Fecha Alerta</th>
+              <th>Producto</th>
+              <th>Talla</th>
+              <th>Color</th>
+              <th>Stock Restante</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let req of restockRequests()">
+              <td>{{ req.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="product-td">
+                <img [src]="req.productId?.images?.[0] || 'assets/img/placeholder.png'" alt="thumb" />
+                <span>{{ req.productId?.name }}</span>
+              </td>
+              <td>{{ req.size || 'Única' }}</td>
+              <td>{{ req.color || 'Único' }}</td>
+              <td class="critical-text">{{ req.currentStock }} unidades</td>
+              <td>
+                <span class="status-pill" [ngClass]="req.status">
+                  {{ 
+                    req.status === 'pending' ? 'Bajo stock' : 
+                    req.status === 'ordered' ? 'Pedido al Proveedor' : 
+                    req.status === 'received' ? 'Recibido' : req.status
+                  }}
+                </span>
+              </td>
+              <td>
+                <div class="row-actions" *ngIf="req.status !== 'received'">
+                  <button class="row-btn restock-order" *ngIf="req.status === 'pending'" (click)="updateRestockStatus(req, 'ordered')">
+                    Marcar Pedido
+                  </button>
+                  <button class="row-btn restock-received" (click)="updateRestockStatus(req, 'received')">
+                    Ingresar Stock
+                  </button>
+                </div>
+                <span class="completed-restock" *ngIf="req.status === 'received'">Completado</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <ng-template #noRestocks>
+          <div class="empty-state">📦 No hay alertas de reposición generadas por bajo stock.</div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- ================= USERS TAB ================= -->
+    <div class="tab-panel" *ngIf="activeTab() === 'users'">
+      <div class="panel-header">
+        <h2>Auditoría de Socios</h2>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Nº de Socio</th>
+              <th>Teléfono</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let u of users()">
+              <td>{{ u.fullName }}</td>
+              <td>{{ u.email }}</td>
+              <td><span class="member-id-tag" *ngIf="u.memberId">{{ u.memberId }}</span></td>
+              <td>{{ u.phone || '-' }}</td>
+              <td>
+                <span class="role-badge" [ngClass]="u.role">{{ u.role }}</span>
+              </td>
+              <td>
+                <span class="status-pill" [ngClass]="u.status">{{ u.status }}</span>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="row-btn role-toggle" (click)="toggleUserRole(u)">
+                    Cambiar Rol
+                  </button>
+                  <button class="row-btn status-toggle" (click)="toggleUserStatus(u)">
+                    {{ u.status === 'active' ? 'Desactivar' : 'Activar' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PRODUCT ADD/EDIT MODAL ================= -->
+<div class="modal-backdrop" *ngIf="showProductModal()" (click)="closeProductModal()"></div>
+<div class="product-modal" *ngIf="showProductModal()">
+  <header>
+    <h2>{{ editingProduct() ? 'Editar Producto' : 'Añadir Nuevo Producto' }}</h2>
+    <button class="close-btn" (click)="closeProductModal()">✕</button>
+  </header>
+
+  <form [formGroup]="productForm" (ngSubmit)="onSaveProduct()">
+    <div class="form-group">
+      <label for="prodName">Nombre del Producto</label>
+      <input type="text" id="prodName" formControlName="name" required />
+    </div>
+
+    <div class="form-group">
+      <label for="prodDesc">Descripción</label>
+      <textarea id="prodDesc" formControlName="description" rows="3"></textarea>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="prodPrice">Precio (€)</label>
+        <input type="number" id="prodPrice" formControlName="price" step="0.01" min="0.01" required />
+      </div>
+      <div class="form-group">
+        <label for="prodTag">Etiqueta de Tienda</label>
+        <select id="prodTag" formControlName="tag">
+          <option value="new">Novedad (New)</option>
+          <option value="best">Destacado (Best)</option>
+          <option value="sale">Oferta (Sale)</option>
+          <option value="drop">Edición Limitada (Drop)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="prodCol">Colección</label>
+      <input type="text" id="prodCol" formControlName="collectionTitle" />
+    </div>
+
+    <div class="form-group">
+      <label for="prodImages">URLs de Imágenes (Separadas por comas)</label>
+      <input type="text" id="prodImages" formControlName="imageUrlInput" placeholder="assets/img/prod1.png, assets/img/prod1_detail.png" />
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="prodSizes">Tallas Disponibles (Separadas por comas)</label>
+        <input type="text" id="prodSizes" formControlName="sizesInput" (input)="onSizesOrColorsChange()" placeholder="S, M, L, XL" />
+      </div>
+      <div class="form-group">
+        <label for="prodColors">Colores Disponibles (Separadas por comas)</label>
+        <input type="text" id="prodColors" formControlName="colorsInput" (input)="onSizesOrColorsChange()" placeholder="#ffffff, #000000, Rojo" />
+      </div>
+    </div>
+
+    <!-- DYNAMIC VARIANT STOCK GRID -->
+    <div class="variant-stock-section">
+      <h3>Definir Inventario de Variantes</h3>
+      <p class="help-text">Rellena el stock inicial para cada combinación creada:</p>
+
+      <div class="variant-grid-table">
+        <!-- Case: No sizes and no colors -->
+        <div class="grid-row-input" *ngIf="enteredSizes().length === 0 && enteredColors().length === 0">
+          <span class="row-label">General (Sin variante)</span>
+          <input type="number" min="0" [value]="getVariantStock('', '')" (change)="setVariantStock('', '', $event)" />
+        </div>
+
+        <!-- Case: Sizes but no colors -->
+        <ng-container *ngIf="enteredSizes().length > 0 && enteredColors().length === 0">
+          <div class="grid-row-input" *ngFor="let s of enteredSizes()">
+            <span class="row-label">Talla: <strong>{{ s }}</strong></span>
+            <input type="number" min="0" [value]="getVariantStock(s, '')" (change)="setVariantStock(s, '', $event)" />
+          </div>
+        </ng-container>
+
+        <!-- Case: Colors but no sizes -->
+        <ng-container *ngIf="enteredSizes().length === 0 && enteredColors().length > 0">
+          <div class="grid-row-input" *ngFor="let c of enteredColors()">
+            <span class="row-label">Color: <strong>{{ c }}</strong></span>
+            <input type="number" min="0" [value]="getVariantStock('', c)" (change)="setVariantStock('', c, $event)" />
+          </div>
+        </ng-container>
+
+        <!-- Case: Both sizes and colors -->
+        <ng-container *ngIf="enteredSizes().length > 0 && enteredColors().length > 0">
+          <div class="grid-row-input" *ngFor="let s of enteredSizes()">
+            <div class="grid-row-input-sub" *ngFor="let c of enteredColors()">
+              <span class="row-label">Talla: <strong>{{ s }}</strong> · Color: <strong>{{ c }}</strong></span>
+              <input type="number" min="0" [value]="getVariantStock(s, c)" (change)="setVariantStock(s, c, $event)" />
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" [disabled]="productForm.invalid || isSubmitting()">
+      {{ isSubmitting() ? 'Guardando...' : 'Guardar Producto' }}
+    </button>
+  </form>
+</div>
+
+<!-- ================= RESTOCK RECEIVE MODAL ================= -->
+<div class="modal-backdrop" *ngIf="showRestockReceiveModal()" (click)="showRestockReceiveModal.set(false)"></div>
+<div class="receive-stock-modal" *ngIf="showRestockReceiveModal()">
+  <header>
+    <h2>Ingresar Stock del Proveedor</h2>
+    <button class="close-btn" (click)="showRestockReceiveModal.set(false)">✕</button>
+  </header>
+  <div class="modal-body">
+    <p>
+      Estás recibiendo stock para: <br />
+      <strong>{{ selectedRestockRequest()?.productId?.name }}</strong><br />
+      Talla: <strong>{{ selectedRestockRequest()?.size || 'Única' }}</strong> · 
+      Color: <strong>{{ selectedRestockRequest()?.color || 'Único' }}</strong>
+    </p>
+    <div class="form-group">
+      <label for="addedQty">Cantidad Recibida (Unidades)</label>
+      <input type="number" id="addedQty" min="1" [(ngModel)]="receiveStockQty" />
+    </div>
+    <button class="submit-btn" (click)="onReceiveStockSubmit()">Agregar a Inventario</button>
+  </div>
+</div>
+
+<!-- ================= LOGISTICS SHIP MODAL ================= -->
+<div class="modal-backdrop" *ngIf="showShipModal()" (click)="showShipModal.set(false)"></div>
+<div class="ship-modal" *ngIf="showShipModal()">
+  <header>
+    <h2>Detalles de Envío Logístico</h2>
+    <button class="close-btn" (click)="showShipModal.set(false)">✕</button>
+  </header>
+  <form [formGroup]="shipForm" (ngSubmit)="onShipSubmit()">
+    <div class="form-group">
+      <label for="carrier">Empresa Transportista</label>
+      <select id="carrier" formControlName="carrier">
+        <option value="Correos">Correos de España</option>
+        <option value="SEUR">SEUR</option>
+        <option value="DHL">DHL Express</option>
+        <option value="MRW">MRW</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="trackingNo">Número de Seguimiento (Tracking ID)</label>
+      <input type="text" id="trackingNo" formControlName="trackingNumber" placeholder="ES123456789AA" required />
+    </div>
+    <button type="submit" class="submit-btn" [disabled]="shipForm.invalid">Marcar como Enviado</button>
+  </form>
+</div>

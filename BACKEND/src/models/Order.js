@@ -21,6 +21,7 @@ const ShippingSchema = new Schema({
 }, { _id: false });
 
 const OrderSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: 'User', default: null, index: true },
   items: [OrderItemSchema],
   subtotal: Number,
   discountCode: { type: String, default: null },
@@ -30,8 +31,13 @@ const OrderSchema = new Schema({
   shipping: ShippingSchema,
   total: Number,
   buyer: AddressSchema,
-  status: { type: String, enum: ['review','awaiting_payment','paid','canceled'], default: 'review' },
+  status: { type: String, enum: ['review','awaiting_payment','paid','shipped','canceled'], default: 'review' },
   receiptPath: { type: String, default: null },
+  shippingTracker: {
+    carrier: { type: String, default: '' },
+    trackingNumber: { type: String, default: '' },
+    trackingUrl: { type: String, default: '' }
+  }
 }, { timestamps: true });
 
 module.exports = model('Order', OrderSchema);

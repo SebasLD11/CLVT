@@ -19,7 +19,11 @@ const serialize = p => ({
   colors: (Array.isArray(p.colors) ? p.colors : []).map(String),
   // 👇 incluir en respuesta
   collectionTitle: p.collectionTitle || 'Sin colección',
-  // 👇 añade timestamps; lean() te los deja como Date, OK para el front
+  variants: Array.isArray(p.variants) ? p.variants.map(v => ({
+    size: v.size || '',
+    color: v.color || '',
+    stock: v.stock ?? 0,
+  })) : [],
   createdAt: p.createdAt,
   updatedAt: p.updatedAt,
 });

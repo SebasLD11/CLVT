@@ -1,0 +1,193 @@
+<div class="profile-container">
+  <div class="profile-header-bar">
+    <div class="brand">
+      <img src="assets/img/LOGO-VECTORITZAT-CLVT.png" alt="CLVT" />
+      <span>Mi Cuenta</span>
+    </div>
+    <div class="header-actions">
+      <button class="nav-btn" (click)="goHome()">Tienda</button>
+      <button class="nav-btn admin-btn" *ngIf="auth.isAdmin()" (click)="this.router.navigate(['/admin'])">Panel Admin</button>
+      <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
+    </div>
+  </div>
+
+  <div class="profile-content">
+    <div class="alert error" *ngIf="errorMessage()">
+      <span>⚠️</span> {{ errorMessage() }}
+    </div>
+    <div class="alert success" *ngIf="successMessage()">
+      <span>✅</span> {{ successMessage() }}
+    </div>
+
+    <div class="profile-grid">
+      <!-- INFO CARD -->
+      <div class="card info-card">
+        <div class="card-header">
+          <h2>Mis Datos</h2>
+          <button class="edit-toggle" (click)="toggleEdit()">
+            {{ isEditing() ? 'Cancelar' : 'Editar' }}
+          </button>
+        </div>
+
+        <div class="card-body" *ngIf="!isEditing()">
+          <div class="data-row">
+            <span class="label">Nombre</span>
+            <span class="value">{{ auth.currentUser()?.fullName }}</span>
+          </div>
+          <div class="data-row">
+            <span class="label">Email</span>
+            <span class="value">{{ auth.currentUser()?.email }}</span>
+          </div>
+          <div class="data-row" *ngIf="auth.currentUser()?.memberId">
+            <span class="label">Nº de Asociado</span>
+            <span class="value badge-member">{{ auth.currentUser()?.memberId }}</span>
+          </div>
+          <div class="data-row">
+            <span class="label">Teléfono</span>
+            <span class="value">{{ auth.currentUser()?.phone || 'No especificado' }}</span>
+          </div>
+          
+          <div class="address-box">
+            <h3>Dirección de Envío</h3>
+            <p *ngIf="auth.currentUser()?.address?.line1; else noAddress">
+              {{ auth.currentUser()?.address?.line1 }}<br />
+              <span *ngIf="auth.currentUser()?.address?.line2">{{ auth.currentUser()?.address?.line2 }}<br /></span>
+              {{ auth.currentUser()?.address?.postalCode }} {{ auth.currentUser()?.address?.city }} ({{ auth.currentUser()?.address?.province }})<br />
+              {{ auth.currentUser()?.address?.country === 'ES' ? 'España' : auth.currentUser()?.address?.country }}
+            </p>
+            <ng-template #noAddress>
+              <p class="muted">No se ha guardado ninguna dirección de envío.</p>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- EDIT FORM -->
+        <form [formGroup]="profileForm" (ngSubmit)="onSave()" *ngIf="isEditing()" class="card-body form-body">
+          <div class="form-group">
+            <label for="profName">Nombre Completo</label>
+            <input type="text" id="profName" formControlName="fullName" required />
+          </div>
+
+          <div class="form-group">
+            <label for="profPhone">Teléfono</label>
+            <input type="tel" id="profPhone" formControlName="phone" />
+          </div>
+
+          <div class="address-section" formGroupName="address">
+            <h3>Dirección de Envío</h3>
+            
+            <div class="form-group">
+              <label for="profLine1">Calle, Número, Piso</label>
+              <input type="text" id="profLine1" formControlName="line1" />
+            </div>
+
+            <div class="form-group">
+              <label for="profLine2">Indicaciones Adicionales</label>
+              <input type="text" id="profLine2" formControlName="line2" />
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="profCity">Ciudad</label>
+                <input type="text" id="profCity" formControlName="city" />
+              </div>
+              <div class="form-group">
+                <label for="profProvince">Provincia</label>
+                <input type="text" id="profProvince" formControlName="province" />
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="profZip">Código Postal</label>
+                <input type="text" id="profZip" formControlName="postalCode" />
+              </div>
+              <div class="form-group">
+                <label for="profCountry">País</label>
+                <select id="profCountry" formControlName="country">
+                  <option value="ES">España</option>
+                  <option value="PT">Portugal</option>
+                  <option value="FR">Francia</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" [disabled]="profileForm.invalid || isSaving()">
+            {{ isSaving() ? 'Guardando...' : 'Guardar Cambios' }}
+          </button>
+        </form>
+      </div>
+
+      <!-- ORDERS LIST -->
+      <div class="card orders-card">
+        <h2>Historial de Compras</h2>
+
+        <div class="orders-list" *ngIf="orders().length > 0; else noOrders">
+          <div class="order-item" *ngFor="let order of orders()">
+            <div class="order-header">
+              <div class="meta">
+                <span class="date">{{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                <span class="order-id">Ped: #{{ order._id.substring(18) }}</span>
+              </div>
+              <div class="status-badge" [ngClass]="order.status">
+                {{ 
+                  order.status === 'review' ? 'Revisión' : 
+                  order.status === 'awaiting_payment' ? 'Pago Pendiente' : 
+                  order.status === 'paid' ? 'Pagado' : 
+                  order.status === 'shipped' ? 'Enviado' : 
+                  order.status === 'canceled' ? 'Cancelado' : order.status
+                }}
+              </div>
+            </div>
+
+            <div class="order-body">
+              <div class="order-product" *ngFor="let item of order.items">
+                <img [src]="item.img || 'assets/img/placeholder.png'" alt="thumb" />
+                <div class="prod-details">
+                  <span class="name">{{ item.name }}</span>
+                  <span class="specs">
+                    Talla: {{ item.size || 'Única' }} · Color: {{ item.colorLabel || item.color || 'Único' }} · Qty: {{ item.qty }}
+                  </span>
+                </div>
+                <span class="price">{{ item.price * item.qty | currency:'EUR':'symbol':'1.2-2' }}</span>
+              </div>
+            </div>
+
+            <!-- LOGISTICS TRACKING -->
+            <div class="tracking-box" *ngIf="order.status === 'shipped' && order.shippingTracker?.trackingNumber">
+              <div class="tracking-title">🚛 Información de Envío</div>
+              <p>
+                Transportista: <strong>{{ order.shippingTracker.carrier }}</strong><br />
+                Número de seguimiento: <strong>{{ order.shippingTracker.trackingNumber }}</strong>
+              </p>
+              <a *ngIf="order.shippingTracker.trackingUrl" [href]="order.shippingTracker.trackingUrl" target="_blank" class="track-link">
+                Rastrear envío →
+              </a>
+            </div>
+
+            <div class="order-footer">
+              <div class="totals">
+                <span>Total: <strong>{{ order.total | currency:'EUR':'symbol':'1.2-2' }}</strong></span>
+              </div>
+              <button 
+                class="receipt-btn" 
+                *ngIf="order.receiptPath" 
+                (click)="downloadReceipt(order.receiptPath)">
+                📄 Descargar Recibo
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noOrders>
+          <div class="no-orders-box">
+            <span class="icon">📦</span>
+            <p>Todavía no has realizado ninguna compra con esta cuenta.</p>
+            <button class="cta-shop" (click)="goHome()">Ir a la Tienda</button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

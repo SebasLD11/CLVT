@@ -1,8 +1,12 @@
 // src/controllers/checkout.controller.js
 const { z } = require('zod');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const RestockRequest = require('../models/RestockRequest');
+const StockTransaction = require('../models/StockTransaction');
+const { sendMail, hasSMTP } = require('../utils/email');
 const { quoteOptions } = require('../utils/shipping');
 const { generateReceiptPDF } = require('../utils/pdf');
 
@@ -93,6 +97,22 @@ async function buildSummary({ items, buyer, discountCode, shipping }) {
     if (Array.isArray(p.sizes) && p.sizes.length && (!i.size || !p.sizes.includes(String(i.size)))) {
       throw Object.assign(new Error('invalid_size'), { status: 400 });
     }
+
+    // Check stock for variant
+    if (p.variants && p.variants.length) {
+      const variant = p.variants.find(v => 
+        (v.size || '') === (i.size || '') && 
+        (v.color || '') === (i.color || '')
+      );
+      if (!variant || variant.stock < i.qty) {
+        const variantDesc = `${i.size ? 'Talla ' + i.size : ''}${i.colorLabel || i.color ? (i.size ? ', ' : '') + 'Color ' + (i.colorLabel || i.color) : ''}`;
+        const err = new Error('insufficient_stock');
+        err.status = 400;
+        err.message = `Stock insuficiente para ${p.name} (${variantDesc || 'General'}). Stock disponible: ${variant ? variant.stock : 0}.`;
+        throw err;
+      }
+    }
+
     return {
       productId: p._id,
       name: p.name,
@@ -158,9 +178,98 @@ exports.finalize = async (req, res, next) => {
     const input = summarySchema.parse(req.body);
     const s = await buildSummary(input);
 
+    // Resolve optional userId from token
+    let userId = null;
+    try {
+      let token = null;
+      if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+        token = req.headers.authorization.split(' ')[1];
+      } else if (req.cookies && req.cookies.token) {
+        token = req.cookies.token;
+      }
+      if (token) {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'clvt_secret_key_12345');
+        userId = decoded.id;
+      }
+    } catch (e) {
+      // Ignore token verification errors during checkout finalization (runs as guest)
+    }
+
+    // Decrement stock & check alert thresholds
+    for (const item of s.items) {
+      const product = await Product.findById(item.productId);
+      if (!product) continue;
+
+      if (product.variants && product.variants.length) {
+        const variant = product.variants.find(v => 
+          (v.size || '') === (item.size || '') && 
+          (v.color || '') === (item.color || '')
+        );
+
+        if (variant) {
+          variant.stock = Math.max(0, variant.stock - item.qty);
+
+          // Create stock transaction
+          await StockTransaction.create({
+            productId: product._id,
+            size: item.size || '',
+            color: item.color || '',
+            quantityChange: -item.qty,
+            reason: 'purchase'
+          });
+
+          // Check if stock falls below or equal to 5
+          if (variant.stock <= 5) {
+            const alreadyAlerted = await RestockRequest.findOne({
+              productId: product._id,
+              size: item.size || '',
+              color: item.color || '',
+              status: 'pending'
+            });
+
+            if (!alreadyAlerted) {
+              await RestockRequest.create({
+                productId: product._id,
+                size: item.size || '',
+                color: item.color || '',
+                currentStock: variant.stock,
+                status: 'pending'
+              });
+
+              // Send email if SMTP is configured
+              if (hasSMTP()) {
+                try {
+                  const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER;
+                  const variantDesc = `${item.size ? 'Talla ' + item.size : ''}${item.colorLabel || item.color ? (item.size ? ', ' : '') + 'Color ' + (item.colorLabel || item.color) : ''}` || 'General';
+                  await sendMail({
+                    to: adminEmail,
+                    subject: `[ALERTA STOCK BAJO] ${product.name} - ${variantDesc}`,
+                    text: `El producto "${product.name}" (${variantDesc}) ha alcanzado un stock de ${variant.stock} unidades. Se ha añadido a la lista de reposición para proveedores.`,
+                    html: `<h3>Alerta de Bajo Stock</h3>
+                           <p>El producto <strong>${product.name}</strong> (${variantDesc}) ha alcanzado un stock de <strong>${variant.stock}</strong> unidades.</p>
+                           <p>Se ha añadido automáticamente a la lista de pedidos a proveedores del panel de administración.</p>`
+                  });
+                } catch (emailError) {
+                  console.error('Error sending stock alert email:', emailError);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Recalculate available sizes
+      product.availableSizes = [...new Set(
+        product.variants.filter(v => v.stock > 0).map(v => v.size).filter(Boolean)
+      )];
+
+      await product.save();
+    }
+
+    const orderData = { ...s, userId, status: 'awaiting_payment' };
     const order = req.body.orderId
-      ? await Order.findByIdAndUpdate(req.body.orderId, { ...s, status: 'awaiting_payment' }, { new: true })
-      : await Order.create({ ...s, status: 'awaiting_payment' });
+      ? await Order.findByIdAndUpdate(req.body.orderId, orderData, { new: true })
+      : await Order.create(orderData);
 
     // Genera PDF
     const outDir = process.env.RECEIPTS_DIR || path.join(__dirname, '../../uploads/receipts');

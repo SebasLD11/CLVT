@@ -13,6 +13,8 @@ const errorMw = require('./src/middleware/error');
 
 const productRoutes = require('./src/routes/product.routes');
 const checkoutRoutes = require('./src/routes/checkout.routes');
+const authRoutes = require('./src/routes/auth.routes');
+const adminRoutes = require('./src/routes/admin.routes');
 
 const PORT = process.env.PORT || 5000;
 
@@ -39,6 +41,8 @@ app.use('/receipts', express.static(RECEIPTS_DIR, { index:false, extensions:['pd
 app.get('/health', (_req, res) => res.status(200).json({ ok: true }));
 app.use('/api/products', productRoutes);
 app.use('/api/pay', checkoutRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Errors
 app.use(errorMw);

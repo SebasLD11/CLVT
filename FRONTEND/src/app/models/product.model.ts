@@ -12,7 +12,7 @@ export interface Product {
     colors?: string[];
     // 👇 NUEVO
     collectionTitle?: string; // fallback en UI si viene vacío
-      // 👇 necesarios para ordenar por fecha en groups()
+    variants?: Array<{ size: string; color: string; stock: number; }>;
     createdAt?: string | Date;
     updatedAt?: string | Date;
 }

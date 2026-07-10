@@ -13,8 +13,12 @@ const ProductSchema = new Schema(
     availableSizes: { type: [String], default: [] },
     // 👇 Nuevos colores disponibles para la prenda
     colors: { type: [String], default: [] },
-    // 👇 NUEVO: título de la colección a la que pertenece el producto
     collectionTitle: { type: String, default: 'Sin colección', index: true },
+    variants: [{
+        size: { type: String, default: '' },
+        color: { type: String, default: '' },
+        stock: { type: Number, default: 0 }
+    }]
 },
 { timestamps: true },
 );
