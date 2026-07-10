@@ -36,7 +36,7 @@ exports.register = async (req, res, next) => {
       password: hashedPassword,
       fullName,
       phone: phone || '',
-      memberId: memberId ? memberId.trim() : undefined,
+      memberId: memberId && memberId.trim() !== '' ? memberId.trim() : null,
       role,
       status: 'active',
       address: address || {}

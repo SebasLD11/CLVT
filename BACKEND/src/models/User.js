@@ -5,7 +5,7 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   fullName: { type: String, required: true },
   phone: { type: String, default: '' },
-  memberId: { type: String, default: '', unique: true, sparse: true },
+  memberId: { type: String, default: null, unique: true, sparse: true },
   role: { type: String, enum: ['member', 'admin'], default: 'member' },
   status: { type: String, enum: ['active', 'inactive'], default: 'active' },
   address: {

@@ -364,31 +364,9 @@
       <input type="text" id="prodCol" formControlName="collectionTitle" />
     </div>
 
-    <!-- DIRECT FILE UPLOAD FOR IMAGES -->
-    <div class="form-group images-upload-section">
-      <label>Imágenes del Producto</label>
-      
-      <!-- Uploaded images previews grid -->
-      <div class="uploaded-thumbnails" *ngIf="uploadedImages().length > 0">
-        <div class="thumb-wrapper" *ngFor="let img of uploadedImages(); let idx = index">
-          <img [src]="resolveImageSrc(img)" alt="preview" />
-          <button type="button" class="btn-remove" (click)="removeUploadedImage(idx)" title="Eliminar imagen">×</button>
-        </div>
-      </div>
-      
-      <!-- Direct upload controls -->
-      <div class="upload-controls">
-        <input type="file" id="prodImageFile" (change)="onImageFileSelected($event)" accept="image/*" style="display: none;" #fileInput multiple />
-        <button type="button" class="btn-secondary-upload" (click)="fileInput.click()" [disabled]="isUploadingImage()">
-          <span *ngIf="!isUploadingImage()">📁 Subir de ordenador...</span>
-          <span *ngIf="isUploadingImage()">⌛ Subiendo...</span>
-        </button>
-        
-        <div class="url-input-inline">
-          <input type="text" placeholder="O pega URL (Ej: assets/img/cami.BK.jpg)" #urlInput (keyup.enter)="addUrlImage(urlInput)" />
-          <button type="button" class="btn-add-url" (click)="addUrlImage(urlInput)">Añadir URL</button>
-        </div>
-      </div>
+    <div class="form-group">
+      <label for="prodImages">URLs de Imágenes (Separadas por comas)</label>
+      <input type="text" id="prodImages" formControlName="imageUrlInput" placeholder="assets/img/prod1.png, assets/img/prod2.png" />
     </div>
 
     <div class="form-grid">

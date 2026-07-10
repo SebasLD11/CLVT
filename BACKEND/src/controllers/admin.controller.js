@@ -76,7 +76,7 @@ exports.updateUser = async (req, res, next) => {
     if (status) user.status = status;
     if (fullName) user.fullName = fullName;
     if (phone !== undefined) user.phone = phone;
-    if (memberId !== undefined) user.memberId = memberId ? memberId.trim() : '';
+    if (memberId !== undefined) user.memberId = (memberId && memberId.trim() !== '') ? memberId.trim() : null;
 
     await user.save();
 

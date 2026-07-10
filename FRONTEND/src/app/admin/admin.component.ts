@@ -48,8 +48,10 @@ export class AdminComponent implements OnInit {
   showProductModal = signal(false);
   editingProduct = signal<any | null>(null);
   productForm!: FormGroup;
-  uploadedImages = signal<string[]>([]);
-  isUploadingImage = signal(false);
+
+  showUserModal = signal(false);
+  editingUser = signal<any | null>(null);
+  userForm!: FormGroup;
 
   // Custom product options lists for variants grid
   enteredSizes = signal<string[]>([]);
@@ -76,6 +78,7 @@ export class AdminComponent implements OnInit {
     this.fetchUsers();
     this.fetchTransactions();
     this.initProductForm();
+    this.initUserForm();
   }
 
   // --- Fetch Methods ---
@@ -136,7 +139,17 @@ export class AdminComponent implements OnInit {
     this.enteredSizes.set([]);
     this.enteredColors.set([]);
     this.variantStockMap.clear();
-    this.uploadedImages.set([]);
+  }
+
+  private initUserForm() {
+    this.userForm = this.fb.group({
+      fullName: ['', Validators.required],
+      email: [''],
+      phone: [''],
+      memberId: [''],
+      role: ['member', Validators.required],
+      status: ['active', Validators.required]
+    });
   }
 
   onSizesOrColorsChange() {
@@ -179,6 +192,7 @@ export class AdminComponent implements OnInit {
       price: p.price,
       tag: p.tag,
       collectionTitle: p.collectionTitle,
+      imageUrlInput: (p.images || []).join(', '),
       sizesInput: (p.sizes || []).join(', '),
       colorsInput: (p.colors || []).join(', ')
     });
@@ -186,7 +200,6 @@ export class AdminComponent implements OnInit {
     this.enteredSizes.set(p.sizes || []);
     this.enteredColors.set(p.colors || []);
     this.variantStockMap.clear();
-    this.uploadedImages.set(p.images || []);
 
     if (p.variants && p.variants.length) {
       p.variants.forEach((v: any) => {
@@ -240,9 +253,13 @@ export class AdminComponent implements OnInit {
       });
     }
 
-    const images = this.uploadedImages().length > 0
-      ? this.uploadedImages()
-      : ['assets/img/placeholder.png'];
+    // Images parsing
+    let images: string[] = [];
+    if (formVal.imageUrlInput) {
+      images = formVal.imageUrlInput.split(',').map((img: string) => img.trim()).filter(Boolean);
+    } else {
+      images = ['assets/img/placeholder.png'];
+    }
 
     const payload = {
       name: formVal.name,
@@ -325,6 +342,43 @@ export class AdminComponent implements OnInit {
   }
 
   // --- Users Auditing ---
+  openEditUser(u: any) {
+    this.editingUser.set(u);
+    this.userForm.patchValue({
+      fullName: u.fullName,
+      email: u.email,
+      phone: u.phone,
+      memberId: u.memberId,
+      role: u.role,
+      status: u.status
+    });
+    this.showUserModal.set(true);
+  }
+
+  closeUserModal() {
+    this.showUserModal.set(false);
+  }
+
+  onSaveUser() {
+    if (this.userForm.invalid) return;
+    this.isSubmitting.set(true);
+    this.errorMessage.set(null);
+    const updates = this.userForm.value;
+    
+    this.http.put(`${this.base}/api/admin/users/${this.editingUser()._id}`, updates).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.showUserModal.set(false);
+        this.successMessage.set('Socio actualizado correctamente.');
+        this.fetchUsers();
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(err.error?.message || 'Error al actualizar usuario.');
+      }
+    });
+  }
+
   toggleUserRole(user: any) {
     const newRole = user.role === 'admin' ? 'member' : 'admin';
     if (!confirm(`¿Quieres cambiar el rol de ${user.fullName} a ${newRole}?`)) return;
@@ -371,37 +425,7 @@ export class AdminComponent implements OnInit {
         this.errorMessage.set(err.error?.message || 'Error al actualizar el envío.');
       }
     });
-  }
 
-  onImageFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
-
-    const files = Array.from(input.files);
-    this.isUploadingImage.set(true);
-    this.errorMessage.set(null);
-
-    const formData = new FormData();
-    files.forEach(file => {
-      formData.append('images', file);
-    });
-
-    this.http.post<any>(`${this.base}/api/admin/upload-image`, formData).subscribe({
-      next: (res) => {
-        if (res && res.paths) {
-          this.uploadedImages.update(imgs => [...imgs, ...res.paths]);
-        }
-        this.isUploadingImage.set(false);
-      },
-      error: (err) => {
-        this.isUploadingImage.set(false);
-        this.errorMessage.set(err.error?.message || 'Error al subir las imágenes.');
-      }
-    });
-  }
-
-  removeUploadedImage(idx: number) {
-    this.uploadedImages.update(imgs => imgs.filter((_, i) => i !== idx));
   }
 
   resolveImageSrc(src: string): string {
@@ -427,13 +451,7 @@ export class AdminComponent implements OnInit {
       (v.color || '') === (req.color || '')
     );
     return variant ? variant.stock : 0;
-  }
 
-  addUrlImage(input: HTMLInputElement) {
-    const val = input.value.trim();
-    if (!val) return;
-    this.uploadedImages.update(imgs => [...imgs, val]);
-    input.value = '';
   }
 
   goHome() {
