@@ -142,7 +142,7 @@
         <table>
           <thead>
             <tr>
-              <th>Producto</th>
+              <th style="width: 28%;">Producto</th>
               <th>Colección</th>
               <th>Precio</th>
               <th>Variantes & Stock</th>
@@ -257,7 +257,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let req of restockRequests()">
+            <tr *ngFor="let req of paginatedRestockRequests()">
               <td>{{ req.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
               <td class="product-td">
                 <div class="product-info-wrapper">
@@ -290,8 +290,13 @@
               </td>
             </tr>
           </tbody>
-        </table>
-        <ng-template #noRestocks>
+          </table>
+          <div class="pagination-controls" style="margin-top:16px; display:flex; justify-content:center; gap:16px; align-items: center;" *ngIf="restockRequests().length > 10">
+            <button class="row-btn" [disabled]="restockPage() === 0" (click)="restockPage.set(restockPage() - 1)">Anterior</button>
+            <span style="color: #9ca3af; font-size: 14px;">Página {{ restockPage() + 1 }}</span>
+            <button class="row-btn" [disabled]="(restockPage() + 1) * 10 >= restockRequests().length" (click)="restockPage.set(restockPage() + 1)">Siguiente</button>
+          </div>
+          <ng-template #noRestocks>
           <div class="empty-state">📦 No hay alertas de reposición generadas por bajo stock.</div>
         </ng-template>
       </div>
