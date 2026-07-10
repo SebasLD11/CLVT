@@ -1,4 +1,4 @@
-﻿.admin-container {
+.admin-container {
   min-height: 100vh;
   background-color: #0c0d0f;
   color: #f3f4f6;
@@ -548,12 +548,12 @@ table {
   max-width: 600px;
 }
 
-.product-modal {
+.product-modal, .user-modal {
   width: 95%;
   max-width: 850px;
 }
 
-.product-modal, .receive-stock-modal, .ship-modal {
+.product-modal, .receive-stock-modal, .ship-modal, .user-modal {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -890,52 +890,4 @@ select, select option {
       }
     }
   }
-}
-
-.user-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--bg-card);
-  width: 90%;
-  max-width: 500px;
-  border-radius: 16px;
-  padding: 24px;
-  z-index: 1001;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-  max-height: 90vh;
-  overflow-y: auto;
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    h2 { font-size: 20px; margin: 0; }
-    .close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); }
-  }
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 16px;
-  margin-bottom: 24px;
-  button {
-    background: var(--bg-card);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: var(--text-main);
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    &:disabled { opacity: 0.5; cursor: not-allowed; }
-    &:not(:disabled):hover { border-color: var(--primary); }
-  }
-}
-
-.table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 }

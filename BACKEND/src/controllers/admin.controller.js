@@ -276,26 +276,12 @@ exports.deleteProduct = async (req, res, next) => {
 // GET /api/admin/stock-transactions
 exports.getStockTransactions = async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-
-    const total = await StockTransaction.countDocuments({});
     const txs = await StockTransaction.find({})
       .populate('productId', 'name')
       .populate('performedBy', 'fullName email')
       .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    res.json({
-      data: txs,
-      pagination: {
-        total,
-        page,
-        pages: Math.ceil(total / limit)
-      }
-    });
+      .limit(100);
+    res.json(txs);
   } catch (error) {
     next(error);
   }
@@ -324,87 +310,72 @@ exports.shipOrder = async (req, res, next) => {
   }
 };
 
- / /   G E T   / a p i / a d m i n / c o u p o n s 
- e x p o r t s . g e t C o u p o n s   =   a s y n c   ( r e q ,   r e s ,   n e x t )   = >   { 
-     t r y   { 
-         c o n s t   C o u p o n   =   r e q u i r e ( " . . / m o d e l s / C o u p o n " ) ; 
-         c o n s t   c o u p o n s   =   a w a i t   C o u p o n . f i n d ( ) . s o r t ( {   c r e a t e d A t :   - 1   } ) ; 
-         r e s . j s o n ( c o u p o n s ) ; 
-     }   c a t c h   ( e r r o r )   {   n e x t ( e r r o r ) ;   } 
- } ; 
- 
- / /   P O S T   / a p i / a d m i n / c o u p o n s 
- e x p o r t s . a d d C o u p o n   =   a s y n c   ( r e q ,   r e s ,   n e x t )   = >   { 
-     t r y   { 
-         c o n s t   C o u p o n   =   r e q u i r e ( " . . / m o d e l s / C o u p o n " ) ; 
-         c o n s t   {   c o d e ,   d i s c o u n t P e r c e n t ,   i s A c t i v e ,   v a l i d U n t i l   }   =   r e q . b o d y ; 
-         i f   ( ! c o d e   | |   ! d i s c o u n t P e r c e n t )   r e t u r n   r e s . s t a t u s ( 4 0 0 ) . j s o n ( {   e r r o r :   " m i s s i n g _ f i e l d s "   } ) ; 
-         c o n s t   c o u p o n   =   a w a i t   C o u p o n . c r e a t e ( {   c o d e ,   d i s c o u n t P e r c e n t ,   i s A c t i v e ,   v a l i d U n t i l   } ) ; 
-         r e s . s t a t u s ( 2 0 1 ) . j s o n ( {   o k :   t r u e ,   c o u p o n   } ) ; 
-     }   c a t c h   ( e r r o r )   {   n e x t ( e r r o r ) ;   } 
- } ; 
- 
- / /   P U T   / a p i / a d m i n / c o u p o n s / : i d 
- e x p o r t s . u p d a t e C o u p o n   =   a s y n c   ( r e q ,   r e s ,   n e x t )   = >   { 
-     t r y   { 
-         c o n s t   C o u p o n   =   r e q u i r e ( " . . / m o d e l s / C o u p o n " ) ; 
-         c o n s t   {   c o d e ,   d i s c o u n t P e r c e n t ,   i s A c t i v e ,   v a l i d U n t i l   }   =   r e q . b o d y ; 
-         c o n s t   c o u p o n   =   a w a i t   C o u p o n . f i n d B y I d ( r e q . p a r a m s . i d ) ; 
-         i f   ( ! c o u p o n )   r e t u r n   r e s . s t a t u s ( 4 0 4 ) . j s o n ( {   e r r o r :   " n o t _ f o u n d "   } ) ; 
-         i f   ( c o d e )   c o u p o n . c o d e   =   c o d e ; 
-         i f   ( d i s c o u n t P e r c e n t   ! = =   u n d e f i n e d )   c o u p o n . d i s c o u n t P e r c e n t   =   d i s c o u n t P e r c e n t ; 
-         i f   ( i s A c t i v e   ! = =   u n d e f i n e d )   c o u p o n . i s A c t i v e   =   i s A c t i v e ; 
-         i f   ( v a l i d U n t i l   ! = =   u n d e f i n e d )   c o u p o n . v a l i d U n t i l   =   v a l i d U n t i l ; 
-         a w a i t   c o u p o n . s a v e ( ) ; 
-         r e s . j s o n ( {   o k :   t r u e ,   c o u p o n   } ) ; 
-     }   c a t c h   ( e r r o r )   {   n e x t ( e r r o r ) ;   } 
- } ; 
- 
- / /   D E L E T E   / a p i / a d m i n / c o u p o n s / : i d 
- e x p o r t s . d e l e t e C o u p o n   =   a s y n c   ( r e q ,   r e s ,   n e x t )   = >   { 
-     t r y   { 
-         c o n s t   C o u p o n   =   r e q u i r e ( " . . / m o d e l s / C o u p o n " ) ; 
-         c o n s t   c o u p o n   =   a w a i t   C o u p o n . f i n d B y I d A n d D e l e t e ( r e q . p a r a m s . i d ) ; 
-         i f   ( ! c o u p o n )   r e t u r n   r e s . s t a t u s ( 4 0 4 ) . j s o n ( {   e r r o r :   " n o t _ f o u n d "   } ) ; 
-         r e s . j s o n ( {   o k :   t r u e   } ) ; 
-     }   c a t c h   ( e r r o r )   {   n e x t ( e r r o r ) ;   } 
- } ; 
-  
- 
- / /   P O S T   / a p i / a d m i n / r e s t o c k - r e q u e s t s / g e n e r a t e 
- e x p o r t s . g e n e r a t e R e s t o c k A l e r t s   =   a s y n c   ( r e q ,   r e s ,   n e x t )   = >   { 
-     t r y   { 
-         c o n s t   P r o d u c t   =   r e q u i r e ( " . . / m o d e l s / P r o d u c t " ) ; 
-         c o n s t   R e s t o c k R e q u e s t   =   r e q u i r e ( " . . / m o d e l s / R e s t o c k R e q u e s t " ) ; 
-         c o n s t   p r o d u c t s   =   a w a i t   P r o d u c t . f i n d ( ) ; 
-         l e t   c o u n t   =   0 ; 
- 
-         f o r   ( c o n s t   p   o f   p r o d u c t s )   { 
-             i f   ( p . v a r i a n t s   & &   p . v a r i a n t s . l e n g t h )   { 
-                 f o r   ( c o n s t   v   o f   p . v a r i a n t s )   { 
-                     i f   ( v . s t o c k   < =   5 )   { 
-                         c o n s t   a l r e a d y P e n d i n g   =   a w a i t   R e s t o c k R e q u e s t . f i n d O n e ( { 
-                             p r o d u c t I d :   p . _ i d , 
-                             s i z e :   v . s i z e   | |   " " , 
-                             c o l o r :   v . c o l o r   | |   " " , 
-                             s t a t u s :   " p e n d i n g " 
-                         } ) ; 
-                         i f   ( ! a l r e a d y P e n d i n g )   { 
-                             a w a i t   R e s t o c k R e q u e s t . c r e a t e ( { 
-                                 p r o d u c t I d :   p . _ i d , 
-                                 s i z e :   v . s i z e   | |   " " , 
-                                 c o l o r :   v . c o l o r   | |   " " , 
-                                 c u r r e n t S t o c k :   v . s t o c k , 
-                                 s t a t u s :   " p e n d i n g " 
-                             } ) ; 
-                             c o u n t + + ; 
-                         } 
-                     } 
-                 } 
-             } 
-         } 
-         r e s . j s o n ( {   o k :   t r u e ,   g e n e r a t e d :   c o u n t   } ) ; 
-     }   c a t c h   ( e r r o r )   {   n e x t ( e r r o r ) ;   } 
- } ; 
-  
- 
+// GET /api/admin/coupons
+exports.getCoupons = async (req, res, next) => {
+  try {
+    const Coupon = require('../models/Coupon');
+    const coupons = await Coupon.find().sort({ createdAt: -1 });
+    res.json(coupons);
+  } catch (error) { next(error); }
+};
+
+// POST /api/admin/coupons
+exports.addCoupon = async (req, res, next) => {
+  try {
+    const Coupon = require('../models/Coupon');
+    const c = new Coupon(req.body);
+    await c.save();
+    res.json(c);
+  } catch (error) { next(error); }
+};
+
+// PUT /api/admin/coupons/:id
+exports.updateCoupon = async (req, res, next) => {
+  try {
+    const Coupon = require('../models/Coupon');
+    const c = await Coupon.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(c);
+  } catch (error) { next(error); }
+};
+
+// DELETE /api/admin/coupons/:id
+exports.deleteCoupon = async (req, res, next) => {
+  try {
+    const Coupon = require('../models/Coupon');
+    await Coupon.findByIdAndDelete(req.params.id);
+    res.json({ ok: true });
+  } catch (error) { next(error); }
+};
+
+// POST /api/admin/restock-requests/generate
+exports.generateRestockAlerts = async (req, res, next) => {
+  try {
+    const Product = require('../models/Product');
+    const RestockRequest = require('../models/RestockRequest');
+    const products = await Product.find().lean();
+    let generated = 0;
+
+    for (const p of products) {
+      if (!p.variants || !p.variants.length) {
+        if (p.stock <= 5) {
+          const exist = await RestockRequest.findOne({ productId: p._id, status: 'pending' });
+          if (!exist) {
+            await RestockRequest.create({ productId: p._id, size: '', color: '', currentStock: p.stock });
+            generated++;
+          }
+        }
+        continue;
+      }
+      for (const v of p.variants) {
+        if (v.stock <= 5) {
+          const exist = await RestockRequest.findOne({ productId: p._id, size: v.size, color: v.color, status: 'pending' });
+          if (!exist) {
+            await RestockRequest.create({ productId: p._id, size: v.size, color: v.color, currentStock: v.stock });
+            generated++;
+          }
+        }
+      }
+    }
+    res.json({ ok: true, generated });
+  } catch (error) { next(error); }
+};

@@ -42,7 +42,6 @@ const summarySchema = z.object({
 });
 
 // ===== Helpers =====
-// Registro de cupones con límite de usos
 const Coupon = require('../models/Coupon');
 const User = require('../models/User');
 
@@ -51,7 +50,6 @@ async function applyDiscount(subtotal, code, userId) {
   let finalCode = null;
   let isMember = false;
 
-  // Check if user is a verified member
   if (userId) {
     const user = await User.findById(userId);
     if (user && user.memberId && user.memberId.trim() !== '') {
@@ -71,7 +69,6 @@ async function applyDiscount(subtotal, code, userId) {
     }
   }
 
-  // Si no hay cupón válido, pero es socio, aplica 10% automático
   if (isMember && discountAmount === 0) {
     discountAmount = +(subtotal * 0.10).toFixed(2);
     finalCode = 'SOCIO10';
@@ -98,6 +95,19 @@ function resolveUser(req) {
   return null;
 }
 
+function waLinkForVendor(number, order, receiptUrl) {
+  const digits = String(number || '').replace(/\D+/g, '');
+  if (!digits) return null;
+  const text = [
+    'Nuevo pedido Bizum:',
+    `Cliente: ${order?.buyer?.fullName || ''} (${order?.buyer?.phone || ''})`,
+    `Total: €${(order?.total || 0).toFixed(2)}`,
+    `Recibo: ${receiptUrl}`,
+  ].join('\n');
+  const qs = new URLSearchParams({ text }).toString();
+  return `https://wa.me/${digits}?${qs}`;
+}
+
 async function buildSummary(req, { items, buyer, discountCode, shipping }) {
   const ids = items.map(i => i.id);
   const dbProducts = await Product.find({ _id: { $in: ids } }).lean();
@@ -109,6 +119,7 @@ async function buildSummary(req, { items, buyer, discountCode, shipping }) {
       throw Object.assign(new Error('invalid_size'), { status: 400 });
     }
 
+    // Check stock for variant
     if (p.variants && p.variants.length) {
       const variant = p.variants.find(v => 
         (v.size || '') === (i.size || '') && 
@@ -129,12 +140,13 @@ async function buildSummary(req, { items, buyer, discountCode, shipping }) {
       price: Number(p.price),
       qty: Math.max(1, Number(i.qty || 1)),
       size: i.size ?? null,
-      color: i.color ?? null,
-      colorLabel: i.colorLabel ?? null,
+      color: i.color ?? null,               // ✅ PROPAGAR color
+      colorLabel: i.colorLabel ?? null,     // ✅ PROPAGAR etiqueta legible
       img: p.images?.[0] || null,
     };
   });
 
+  // precios base YA incluyen IVA
   const subtotal = lines.reduce((s, l) => s + l.price * l.qty, 0);
   
   const userId = resolveUser(req);

@@ -35,10 +35,15 @@ export class AdminComponent implements OnInit {
   productSvc = inject(ProductService);
   products = computed(() => this.productSvc.products());
   users = signal<any[]>([]);
+  coupons = signal<any[]>([]);
   restockRequests = signal<any[]>([]);
   stockTransactions = signal<any[]>([]);
-  coupons = signal<any[]>([]);
-  stockPagination = signal<any>({ page: 1, total: 0, pages: 1 });
+  transactionsPage = signal(0);
+  paginatedTransactions = computed(() => {
+    const all = this.stockTransactions();
+    const start = this.transactionsPage() * 10;
+    return all.slice(start, start + 10);
+  });
 
   // UI state
   isLoading = signal(false);
@@ -47,6 +52,10 @@ export class AdminComponent implements OnInit {
   successMessage = signal<string | null>(null);
 
   // Forms & Modals
+  showCouponModal = signal(false);
+  editingCoupon = signal<any | null>(null);
+  couponForm!: FormGroup;
+
   showProductModal = signal(false);
   editingProduct = signal<any | null>(null);
   productForm!: FormGroup;
@@ -54,10 +63,6 @@ export class AdminComponent implements OnInit {
   showUserModal = signal(false);
   editingUser = signal<any | null>(null);
   userForm!: FormGroup;
-
-  showCouponModal = signal(false);
-  editingCoupon = signal<any | null>(null);
-  couponForm!: FormGroup;
 
   // Custom product options lists for variants grid
   enteredSizes = signal<string[]>([]);
@@ -82,6 +87,7 @@ export class AdminComponent implements OnInit {
     this.fetchProducts();
     this.fetchRestockRequests();
     this.fetchUsers();
+    this.fetchCoupons();
     this.fetchTransactions();
     this.initProductForm();
     this.initUserForm();
@@ -104,33 +110,21 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  fetchUsers() {
-    this.http.get<any[]>(`${this.base}/api/admin/users`).subscribe(res => {
-      this.users.set(res);
-    });
-  }
-
-  fetchTransactions(page: number = 1) {
-    this.http.get<any>(`${this.base}/api/admin/stock-transactions?page=${page}&limit=10&t=${Date.now()}`).subscribe(res => {
-      this.stockTransactions.set(res.data);
-      this.stockPagination.set(res.pagination);
-    });
-  }
-
   fetchCoupons() {
     this.http.get<any[]>(`${this.base}/api/admin/coupons`).subscribe(res => {
       this.coupons.set(res);
     });
   }
 
-  generateRestockAlerts() {
-    if(!confirm('Â¿Generar alertas de stock para variantes con 5 o menos unidades?')) return;
-    this.http.post(`${this.base}/api/admin/restock-requests/generate`, {}).subscribe({
-      next: (res: any) => {
-        this.successMessage.set(`Se han generado ${res.generated} alertas de stock.`);
-        if (this.activeTab() === 'restock') this.fetchRestockRequests();
-      },
-      error: err => this.errorMessage.set(err.error?.error || 'Error al generar alertas')
+  fetchUsers() {
+    this.http.get<any[]>(`${this.base}/api/admin/users`).subscribe(res => {
+      this.users.set(res);
+    });
+  }
+
+  fetchTransactions() {
+    this.http.get<any[]>(`${this.base}/api/admin/stock-transactions?t=${Date.now()}`).subscribe(res => {
+      this.stockTransactions.set(res);
     });
   }
 
@@ -149,13 +143,24 @@ export class AdminComponent implements OnInit {
   }
 
   // --- Product CRUD ---
+  generateRestockAlerts() {
+    if(!confirm('¿Generar alertas de stock para variantes con 5 o menos unidades?')) return;
+    this.http.post(`${this.base}/api/admin/restock-requests/generate`, {}).subscribe({
+      next: (res: any) => {
+        this.successMessage.set(`Se han generado ${res.generated} alertas de stock.`);
+        if (this.activeTab() === 'restock') this.fetchRestockRequests();
+      },
+      error: err => this.errorMessage.set(err.error?.error || 'Error al generar alertas')
+    });
+  }
+
   private initProductForm() {
     this.productForm = this.fb.group({
       name: ['', Validators.required],
       description: [''],
       price: [0, [Validators.required, Validators.min(0.01)]],
       tag: ['new'],
-      collectionTitle: ['Sin colecciÃ³n'],
+      collectionTitle: ['Sin colección'],
       imageUrlInput: [''], // raw input to add to images list
       sizesInput: [''],    // comma-separated
       colorsInput: ['']    // comma-separated
@@ -306,7 +311,7 @@ export class AdminComponent implements OnInit {
       next: () => {
         this.isSubmitting.set(false);
         this.showProductModal.set(false);
-        this.successMessage.set(this.editingProduct() ? 'Producto modificado con Ã©xito.' : 'Producto aÃ±adido con Ã©xito.');
+        this.successMessage.set(this.editingProduct() ? 'Producto modificado con éxito.' : 'Producto añadido con éxito.');
         this.fetchProducts();
         this.fetchTransactions();
       },
@@ -318,7 +323,7 @@ export class AdminComponent implements OnInit {
   }
 
   deleteProduct(id: string) {
-    if (!confirm('Â¿EstÃ¡s seguro de que deseas eliminar este producto?')) return;
+    if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) return;
     this.http.delete(`${this.base}/api/admin/products/${id}`).subscribe({
       next: () => {
         this.successMessage.set('Producto eliminado correctamente.');
@@ -335,7 +340,7 @@ export class AdminComponent implements OnInit {
     if (status === 'ordered') {
       this.http.put(`${this.base}/api/admin/restock-requests/${req._id}`, { status }).subscribe({
         next: () => {
-          this.successMessage.set('ReposiciÃ³n marcada como Pedido.');
+          this.successMessage.set('Reposición marcada como Pedido.');
           this.fetchRestockRequests();
         }
       });
@@ -386,26 +391,27 @@ export class AdminComponent implements OnInit {
 
   onSaveUser() {
     if (this.userForm.invalid) return;
-    const u = this.editingUser();
-    if (!u) return;
-
+    this.isSubmitting.set(true);
+    this.errorMessage.set(null);
     const updates = this.userForm.value;
-    this.http.put(`${this.base}/api/admin/users/${u._id}`, updates).subscribe({
+    
+    this.http.put(`${this.base}/api/admin/users/${this.editingUser()._id}`, updates).subscribe({
       next: () => {
+        this.isSubmitting.set(false);
+        this.showUserModal.set(false);
+        this.successMessage.set('Socio actualizado correctamente.');
         this.fetchUsers();
-        this.showUserModal.set(false);
-        this.successMessage.set('Usuario actualizado.');
       },
-      error: err => {
-        this.errorMessage.set(err.error?.error || 'Error actualizando usuario');
-        this.showUserModal.set(false);
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(err.error?.message || 'Error al actualizar usuario.');
       }
     });
   }
 
   toggleUserRole(user: any) {
     const newRole = user.role === 'admin' ? 'member' : 'admin';
-    if (!confirm(`Â¿Quieres cambiar el rol de ${user.fullName} a ${newRole}?`)) return;
+    if (!confirm(`¿Quieres cambiar el rol de ${user.fullName} a ${newRole}?`)) return;
 
     this.http.put(`${this.base}/api/admin/users/${user._id}`, { role: newRole }).subscribe({
       next: () => {
@@ -417,7 +423,7 @@ export class AdminComponent implements OnInit {
 
   toggleUserStatus(user: any) {
     const newStatus = user.status === 'active' ? 'inactive' : 'active';
-    if (!confirm(`Â¿Quieres cambiar el estado de ${user.fullName} a ${newStatus}?`)) return;
+    if (!confirm(`¿Quieres cambiar el estado de ${user.fullName} a ${newStatus}?`)) return;
 
     this.http.put(`${this.base}/api/admin/users/${user._id}`, { status: newStatus }).subscribe({
       next: () => {
@@ -446,7 +452,7 @@ export class AdminComponent implements OnInit {
         this.fetchAnalytics();
       },
       error: (err) => {
-        this.errorMessage.set(err.error?.message || 'Error al actualizar el envÃ­o.');
+        this.errorMessage.set(err.error?.message || 'Error al actualizar el envío.');
       }
     });
 
