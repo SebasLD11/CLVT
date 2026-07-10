@@ -28,12 +28,18 @@ router.get('/analytics', ctrl.getAnalytics);
 router.get('/users', ctrl.getUsers);
 router.put('/users/:id', ctrl.updateUser);
 router.get('/restock-requests', ctrl.getRestockRequests);
+router.post('/restock-requests/generate', ctrl.generateRestockAlerts);
 router.put('/restock-requests/:id', ctrl.updateRestockRequest);
 router.post('/products', ctrl.addProduct);
 router.put('/products/:id', ctrl.updateProduct);
 router.delete('/products/:id', ctrl.deleteProduct);
 router.get('/stock-transactions', ctrl.getStockTransactions);
 router.put('/orders/:id/ship', ctrl.shipOrder);
+
+router.get('/coupons', ctrl.getCoupons);
+router.post('/coupons', ctrl.addCoupon);
+router.put('/coupons/:id', ctrl.updateCoupon);
+router.delete('/coupons/:id', ctrl.deleteCoupon);
 
 router.post('/upload-image', upload.array('images', 10), (req, res) => {
   if (!req.files || req.files.length === 0) {

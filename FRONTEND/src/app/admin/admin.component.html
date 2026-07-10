@@ -1,4 +1,4 @@
-<div class="admin-container">
+﻿<div class="admin-container">
   <!-- HEADER BAR -->
   <div class="admin-header-bar">
     <div class="brand">
@@ -8,24 +8,24 @@
     <div class="header-actions">
       <button class="nav-btn" (click)="goHome()">Tienda</button>
       <button class="nav-btn" (click)="this.router.navigate(['/profile'])">Mi Cuenta</button>
-      <button class="logout-btn" (click)="auth.logout()">Cerrar Sesión</button>
+      <button class="logout-btn" (click)="auth.logout()">Cerrar SesiÃƒÂ³n</button>
     </div>
   </div>
 
   <!-- NAVIGATION TABS -->
   <div class="admin-tabs">
-    <button [class.active]="activeTab() === 'analytics'" (click)="setTab('analytics')">📊 Analíticas</button>
-    <button [class.active]="activeTab() === 'catalog'" (click)="setTab('catalog')">👕 Catálogo & Inventario</button>
-    <button [class.active]="activeTab() === 'restock'" (click)="setTab('restock')">📦 Pedidos Proveedores</button>
-    <button [class.active]="activeTab() === 'users'" (click)="setTab('users')">👥 Auditoría de Socios</button>
+    <button [class.active]="activeTab() === 'analytics'" (click)="setTab('analytics')">Ã°Å¸â€œÅ  AnalÃƒÂ­ticas</button>
+    <button [class.active]="activeTab() === 'catalog'" (click)="setTab('catalog')">Ã°Å¸â€˜â€¢ CatÃƒÂ¡logo & Inventario</button>
+    <button [class.active]="activeTab() === 'restock'" (click)="setTab('restock')">Ã°Å¸â€œÂ¦ Pedidos Proveedores</button>
+    <button [class.active]="activeTab() === 'users'" (click)="setTab('users')">Ã°Å¸â€˜Â¥ AuditorÃƒÂ­a de Socios</button>
   </div>
 
   <!-- NOTIFICATIONS -->
   <div class="alert error" *ngIf="errorMessage()">
-    <span>⚠️</span> {{ errorMessage() }}
+    <span>Ã¢Å¡Â Ã¯Â¸Â</span> {{ errorMessage() }}
   </div>
   <div class="alert success" *ngIf="successMessage()">
-    <span>✅</span> {{ successMessage() }}
+    <span>Ã¢Å“â€¦</span> {{ successMessage() }}
   </div>
 
   <div class="admin-content">
@@ -53,7 +53,7 @@
       <div class="analytics-grid">
         <!-- LOW STOCK ALERT PANEL -->
         <div class="grid-card alerts-panel">
-          <h2>⚠️ Variantes con Stock Crítico (≤ 5)</h2>
+          <h2>Ã¢Å¡Â Ã¯Â¸Â Variantes con Stock CrÃƒÂ­tico (Ã¢â€°Â¤ 5)</h2>
           <div class="table-wrapper">
             <table *ngIf="analyticsData()?.lowStockAlerts?.length > 0; else noAlerts">
               <thead>
@@ -75,14 +75,14 @@
               </tbody>
             </table>
             <ng-template #noAlerts>
-              <div class="empty-state">✅ Todo el inventario está por encima del nivel crítico.</div>
+              <div class="empty-state">Ã¢Å“â€¦ Todo el inventario estÃƒÂ¡ por encima del nivel crÃƒÂ­tico.</div>
             </ng-template>
           </div>
         </div>
 
         <!-- RECENT ORDERS PANEL -->
         <div class="grid-card orders-panel">
-          <h2>📦 Pedidos Recientes</h2>
+          <h2>Ã°Å¸â€œÂ¦ Pedidos Recientes</h2>
           <div class="table-wrapper">
             <table *ngIf="analyticsData()?.recentOrders?.length > 0; else noRecentOrders">
               <thead>
@@ -91,7 +91,7 @@
                   <th>Comprador</th>
                   <th>Total</th>
                   <th>Estado</th>
-                  <th>Acción</th>
+                  <th>AcciÃƒÂ³n</th>
                 </tr>
               </thead>
               <tbody>
@@ -106,7 +106,7 @@
                   </td>
                   <td>
                     <button class="action-btn ship" *ngIf="order.status === 'paid'" (click)="openShipModal(order)">
-                      Marcar Envío
+                      Marcar EnvÃƒÂ­o
                     </button>
                     <span *ngIf="order.status === 'shipped'" class="shipped-badge">Enviado</span>
                   </td>
@@ -114,7 +114,7 @@
               </tbody>
             </table>
             <ng-template #noRecentOrders>
-              <div class="empty-state">No se han realizado compras todavía.</div>
+              <div class="empty-state">No se han realizado compras todavÃƒÂ­a.</div>
             </ng-template>
           </div>
         </div>
@@ -124,8 +124,8 @@
     <!-- ================= CATALOG TAB ================= -->
     <div class="tab-panel" *ngIf="activeTab() === 'catalog'">
       <div class="panel-header">
-        <h2>Catálogo de Productos</h2>
-        <button class="add-btn" (click)="openAddProduct()">＋ Añadir Producto</button>
+        <h2>CatÃƒÂ¡logo de Productos</h2>
+        <button class="add-btn" (click)="openAddProduct()">Ã¯Â¼â€¹ AÃƒÂ±adir Producto</button>
       </div>
 
       <div class="table-wrapper">
@@ -133,7 +133,7 @@
           <thead>
             <tr>
               <th>Producto</th>
-              <th>Colección</th>
+              <th>ColecciÃƒÂ³n</th>
               <th>Precio</th>
               <th>Variantes & Stock</th>
               <th>Etiqueta</th>
@@ -155,7 +155,7 @@
                 <div class="variants-list">
                   <div class="variant-item" *ngFor="let v of p.variants">
                     <span class="variant-specs">
-                      {{ v.size || 'Única' }} - {{ v.color || 'Único' }}
+                      {{ v.size || 'ÃƒÅ¡nica' }} - {{ v.color || 'ÃƒÅ¡nico' }}
                     </span>
                     <span class="variant-stock" [class.low]="v.stock <= 5">
                       {{ v.stock }} ud.
@@ -177,7 +177,7 @@
 
       <!-- TRANSACTION HISTORY -->
       <div class="transactions-section">
-        <h2>📜 Historial de Ajustes e Incidencias de Stock</h2>
+        <h2>Ã°Å¸â€œÅ“ Historial de Ajustes e Incidencias de Stock</h2>
         <div class="table-wrapper">
           <table>
             <thead>
@@ -195,15 +195,15 @@
               <tr *ngFor="let tx of stockTransactions()">
                 <td>{{ tx.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
                 <td>{{ tx.productId?.name }}</td>
-                <td>{{ tx.size || 'Única' }}</td>
-                <td>{{ tx.color || 'Único' }}</td>
+                <td>{{ tx.size || 'ÃƒÅ¡nica' }}</td>
+                <td>{{ tx.color || 'ÃƒÅ¡nico' }}</td>
                 <td [class.positive]="tx.quantityChange > 0" [class.negative]="tx.quantityChange < 0">
                   {{ tx.quantityChange > 0 ? '+' : '' }}{{ tx.quantityChange }} unidades
                 </td>
                 <td>
                   {{ 
                     tx.reason === 'purchase' ? 'Compra de socio' : 
-                    tx.reason === 'supplier_restock' ? 'Recepción de proveedor' : 
+                    tx.reason === 'supplier_restock' ? 'RecepciÃƒÂ³n de proveedor' : 
                     tx.reason === 'manual_adjustment' ? 'Ajuste de inventario' : tx.reason
                   }}
                 </td>
@@ -216,9 +216,10 @@
     </div>
 
     <!-- ================= RESTOCK TAB ================= -->
-    <div class="tab-panel" *ngIf="activeTab() === 'restock'">
-      <div class="panel-header">
-        <h2>Lista de Pedidos a Proveedores</h2>
+    <div class="dashboard-section" *ngIf="activeTab() === 'restock'">
+      <div class="section-header">
+        <h3>Pedidos a Proveedores</h3>
+        <button class="primary-btn" (click)="generateRestockAlerts()">Generar Alertas (AutomÃ¡tico)</button>
       </div>
 
       <div class="table-wrapper">
@@ -231,7 +232,7 @@
               <th>Color</th>
               <th>Stock Restante</th>
               <th>Estado</th>
-              <th>Acción</th>
+              <th>AcciÃƒÂ³n</th>
             </tr>
           </thead>
           <tbody>
@@ -241,8 +242,8 @@
                 <img [src]="req.productId?.images?.[0] || 'assets/img/placeholder.png'" alt="thumb" />
                 <span>{{ req.productId?.name }}</span>
               </td>
-              <td>{{ req.size || 'Única' }}</td>
-              <td>{{ req.color || 'Único' }}</td>
+              <td>{{ req.size || 'ÃƒÅ¡nica' }}</td>
+              <td>{{ req.color || 'ÃƒÅ¡nico' }}</td>
               <td class="critical-text">{{ getLiveVariantStock(req) }} unidades</td>
               <td>
                 <span class="status-pill" [ngClass]="req.status">
@@ -268,7 +269,7 @@
           </tbody>
         </table>
         <ng-template #noRestocks>
-          <div class="empty-state">📦 No hay alertas de reposición generadas por bajo stock.</div>
+          <div class="empty-state">Ã°Å¸â€œÂ¦ No hay alertas de reposiciÃƒÂ³n generadas por bajo stock.</div>
         </ng-template>
       </div>
     </div>
@@ -276,7 +277,7 @@
     <!-- ================= USERS TAB ================= -->
     <div class="tab-panel" *ngIf="activeTab() === 'users'">
       <div class="panel-header">
-        <h2>Auditoría de Socios</h2>
+        <h2>AuditorÃƒÂ­a de Socios</h2>
       </div>
 
       <div class="table-wrapper">
@@ -285,11 +286,11 @@
             <tr>
               <th>Nombre</th>
               <th>Email</th>
-              <th>Nº de Socio</th>
-              <th>Teléfono</th>
+              <th>NÃ‚Âº de Socio</th>
+              <th>TelÃƒÂ©fono</th>
               <th>Rol</th>
               <th>Estado</th>
-              <th>Acción</th>
+              <th>AcciÃƒÂ³n</th>
             </tr>
           </thead>
           <tbody>
@@ -306,11 +307,8 @@
               </td>
               <td>
                 <div class="row-actions">
-                  <button class="row-btn role-toggle" (click)="toggleUserRole(u)">
-                    Cambiar Rol
-                  </button>
-                  <button class="row-btn status-toggle" (click)="toggleUserStatus(u)">
-                    {{ u.status === 'active' ? 'Desactivar' : 'Activar' }}
+                  <button class="row-btn edit-btn" (click)="openEditUser(u)">
+                    Editar
                   </button>
                 </div>
               </td>
@@ -326,8 +324,8 @@
 <div class="modal-backdrop" *ngIf="showProductModal()" (click)="closeProductModal()"></div>
 <div class="product-modal" *ngIf="showProductModal()">
   <header>
-    <h2>{{ editingProduct() ? 'Editar Producto' : 'Añadir Nuevo Producto' }}</h2>
-    <button class="close-btn" (click)="closeProductModal()">✕</button>
+    <h2>{{ editingProduct() ? 'Editar Producto' : 'AÃƒÂ±adir Nuevo Producto' }}</h2>
+    <button class="close-btn" (click)="closeProductModal()">Ã¢Å“â€¢</button>
   </header>
 
   <form [formGroup]="productForm" (ngSubmit)="onSaveProduct()">
@@ -337,13 +335,13 @@
     </div>
 
     <div class="form-group">
-      <label for="prodDesc">Descripción</label>
+      <label for="prodDesc">DescripciÃƒÂ³n</label>
       <textarea id="prodDesc" formControlName="description" rows="3"></textarea>
     </div>
 
     <div class="form-grid">
       <div class="form-group">
-        <label for="prodPrice">Precio (€)</label>
+        <label for="prodPrice">Precio (Ã¢â€šÂ¬)</label>
         <input type="number" id="prodPrice" formControlName="price" step="0.01" min="0.01" required />
       </div>
       <div class="form-group">
@@ -353,19 +351,19 @@
           <option value="new">Novedad (New)</option>
           <option value="best">Destacado (Best)</option>
           <option value="sale">Oferta (Sale)</option>
-          <option value="drop">Edición Limitada (Drop)</option>
+          <option value="drop">EdiciÃƒÂ³n Limitada (Drop)</option>
           <option value="sold-out">Agotado (Sold-out)</option>
         </datalist>
       </div>
     </div>
 
     <div class="form-group">
-      <label for="prodCol">Colección</label>
+      <label for="prodCol">ColecciÃƒÂ³n</label>
       <input type="text" id="prodCol" formControlName="collectionTitle" />
     </div>
 
     <div class="form-group">
-      <label for="prodImages">URLs de Imágenes (Separadas por comas)</label>
+      <label for="prodImages">URLs de ImÃƒÂ¡genes (Separadas por comas)</label>
       <input type="text" id="prodImages" formControlName="imageUrlInput" placeholder="assets/img/prod1.png, assets/img/prod2.png" />
     </div>
 
@@ -383,7 +381,7 @@
     <!-- DYNAMIC VARIANT STOCK GRID -->
     <div class="variant-stock-section">
       <h3>Definir Inventario de Variantes</h3>
-      <p class="help-text">Rellena el stock inicial para cada combinación creada:</p>
+      <p class="help-text">Rellena el stock inicial para cada combinaciÃƒÂ³n creada:</p>
 
       <div class="variant-grid-table">
         <!-- Case: No sizes and no colors -->
@@ -412,7 +410,7 @@
         <ng-container *ngIf="enteredSizes().length > 0 && enteredColors().length > 0">
           <ng-container *ngFor="let s of enteredSizes()">
             <div class="grid-row-input" *ngFor="let c of enteredColors()">
-              <span class="row-label">Talla: <strong>{{ s }}</strong> · Color: <strong>{{ c }}</strong></span>
+              <span class="row-label">Talla: <strong>{{ s }}</strong> Ã‚Â· Color: <strong>{{ c }}</strong></span>
               <input type="number" min="0" [value]="getVariantStock(s, c)" (change)="setVariantStock(s, c, $event)" />
             </div>
           </ng-container>
@@ -431,14 +429,14 @@
 <div class="receive-stock-modal" *ngIf="showRestockReceiveModal()">
   <header>
     <h2>Ingresar Stock del Proveedor</h2>
-    <button class="close-btn" (click)="showRestockReceiveModal.set(false)">✕</button>
+    <button class="close-btn" (click)="showRestockReceiveModal.set(false)">Ã¢Å“â€¢</button>
   </header>
   <div class="modal-body">
     <p>
-      Estás recibiendo stock para: <br />
+      EstÃƒÂ¡s recibiendo stock para: <br />
       <strong>{{ selectedRestockRequest()?.productId?.name }}</strong><br />
-      Talla: <strong>{{ selectedRestockRequest()?.size || 'Única' }}</strong> · 
-      Color: <strong>{{ selectedRestockRequest()?.color || 'Único' }}</strong>
+      Talla: <strong>{{ selectedRestockRequest()?.size || 'ÃƒÅ¡nica' }}</strong> Ã‚Â· 
+      Color: <strong>{{ selectedRestockRequest()?.color || 'ÃƒÅ¡nico' }}</strong>
     </p>
     <div class="form-group">
       <label for="addedQty">Cantidad Recibida (Unidades)</label>
@@ -452,23 +450,94 @@
 <div class="modal-backdrop" *ngIf="showShipModal()" (click)="showShipModal.set(false)"></div>
 <div class="ship-modal" *ngIf="showShipModal()">
   <header>
-    <h2>Detalles de Envío Logístico</h2>
-    <button class="close-btn" (click)="showShipModal.set(false)">✕</button>
+    <h2>Detalles de EnvÃƒÂ­o LogÃƒÂ­stico</h2>
+    <button class="close-btn" (click)="showShipModal.set(false)">Ã¢Å“â€¢</button>
   </header>
   <form [formGroup]="shipForm" (ngSubmit)="onShipSubmit()">
     <div class="form-group">
       <label for="carrier">Empresa Transportista</label>
       <select id="carrier" formControlName="carrier">
-        <option value="Correos">Correos de España</option>
+        <option value="Correos">Correos de EspaÃƒÂ±a</option>
         <option value="SEUR">SEUR</option>
         <option value="DHL">DHL Express</option>
         <option value="MRW">MRW</option>
       </select>
     </div>
     <div class="form-group">
-      <label for="trackingNo">Número de Seguimiento (Tracking ID)</label>
+      <label for="trackingNo">NÃƒÂºmero de Seguimiento (Tracking ID)</label>
       <input type="text" id="trackingNo" formControlName="trackingNumber" placeholder="ES123456789AA" required />
     </div>
     <button type="submit" class="submit-btn" [disabled]="shipForm.invalid">Marcar como Enviado</button>
+  </form>
+</div>
+
+ < ! - -   = = = = = = = = = = = = = = = = =   U S E R   E D I T   M O D A L   = = = = = = = = = = = = = = = = =   - - > 
+ < d i v   c l a s s = " m o d a l - b a c k d r o p "   * n g I f = " s h o w U s e r M o d a l ( ) "   ( c l i c k ) = " c l o s e U s e r M o d a l ( ) " > < / d i v > 
+ < d i v   c l a s s = " u s e r - m o d a l "   * n g I f = " s h o w U s e r M o d a l ( ) " > 
+     < h e a d e r > 
+         < h 2 > E d i t a r   U s u a r i o < / h 2 > 
+         < b u t t o n   c l a s s = " c l o s e - b t n "   ( c l i c k ) = " c l o s e U s e r M o d a l ( ) " > '< / b u t t o n > 
+     < / h e a d e r > 
+     < f o r m   [ f o r m G r o u p ] = " u s e r F o r m "   ( n g S u b m i t ) = " o n S a v e U s e r ( ) " > 
+         < d i v   c l a s s = " f o r m - g r o u p " > 
+             < l a b e l   f o r = " u N a m e " > N o m b r e   C o m p l e t o < / l a b e l > 
+             < i n p u t   t y p e = " t e x t "   i d = " u N a m e "   f o r m C o n t r o l N a m e = " f u l l N a m e "   / > 
+         < / d i v > 
+         < d i v   c l a s s = " f o r m - g r o u p " > 
+             < l a b e l   f o r = " u P h o n e " > T e l Ã© f o n o < / l a b e l > 
+             < i n p u t   t y p e = " t e x t "   i d = " u P h o n e "   f o r m C o n t r o l N a m e = " p h o n e "   / > 
+         < / d i v > 
+         < d i v   c l a s s = " f o r m - g r o u p " > 
+             < l a b e l   f o r = " u M e m b e r " > N Âº   d e   S o c i o < / l a b e l > 
+             < i n p u t   t y p e = " t e x t "   i d = " u M e m b e r "   f o r m C o n t r o l N a m e = " m e m b e r I d "   / > 
+         < / d i v > 
+         < d i v   c l a s s = " f o r m - g r i d " > 
+             < d i v   c l a s s = " f o r m - g r o u p " > 
+                 < l a b e l   f o r = " u R o l e " > R o l < / l a b e l > 
+                 < s e l e c t   i d = " u R o l e "   f o r m C o n t r o l N a m e = " r o l e " > 
+                     < o p t i o n   v a l u e = " m e m b e r " > M i e m b r o < / o p t i o n > 
+                     < o p t i o n   v a l u e = " a d m i n " > A d m i n i s t r a d o r < / o p t i o n > 
+                 < / s e l e c t > 
+             < / d i v > 
+             < d i v   c l a s s = " f o r m - g r o u p " > 
+                 < l a b e l   f o r = " u S t a t u s " > E s t a d o < / l a b e l > 
+                 < s e l e c t   i d = " u S t a t u s "   f o r m C o n t r o l N a m e = " s t a t u s " > 
+                     < o p t i o n   v a l u e = " a c t i v e " > A c t i v o < / o p t i o n > 
+                     < o p t i o n   v a l u e = " i n a c t i v e " > I n a c t i v o < / o p t i o n > 
+                 < / s e l e c t > 
+             < / d i v > 
+         < / d i v > 
+         < b u t t o n   t y p e = " s u b m i t "   c l a s s = " s u b m i t - b t n "   [ d i s a b l e d ] = " u s e r F o r m . i n v a l i d " > G u a r d a r   U s u a r i o < / b u t t o n > 
+     < / f o r m > 
+ < / d i v > 
+  
+ 
+
+<!-- ================= COUPON MODAL ================= -->
+<div class="modal-backdrop" *ngIf="showCouponModal()" (click)="showCouponModal.set(false)"></div>
+<div class="user-modal" *ngIf="showCouponModal()">
+  <header>
+    <h2>{{ editingCoupon() ? 'Editar Cupón' : 'Nuevo Cupón' }}</h2>
+    <button class="close-btn" (click)="showCouponModal.set(false)">✕</button>
+  </header>
+  <form *ngIf="couponForm" [formGroup]="couponForm" (ngSubmit)="saveCoupon()">
+    <div class="form-group">
+      <label for="cCode">Código</label>
+      <input type="text" id="cCode" formControlName="code" />
+    </div>
+    <div class="form-group">
+      <label for="cDisc">Descuento (%)</label>
+      <input type="number" id="cDisc" formControlName="discountPercent" />
+    </div>
+    <div class="form-group">
+      <label for="cValid">Válido Hasta (opcional)</label>
+      <input type="date" id="cValid" formControlName="validUntil" />
+    </div>
+    <div class="form-group">
+      <label>
+        <input type="checkbox" formControlName="isActive" /> Activo
+      </label>
+    </div>
+    <button type="submit" class="submit-btn" [disabled]="couponForm.invalid">Guardar Cupón</button>
   </form>
 </div>

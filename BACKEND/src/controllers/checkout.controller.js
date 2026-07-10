@@ -43,51 +43,62 @@ const summarySchema = z.object({
 
 // ===== Helpers =====
 // Registro de cupones con límite de usos
-const COUPONS = {
-  'NAVIDAD25': { percent: 0.25, maxUses: 5, used: 0 },
-  'CLVT10': { percent: 0.10, maxUses: Infinity },
-  'ASC10': { percent: 0.10, maxUses: Infinity },
-};
+const Coupon = require('../models/Coupon');
+const User = require('../models/User');
 
-function applyDiscount(subtotal, code) {
+async function applyDiscount(subtotal, code, userId) {
+  let discountAmount = 0;
+  let finalCode = null;
+  let isMember = false;
+
+  // Check if user is a verified member
+  if (userId) {
+    const user = await User.findById(userId);
+    if (user && user.memberId && user.memberId.trim() !== '') {
+      isMember = true;
+    }
+  }
+
   const normalized = String(code || '').trim().toUpperCase();
-  if (!normalized) {
-    return { discountCode: null, discountAmount: 0 };
+  if (normalized) {
+    const coupon = await Coupon.findOne({ code: normalized, isActive: true });
+    if (coupon) {
+      if (coupon.validUntil && coupon.validUntil < new Date()) {
+        return { discountCode: normalized, discountAmount: 0, error: 'EXPIRED' };
+      }
+      discountAmount = +(subtotal * (coupon.discountPercent / 100)).toFixed(2);
+      finalCode = normalized;
+    }
   }
 
-  const coupon = COUPONS[normalized];
-  if (!coupon) {
-    return { discountCode: normalized, discountAmount: 0 };
+  // Si no hay cupón válido, pero es socio, aplica 10% automático
+  if (isMember && discountAmount === 0) {
+    discountAmount = +(subtotal * 0.10).toFixed(2);
+    finalCode = 'SOCIO10';
   }
 
-  // Verificar límite de usos
-  if (coupon.used >= coupon.maxUses) {
-    return { discountCode: normalized, discountAmount: 0, error: 'LIMIT_REACHED' };
-  }
-
-  // Aplicar descuento
-  const discountAmount = +(subtotal * coupon.percent).toFixed(2);
-
-  // Registrar uso
-  coupon.used++;
-
-  return { discountCode: normalized, discountAmount };
+  return { discountCode: finalCode, discountAmount };
 }
 
-function waLinkForVendor(number, order, receiptUrl) {
-  const digits = String(number || '').replace(/\D+/g, '');
-  if (!digits) return null;
-  const text = [
-    'Nuevo pedido Bizum:',
-    `Cliente: ${order?.buyer?.fullName || ''} (${order?.buyer?.phone || ''})`,
-    `Total: €${(order?.total || 0).toFixed(2)}`,
-    `Recibo: ${receiptUrl}`,
-  ].join('\n');
-  const qs = new URLSearchParams({ text }).toString();
-  return `https://wa.me/${digits}?${qs}`;
+function resolveUser(req) {
+  try {
+    let token = null;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      token = req.headers.authorization.split(' ')[1];
+    } else if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+    }
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'clvt_secret_key_12345');
+      return decoded.id;
+    }
+  } catch (e) {
+    return null;
+  }
+  return null;
 }
 
-async function buildSummary({ items, buyer, discountCode, shipping }) {
+async function buildSummary(req, { items, buyer, discountCode, shipping }) {
   const ids = items.map(i => i.id);
   const dbProducts = await Product.find({ _id: { $in: ids } }).lean();
 
@@ -98,7 +109,6 @@ async function buildSummary({ items, buyer, discountCode, shipping }) {
       throw Object.assign(new Error('invalid_size'), { status: 400 });
     }
 
-    // Check stock for variant
     if (p.variants && p.variants.length) {
       const variant = p.variants.find(v => 
         (v.size || '') === (i.size || '') && 
@@ -119,15 +129,16 @@ async function buildSummary({ items, buyer, discountCode, shipping }) {
       price: Number(p.price),
       qty: Math.max(1, Number(i.qty || 1)),
       size: i.size ?? null,
-      color: i.color ?? null,               // ✅ PROPAGAR color
-      colorLabel: i.colorLabel ?? null,     // ✅ PROPAGAR etiqueta legible
+      color: i.color ?? null,
+      colorLabel: i.colorLabel ?? null,
       img: p.images?.[0] || null,
     };
   });
 
-  // precios base YA incluyen IVA
   const subtotal = lines.reduce((s, l) => s + l.price * l.qty, 0);
-  const { discountCode: disc, discountAmount } = applyDiscount(subtotal, discountCode);
+  
+  const userId = resolveUser(req);
+  const { discountCode: disc, discountAmount } = await applyDiscount(subtotal, discountCode, userId);
 
   const vatRate = Number(process.env.DEFAULT_VAT_RATE || 0.21);
   const baseGross = +(subtotal - discountAmount).toFixed(2); // bruto con IVA
@@ -165,7 +176,7 @@ async function buildSummary({ items, buyer, discountCode, shipping }) {
 exports.summary = async (req, res, next) => {
   try {
     const input = summarySchema.omit({ shipping: true }).parse(req.body);
-    const s = await buildSummary(input);
+    const s = await buildSummary(req, input);
     const order = await Order.create({ ...s, status: 'review' });
     return res.json({ orderId: order._id, ...s, shippingOptions: s.shippingOptions });
   } catch (e) {
@@ -176,7 +187,7 @@ exports.summary = async (req, res, next) => {
 exports.finalize = async (req, res, next) => {
   try {
     const input = summarySchema.parse(req.body);
-    const s = await buildSummary(input);
+    const s = await buildSummary(req, input);
 
     // Resolve optional userId from token
     let userId = null;

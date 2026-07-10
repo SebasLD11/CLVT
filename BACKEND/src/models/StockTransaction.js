@@ -6,7 +6,13 @@ const StockTransactionSchema = new Schema({
   color: { type: String, default: '' },
   quantityChange: { type: Number, required: true }, // positive for additions, negative for sales
   reason: { type: String, required: true }, // 'purchase', 'supplier_restock', 'manual_adjustment'
-  performedBy: { type: Schema.Types.ObjectId, ref: 'User', default: null }
-}, { timestamps: true });
+  performedBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
+  createdAt: { type: Date, default: Date.now, expires: '30d' }
+});
+
+// Avoid timestamps option to not override createdAt custom TTL definition
+// but if we want updatedAt, we can still use it. Wait, Mongoose supports expires directly on createdAt without disabling timestamps.
+// Let's just redefine it correctly.
+
 
 module.exports = model('StockTransaction', StockTransactionSchema);

@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, computed } from '@angular/core';
+﻿import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -37,6 +37,8 @@ export class AdminComponent implements OnInit {
   users = signal<any[]>([]);
   restockRequests = signal<any[]>([]);
   stockTransactions = signal<any[]>([]);
+  coupons = signal<any[]>([]);
+  stockPagination = signal<any>({ page: 1, total: 0, pages: 1 });
 
   // UI state
   isLoading = signal(false);
@@ -52,6 +54,10 @@ export class AdminComponent implements OnInit {
   showUserModal = signal(false);
   editingUser = signal<any | null>(null);
   userForm!: FormGroup;
+
+  showCouponModal = signal(false);
+  editingCoupon = signal<any | null>(null);
+  couponForm!: FormGroup;
 
   // Custom product options lists for variants grid
   enteredSizes = signal<string[]>([]);
@@ -104,9 +110,27 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  fetchTransactions() {
-    this.http.get<any[]>(`${this.base}/api/admin/stock-transactions?t=${Date.now()}`).subscribe(res => {
-      this.stockTransactions.set(res);
+  fetchTransactions(page: number = 1) {
+    this.http.get<any>(`${this.base}/api/admin/stock-transactions?page=${page}&limit=10&t=${Date.now()}`).subscribe(res => {
+      this.stockTransactions.set(res.data);
+      this.stockPagination.set(res.pagination);
+    });
+  }
+
+  fetchCoupons() {
+    this.http.get<any[]>(`${this.base}/api/admin/coupons`).subscribe(res => {
+      this.coupons.set(res);
+    });
+  }
+
+  generateRestockAlerts() {
+    if(!confirm('Â¿Generar alertas de stock para variantes con 5 o menos unidades?')) return;
+    this.http.post(`${this.base}/api/admin/restock-requests/generate`, {}).subscribe({
+      next: (res: any) => {
+        this.successMessage.set(`Se han generado ${res.generated} alertas de stock.`);
+        if (this.activeTab() === 'restock') this.fetchRestockRequests();
+      },
+      error: err => this.errorMessage.set(err.error?.error || 'Error al generar alertas')
     });
   }
 
@@ -121,6 +145,7 @@ export class AdminComponent implements OnInit {
     if (tab === 'catalog') { this.fetchProducts(); this.fetchTransactions(); }
     if (tab === 'restock') this.fetchRestockRequests();
     if (tab === 'users') this.fetchUsers();
+    if (tab === 'coupons') this.fetchCoupons();
   }
 
   // --- Product CRUD ---
@@ -130,7 +155,7 @@ export class AdminComponent implements OnInit {
       description: [''],
       price: [0, [Validators.required, Validators.min(0.01)]],
       tag: ['new'],
-      collectionTitle: ['Sin colección'],
+      collectionTitle: ['Sin colecciÃ³n'],
       imageUrlInput: [''], // raw input to add to images list
       sizesInput: [''],    // comma-separated
       colorsInput: ['']    // comma-separated
@@ -281,7 +306,7 @@ export class AdminComponent implements OnInit {
       next: () => {
         this.isSubmitting.set(false);
         this.showProductModal.set(false);
-        this.successMessage.set(this.editingProduct() ? 'Producto modificado con éxito.' : 'Producto añadido con éxito.');
+        this.successMessage.set(this.editingProduct() ? 'Producto modificado con Ã©xito.' : 'Producto aÃ±adido con Ã©xito.');
         this.fetchProducts();
         this.fetchTransactions();
       },
@@ -293,7 +318,7 @@ export class AdminComponent implements OnInit {
   }
 
   deleteProduct(id: string) {
-    if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) return;
+    if (!confirm('Â¿EstÃ¡s seguro de que deseas eliminar este producto?')) return;
     this.http.delete(`${this.base}/api/admin/products/${id}`).subscribe({
       next: () => {
         this.successMessage.set('Producto eliminado correctamente.');
@@ -310,7 +335,7 @@ export class AdminComponent implements OnInit {
     if (status === 'ordered') {
       this.http.put(`${this.base}/api/admin/restock-requests/${req._id}`, { status }).subscribe({
         next: () => {
-          this.successMessage.set('Reposición marcada como Pedido.');
+          this.successMessage.set('ReposiciÃ³n marcada como Pedido.');
           this.fetchRestockRequests();
         }
       });
@@ -361,27 +386,26 @@ export class AdminComponent implements OnInit {
 
   onSaveUser() {
     if (this.userForm.invalid) return;
-    this.isSubmitting.set(true);
-    this.errorMessage.set(null);
+    const u = this.editingUser();
+    if (!u) return;
+
     const updates = this.userForm.value;
-    
-    this.http.put(`${this.base}/api/admin/users/${this.editingUser()._id}`, updates).subscribe({
+    this.http.put(`${this.base}/api/admin/users/${u._id}`, updates).subscribe({
       next: () => {
-        this.isSubmitting.set(false);
-        this.showUserModal.set(false);
-        this.successMessage.set('Socio actualizado correctamente.');
         this.fetchUsers();
+        this.showUserModal.set(false);
+        this.successMessage.set('Usuario actualizado.');
       },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        this.errorMessage.set(err.error?.message || 'Error al actualizar usuario.');
+      error: err => {
+        this.errorMessage.set(err.error?.error || 'Error actualizando usuario');
+        this.showUserModal.set(false);
       }
     });
   }
 
   toggleUserRole(user: any) {
     const newRole = user.role === 'admin' ? 'member' : 'admin';
-    if (!confirm(`¿Quieres cambiar el rol de ${user.fullName} a ${newRole}?`)) return;
+    if (!confirm(`Â¿Quieres cambiar el rol de ${user.fullName} a ${newRole}?`)) return;
 
     this.http.put(`${this.base}/api/admin/users/${user._id}`, { role: newRole }).subscribe({
       next: () => {
@@ -393,7 +417,7 @@ export class AdminComponent implements OnInit {
 
   toggleUserStatus(user: any) {
     const newStatus = user.status === 'active' ? 'inactive' : 'active';
-    if (!confirm(`¿Quieres cambiar el estado de ${user.fullName} a ${newStatus}?`)) return;
+    if (!confirm(`Â¿Quieres cambiar el estado de ${user.fullName} a ${newStatus}?`)) return;
 
     this.http.put(`${this.base}/api/admin/users/${user._id}`, { status: newStatus }).subscribe({
       next: () => {
@@ -422,7 +446,7 @@ export class AdminComponent implements OnInit {
         this.fetchAnalytics();
       },
       error: (err) => {
-        this.errorMessage.set(err.error?.message || 'Error al actualizar el envío.');
+        this.errorMessage.set(err.error?.message || 'Error al actualizar el envÃ­o.');
       }
     });
 
@@ -456,5 +480,100 @@ export class AdminComponent implements OnInit {
 
   goHome() {
     this.router.navigate(['/']);
+  }
+}
+
+     i n i t C o u p o n F o r m ( )   { 
+         t h i s . c o u p o n F o r m   =   t h i s . f b . g r o u p ( { 
+             c o d e :   [ " " ,   V a l i d a t o r s . r e q u i r e d ] , 
+             d i s c o u n t P e r c e n t :   [ 1 0 ,   V a l i d a t o r s . r e q u i r e d ] , 
+             i s A c t i v e :   [ t r u e ] , 
+             v a l i d U n t i l :   [ " " ] 
+         } ) ; 
+     } 
+     o p e n A d d C o u p o n ( )   { 
+         t h i s . e d i t i n g C o u p o n . s e t ( n u l l ) ; 
+         i f   ( ! t h i s . c o u p o n F o r m )   t h i s . i n i t C o u p o n F o r m ( ) ; 
+         e l s e   t h i s . c o u p o n F o r m . r e s e t ( {   d i s c o u n t P e r c e n t :   1 0 ,   i s A c t i v e :   t r u e   } ) ; 
+         t h i s . s h o w C o u p o n M o d a l . s e t ( t r u e ) ; 
+     } 
+     o p e n E d i t C o u p o n ( c :   a n y )   { 
+         t h i s . e d i t i n g C o u p o n . s e t ( c ) ; 
+         i f   ( ! t h i s . c o u p o n F o r m )   t h i s . i n i t C o u p o n F o r m ( ) ; 
+         t h i s . c o u p o n F o r m . p a t c h V a l u e ( { 
+             c o d e :   c . c o d e , 
+             d i s c o u n t P e r c e n t :   c . d i s c o u n t P e r c e n t , 
+             i s A c t i v e :   c . i s A c t i v e , 
+             v a l i d U n t i l :   c . v a l i d U n t i l   ?   n e w   D a t e ( c . v a l i d U n t i l ) . t o I S O S t r i n g ( ) . s p l i t ( " T " ) [ 0 ]   :   " " 
+         } ) ; 
+         t h i s . s h o w C o u p o n M o d a l . s e t ( t r u e ) ; 
+     } 
+     s a v e C o u p o n ( )   { 
+         i f   ( t h i s . c o u p o n F o r m . i n v a l i d )   r e t u r n ; 
+         c o n s t   d a t a   =   t h i s . c o u p o n F o r m . v a l u e ; 
+         c o n s t   c   =   t h i s . e d i t i n g C o u p o n ( ) ; 
+         c o n s t   r e q   =   c   ?   t h i s . h t t p . p u t ( ` $ { t h i s . b a s e } / a p i / a d m i n / c o u p o n s / $ { c . _ i d } ` ,   d a t a )   
+                                     :   t h i s . h t t p . p o s t ( ` $ { t h i s . b a s e } / a p i / a d m i n / c o u p o n s ` ,   d a t a ) ; 
+         r e q . s u b s c r i b e ( { 
+             n e x t :   ( )   = >   { 
+                 t h i s . f e t c h C o u p o n s ( ) ; 
+                 t h i s . s h o w C o u p o n M o d a l . s e t ( f a l s e ) ; 
+                 t h i s . s u c c e s s M e s s a g e . s e t ( " C u p ó n   g u a r d a d o . " ) ; 
+             } , 
+             e r r o r :   e r r   = >   t h i s . e r r o r M e s s a g e . s e t ( e r r . e r r o r ? . e r r o r   | |   " E r r o r   g u a r d a n d o   c u p ó n " ) 
+         } ) ; 
+     } 
+     d e l e t e C o u p o n ( i d :   s t r i n g )   { 
+         i f ( ! c o n f i r m ( " ¿ E l i m i n a r   c u p ó n ? " ) )   r e t u r n ; 
+         t h i s . h t t p . d e l e t e ( ` $ { t h i s . b a s e } / a p i / a d m i n / c o u p o n s / $ { i d } ` ) . s u b s c r i b e ( { 
+             n e x t :   ( )   = >   {   t h i s . f e t c h C o u p o n s ( ) ;   t h i s . s u c c e s s M e s s a g e . s e t ( " C u p ó n   e l i m i n a d o . " ) ;   } , 
+             e r r o r :   e r r   = >   t h i s . e r r o r M e s s a g e . s e t ( e r r . e r r o r ? . e r r o r   | |   " E r r o r   a l   e l i m i n a r " ) 
+         } ) ; 
+       initCouponForm() {
+    this.couponForm = this.fb.group({
+      code: ['', Validators.required],
+      discountPercent: [10, Validators.required],
+      isActive: [true],
+      validUntil: ['']
+    });
+  }
+  openAddCoupon() {
+    this.editingCoupon.set(null);
+    if (!this.couponForm) this.initCouponForm();
+    else this.couponForm.reset({ discountPercent: 10, isActive: true });
+    this.showCouponModal.set(true);
+  }
+  openEditCoupon(c: any) {
+    this.editingCoupon.set(c);
+    if (!this.couponForm) this.initCouponForm();
+    this.couponForm.patchValue({
+      code: c.code,
+      discountPercent: c.discountPercent,
+      isActive: c.isActive,
+      validUntil: c.validUntil ? new Date(c.validUntil).toISOString().split('T')[0] : ''
+    });
+    this.showCouponModal.set(true);
+  }
+  saveCoupon() {
+    if (this.couponForm.invalid) return;
+    const data = this.couponForm.value;
+    const c = this.editingCoupon();
+    const req = c ? this.http.put(${this.base}/api/admin/coupons/, data) 
+                  : this.http.post(${this.base}/api/admin/coupons, data);
+    req.subscribe({
+      next: () => {
+        this.fetchCoupons();
+        this.showCouponModal.set(false);
+        this.successMessage.set('Cupón guardado.');
+      },
+      error: err => this.errorMessage.set(err.error?.error || 'Error guardando cupón')
+    });
+  }
+  deleteCoupon(id: string) {
+    if(!confirm('¿Eliminar cupón?')) return;
+    this.http.delete(${this.base}/api/admin/coupons/).subscribe({
+      next: () => { this.fetchCoupons(); this.successMessage.set('Cupón eliminado.'); },
+      error: err => this.errorMessage.set(err.error?.error || 'Error al eliminar')
+    });
   }
 }
