@@ -1,9 +1,10 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
+import { ProductService } from '../services/product.service';
 import { environment } from '../../environments/environment';
 
 interface VariantInput {
@@ -31,7 +32,8 @@ export class AdminComponent implements OnInit {
 
   // Data signals
   analyticsData = signal<any>(null);
-  products = signal<any[]>([]);
+  productSvc = inject(ProductService);
+  products = computed(() => this.productSvc.products());
   users = signal<any[]>([]);
   restockRequests = signal<any[]>([]);
   stockTransactions = signal<any[]>([]);
@@ -84,9 +86,7 @@ export class AdminComponent implements OnInit {
   }
 
   fetchProducts() {
-    this.http.get<any[]>(`${this.base}/api/products`).subscribe(res => {
-      this.products.set(res);
-    });
+    this.productSvc.refresh();
   }
 
   fetchRestockRequests() {
@@ -374,24 +374,33 @@ export class AdminComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
-    const file = input.files[0];
-    const formData = new FormData();
-    formData.append('image', file);
-
+    const files = Array.from(input.files);
     this.isUploadingImage.set(true);
     this.errorMessage.set(null);
 
-    this.http.post<any>(`${this.base}/api/admin/upload-image`, formData).subscribe({
-      next: (res) => {
-        this.isUploadingImage.set(false);
-        if (res && res.path) {
-          this.uploadedImages.update(imgs => [...imgs, res.path]);
+    let completed = 0;
+    files.forEach(file => {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      this.http.post<any>(`${this.base}/api/admin/upload-image`, formData).subscribe({
+        next: (res) => {
+          if (res && res.path) {
+            this.uploadedImages.update(imgs => [...imgs, res.path]);
+          }
+          completed++;
+          if (completed === files.length) {
+            this.isUploadingImage.set(false);
+          }
+        },
+        error: (err) => {
+          completed++;
+          if (completed === files.length) {
+            this.isUploadingImage.set(false);
+          }
+          this.errorMessage.set(err.error?.message || `Error al subir la imagen ${file.name}.`);
         }
-      },
-      error: (err) => {
-        this.isUploadingImage.set(false);
-        this.errorMessage.set(err.error?.message || 'Error al subir la imagen.');
-      }
+      });
     });
   }
 
@@ -407,6 +416,18 @@ export class AdminComponent implements OnInit {
       return `${this.base}/${cleaned}`;
     }
     return `/${cleaned}`;
+  }
+
+  getLiveVariantStock(req: any): number {
+    const product = req.productId;
+    if (!product || !Array.isArray(product.variants)) {
+      return req.currentStock;
+    }
+    const variant = product.variants.find((v: any) => 
+      (v.size || '') === (req.size || '') && 
+      (v.color || '') === (req.color || '')
+    );
+    return variant ? variant.stock : 0;
   }
 
   goHome() {

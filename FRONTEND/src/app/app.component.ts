@@ -43,7 +43,7 @@ export class AppComponent {
 
   // Estado UI
   tab = signal<'home'|'shop'|'about'>('shop');
-  products = signal<Product[]>([]);
+  products = computed(() => this.productSvc.products());
   selected = signal<Product | null>(null);
   imgIndex = 0;
   cartOpen = signal(false);
@@ -118,14 +118,16 @@ export class AppComponent {
       .subscribe(() => this.isRouted.set(isR(this.router.url)));
 
     // productos + rangos de precio
-    this.productSvc.list().subscribe(ps => {
-      const normalized = ps.map(p => ({ ...p, images: (p.images ?? []).map(src => this.normalizeAsset(src)) }));
-      this.products.set(normalized);
-      const prices = normalized.map(p => Number((p as any).price)).filter(n => !isNaN(n));
+    this.productSvc.refresh();
+    effect(() => {
+      const normalized = this.products();
+      const prices = normalized.map(p => Number(p.price)).filter(n => !isNaN(n));
       const min = prices.length ? Math.min(...prices) : 0;
       const max = prices.length ? Math.max(...prices) : 0;
-      this.priceMin.set(min); this.priceMax.set(max);
-      this.filterMin.set(min); this.filterMax.set(max);
+      setTimeout(() => {
+        this.priceMin.set(min); this.priceMax.set(max);
+        this.filterMin.set(min); this.filterMax.set(max);
+      });
     });
 
     // ✅ deja el focus management como lo tenías si quieres

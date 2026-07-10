@@ -243,7 +243,7 @@
               </td>
               <td>{{ req.size || 'Única' }}</td>
               <td>{{ req.color || 'Único' }}</td>
-              <td class="critical-text">{{ req.currentStock }} unidades</td>
+              <td class="critical-text">{{ getLiveVariantStock(req) }} unidades</td>
               <td>
                 <span class="status-pill" [ngClass]="req.status">
                   {{ 
@@ -378,7 +378,7 @@
       
       <!-- Direct upload controls -->
       <div class="upload-controls">
-        <input type="file" id="prodImageFile" (change)="onImageFileSelected($event)" accept="image/*" style="display: none;" #fileInput />
+        <input type="file" id="prodImageFile" (change)="onImageFileSelected($event)" accept="image/*" style="display: none;" #fileInput multiple />
         <button type="button" class="btn-secondary-upload" (click)="fileInput.click()" [disabled]="isUploadingImage()">
           <span *ngIf="!isUploadingImage()">📁 Seleccionar Imagen...</span>
           <span *ngIf="isUploadingImage()">⌛ Subiendo imagen...</span>
