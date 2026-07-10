@@ -430,6 +430,13 @@ export class AdminComponent implements OnInit {
     return variant ? variant.stock : 0;
   }
 
+  addUrlImage(input: HTMLInputElement) {
+    const val = input.value.trim();
+    if (!val) return;
+    this.uploadedImages.update(imgs => [...imgs, val]);
+    input.value = '';
+  }
+
   goHome() {
     this.router.navigate(['/']);
   }

@@ -380,9 +380,14 @@
       <div class="upload-controls">
         <input type="file" id="prodImageFile" (change)="onImageFileSelected($event)" accept="image/*" style="display: none;" #fileInput multiple />
         <button type="button" class="btn-secondary-upload" (click)="fileInput.click()" [disabled]="isUploadingImage()">
-          <span *ngIf="!isUploadingImage()">📁 Seleccionar Imagen...</span>
-          <span *ngIf="isUploadingImage()">⌛ Subiendo imagen...</span>
+          <span *ngIf="!isUploadingImage()">📁 Subir de ordenador...</span>
+          <span *ngIf="isUploadingImage()">⌛ Subiendo...</span>
         </button>
+        
+        <div class="url-input-inline">
+          <input type="text" placeholder="O pega URL (Ej: assets/img/cami.BK.jpg)" #urlInput (keyup.enter)="addUrlImage(urlInput)" />
+          <button type="button" class="btn-add-url" (click)="addUrlImage(urlInput)">Añadir URL</button>
+        </div>
       </div>
     </div>
 
