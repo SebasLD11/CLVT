@@ -74,7 +74,7 @@
                     </td>
                     <td class="critical-text">{{ alert.stock }} unidades</td>
                     <td>
-                      <button class="secondary-btn" (click)="createManualAlert(alert)" style="padding: 4px 8px; font-size: 0.8rem;">Crear Alerta</button>
+                      <button class="row-btn" (click)="createManualAlert(alert)">Crear Alerta</button>
                     </td>
                   </tr>
               </tbody>
@@ -83,10 +83,10 @@
               <div class="empty-state">✅ Todo el inventario está por encima del nivel crítico.</div>
             </ng-template>
           </div>
-          <div class="pagination-controls" style="margin-top:16px; display:flex; justify-content:center; gap:16px;" *ngIf="analyticsData()?.lowStockAlerts?.length > 10">
-            <button class="secondary-btn" [disabled]="criticalStockPage() === 0" (click)="criticalStockPage.set(criticalStockPage() - 1)">Anterior</button>
-            <span>Página {{ criticalStockPage() + 1 }}</span>
-            <button class="secondary-btn" [disabled]="(criticalStockPage() + 1) * 10 >= (analyticsData()?.lowStockAlerts?.length || 0)" (click)="criticalStockPage.set(criticalStockPage() + 1)">Siguiente</button>
+          <div class="pagination-controls" style="margin-top:16px; display:flex; justify-content:center; gap:16px; align-items: center;" *ngIf="analyticsData()?.lowStockAlerts?.length > 10">
+            <button class="row-btn" [disabled]="criticalStockPage() === 0" (click)="criticalStockPage.set(criticalStockPage() - 1)">Anterior</button>
+            <span style="color: #9ca3af; font-size: 14px;">Página {{ criticalStockPage() + 1 }}</span>
+            <button class="row-btn" [disabled]="(criticalStockPage() + 1) * 10 >= (analyticsData()?.lowStockAlerts?.length || 0)" (click)="criticalStockPage.set(criticalStockPage() + 1)">Siguiente</button>
           </div>
         </div>
 
@@ -183,10 +183,10 @@
             </tr>
           </tbody>
         </table>
-        <div class="pagination-controls" style="margin-top:16px; display:flex; justify-content:center; gap:16px;" *ngIf="products().length > 10">
-          <button class="secondary-btn" [disabled]="productsPage() === 0" (click)="productsPage.set(productsPage() - 1)">Anterior</button>
-          <span>Página {{ productsPage() + 1 }}</span>
-          <button class="secondary-btn" [disabled]="(productsPage() + 1) * 10 >= products().length" (click)="productsPage.set(productsPage() + 1)">Siguiente</button>
+        <div class="pagination-controls" style="margin-top:16px; display:flex; justify-content:center; gap:16px; align-items: center;" *ngIf="products().length > 10">
+          <button class="row-btn" [disabled]="productsPage() === 0" (click)="productsPage.set(productsPage() - 1)">Anterior</button>
+          <span style="color: #9ca3af; font-size: 14px;">Página {{ productsPage() + 1 }}</span>
+          <button class="row-btn" [disabled]="(productsPage() + 1) * 10 >= products().length" (click)="productsPage.set(productsPage() + 1)">Siguiente</button>
         </div>
       </div>
 
@@ -226,10 +226,10 @@
               </tr>
             </tbody>
           </table>
-          <div class="pagination-controls" style="margin-top:16px; display:flex; justify-content:center; gap:16px;">
-            <button class="secondary-btn" [disabled]="transactionsPage() === 0" (click)="transactionsPage.set(transactionsPage() - 1)">Anterior</button>
-            <span>Página {{ transactionsPage() + 1 }}</span>
-            <button class="secondary-btn" [disabled]="(transactionsPage() + 1) * 10 >= stockTransactions().length" (click)="transactionsPage.set(transactionsPage() + 1)">Siguiente</button>
+          <div class="pagination-controls" style="margin-top:16px; display:flex; justify-content:center; gap:16px; align-items: center;" *ngIf="stockTransactions().length > 10">
+            <button class="row-btn" [disabled]="transactionsPage() === 0" (click)="transactionsPage.set(transactionsPage() - 1)">Anterior</button>
+            <span style="color: #9ca3af; font-size: 14px;">Página {{ transactionsPage() + 1 }}</span>
+            <button class="row-btn" [disabled]="(transactionsPage() + 1) * 10 >= stockTransactions().length" (click)="transactionsPage.set(transactionsPage() + 1)">Siguiente</button>
           </div>
         </div>
       </div>
@@ -326,8 +326,8 @@
               </td>
               <td>
                 <div class="row-actions">
-                  <button class="edit-btn" (click)="openEditUser(u)">✏️ Editar</button>
-                  <button class="action-btn" (click)="toggleUserRole(u)">
+                  <button class="row-btn edit" (click)="openEditUser(u)">Editar</button>
+                  <button class="row-btn" (click)="toggleUserRole(u)">
                     {{ u.role === 'admin' ? 'Hacer Miembro' : 'Hacer Admin' }}
                   </button>
                 </div>
@@ -367,8 +367,8 @@
               </td>
               <td>{{ c.validUntil ? (c.validUntil | date:'dd/MM/yyyy') : 'Sin Límite' }}</td>
               <td>
-                <button class="edit-btn" (click)="openEditCoupon(c)">✏️</button>
-                <button class="delete-btn" (click)="deleteCoupon(c._id)">🗑️</button>
+                <button class="row-btn edit" (click)="openEditCoupon(c)">Editar</button>
+                <button class="row-btn delete" (click)="deleteCoupon(c._id)">Eliminar</button>
               </td>
             </tr>
           </tbody>
