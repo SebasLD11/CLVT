@@ -90,7 +90,7 @@ export class AdminComponent implements OnInit {
   }
 
   fetchRestockRequests() {
-    this.http.get<any[]>(`${this.base}/api/admin/restock-requests`).subscribe(res => {
+    this.http.get<any[]>(`${this.base}/api/admin/restock-requests?t=${Date.now()}`).subscribe(res => {
       this.restockRequests.set(res);
     });
   }
@@ -102,7 +102,7 @@ export class AdminComponent implements OnInit {
   }
 
   fetchTransactions() {
-    this.http.get<any[]>(`${this.base}/api/admin/stock-transactions`).subscribe(res => {
+    this.http.get<any[]>(`${this.base}/api/admin/stock-transactions?t=${Date.now()}`).subscribe(res => {
       this.stockTransactions.set(res);
     });
   }
@@ -206,6 +206,9 @@ export class AdminComponent implements OnInit {
     if (this.productForm.invalid) return;
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
+
+    // Sync input fields to enteredSizes and enteredColors
+    this.onSizesOrColorsChange();
 
     const formVal = this.productForm.value;
     
@@ -378,29 +381,22 @@ export class AdminComponent implements OnInit {
     this.isUploadingImage.set(true);
     this.errorMessage.set(null);
 
-    let completed = 0;
+    const formData = new FormData();
     files.forEach(file => {
-      const formData = new FormData();
-      formData.append('image', file);
+      formData.append('images', file);
+    });
 
-      this.http.post<any>(`${this.base}/api/admin/upload-image`, formData).subscribe({
-        next: (res) => {
-          if (res && res.path) {
-            this.uploadedImages.update(imgs => [...imgs, res.path]);
-          }
-          completed++;
-          if (completed === files.length) {
-            this.isUploadingImage.set(false);
-          }
-        },
-        error: (err) => {
-          completed++;
-          if (completed === files.length) {
-            this.isUploadingImage.set(false);
-          }
-          this.errorMessage.set(err.error?.message || `Error al subir la imagen ${file.name}.`);
+    this.http.post<any>(`${this.base}/api/admin/upload-image`, formData).subscribe({
+      next: (res) => {
+        if (res && res.paths) {
+          this.uploadedImages.update(imgs => [...imgs, ...res.paths]);
         }
-      });
+        this.isUploadingImage.set(false);
+      },
+      error: (err) => {
+        this.isUploadingImage.set(false);
+        this.errorMessage.set(err.error?.message || 'Error al subir las imágenes.');
+      }
     });
   }
 

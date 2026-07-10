@@ -12,7 +12,7 @@ export class ProductService {
   products = signal<Product[]>([]);
 
   list(): Observable<Product[]> {
-    return this.http.get<any>(`${environment.apiUrl}/api/products`).pipe(
+    return this.http.get<any>(`${environment.apiUrl}/api/products?t=${Date.now()}`).pipe(
       map((data: any) => Array.isArray(data) ? data : (data?.items ?? []))
     );
   }

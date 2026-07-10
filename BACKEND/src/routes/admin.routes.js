@@ -35,12 +35,12 @@ router.delete('/products/:id', ctrl.deleteProduct);
 router.get('/stock-transactions', ctrl.getStockTransactions);
 router.put('/orders/:id/ship', ctrl.shipOrder);
 
-router.post('/upload-image', upload.single('image'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'no_file', message: 'No se ha proporcionado ninguna imagen.' });
+router.post('/upload-image', upload.array('images', 10), (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ error: 'no_file', message: 'No se han proporcionado imágenes.' });
   }
-  const relativePath = `uploads/products/${req.file.filename}`;
-  res.json({ ok: true, path: relativePath });
+  const paths = req.files.map(f => `uploads/products/${f.filename}`);
+  res.json({ ok: true, paths });
 });
 
 module.exports = router;
