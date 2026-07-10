@@ -170,7 +170,7 @@ export class AdminComponent implements OnInit {
   createManualAlert(alert: any) {
     if(!confirm('¿Crear alerta manual para este producto?')) return;
     const payload = {
-      productId: alert.productId,
+      productId: alert._id,
       size: alert.size,
       color: alert.color,
       currentStock: alert.stock

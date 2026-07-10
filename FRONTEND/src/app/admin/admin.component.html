@@ -153,10 +153,12 @@
           <tbody>
             <tr *ngFor="let p of paginatedProducts()">
               <td class="product-td">
-                <img [src]="p.images?.[0] || 'assets/img/placeholder.png'" alt="thumb" />
-                <div class="details">
-                  <span class="name">{{ p.name }}</span>
-                  <span class="desc">{{ p.description }}</span>
+                <div class="product-info-wrapper">
+                  <img [src]="p.images?.[0] || 'assets/img/placeholder.png'" alt="thumb" />
+                  <div class="details">
+                    <span class="name">{{ p.name }}</span>
+                    <span class="desc">{{ p.description }}</span>
+                  </div>
                 </div>
               </td>
               <td>{{ p.collectionTitle }}</td>
@@ -258,8 +260,10 @@
             <tr *ngFor="let req of restockRequests()">
               <td>{{ req.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
               <td class="product-td">
-                <img [src]="req.productId?.images?.[0] || 'assets/img/placeholder.png'" alt="thumb" />
-                <span>{{ req.productId?.name }}</span>
+                <div class="product-info-wrapper">
+                  <img [src]="req.productId?.images?.[0] || 'assets/img/placeholder.png'" alt="thumb" />
+                  <span>{{ req.productId?.name }}</span>
+                </div>
               </td>
               <td>{{ req.size || 'Única' }}</td>
               <td>{{ req.color || 'Único' }}</td>
@@ -340,10 +344,10 @@
 
     <!-- ================= COUPONS TAB ================= -->
     <div class="dashboard-section" *ngIf="activeTab() === 'coupons'">
-      <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h2>Gestión de Cupones</h2>
-        <button class="add-btn" (click)="openAddCoupon()">＋ Crear Cupón</button>
-      </div>
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h2>Gestión de Cupones</h2>
+          <button class="add-btn" (click)="openAddCoupon()">＋ Crear Cupón</button>
+        </div>
       
       <div class="table-wrapper">
         <table>
