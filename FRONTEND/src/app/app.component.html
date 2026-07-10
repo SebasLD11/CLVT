@@ -386,7 +386,7 @@
         <p class="modal-product-price">{{ selected()?.price | currency:'EUR' }}</p>
         
         <!-- DESCRIPCIÓN -->
-        <p class="product-desc" *ngIf="selected()?.description">
+        <p class="product-desc" *ngIf="selected()?.description" style="white-space: pre-wrap;">
           {{ selected()?.description }}
         </p>
 
