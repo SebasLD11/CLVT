@@ -28,6 +28,7 @@
 
     img {
       height: 36px;
+      filter: invert(1) brightness(2);
     }
 
     span {
@@ -83,7 +84,8 @@
 }
 
 .profile-content {
-  max-width: 1200px;
+  max-width: 1500px;
+  width: 100%;
   margin: 40px auto 0 auto;
   padding: 0 20px;
 

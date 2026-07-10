@@ -36,6 +36,7 @@ app.use(express.json({ limit: '1mb' }));
 const RECEIPTS_DIR = process.env.RECEIPTS_DIR || path.join(__dirname, 'uploads/receipts');
 fs.mkdirSync(RECEIPTS_DIR, { recursive: true });
 app.use('/receipts', express.static(RECEIPTS_DIR, { index:false, extensions:['pdf'] }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.get('/health', (_req, res) => res.status(200).json({ ok: true }));

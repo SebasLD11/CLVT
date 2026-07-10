@@ -46,6 +46,8 @@ export class AdminComponent implements OnInit {
   showProductModal = signal(false);
   editingProduct = signal<any | null>(null);
   productForm!: FormGroup;
+  uploadedImages = signal<string[]>([]);
+  isUploadingImage = signal(false);
 
   // Custom product options lists for variants grid
   enteredSizes = signal<string[]>([]);
@@ -134,6 +136,7 @@ export class AdminComponent implements OnInit {
     this.enteredSizes.set([]);
     this.enteredColors.set([]);
     this.variantStockMap.clear();
+    this.uploadedImages.set([]);
   }
 
   onSizesOrColorsChange() {
@@ -183,6 +186,7 @@ export class AdminComponent implements OnInit {
     this.enteredSizes.set(p.sizes || []);
     this.enteredColors.set(p.colors || []);
     this.variantStockMap.clear();
+    this.uploadedImages.set(p.images || []);
 
     if (p.variants && p.variants.length) {
       p.variants.forEach((v: any) => {
@@ -233,15 +237,9 @@ export class AdminComponent implements OnInit {
       });
     }
 
-    // Images parsing (use entered text, or placeholder if empty)
-    let images: string[] = [];
-    if (formVal.imageUrlInput) {
-      images = formVal.imageUrlInput.split(',').map((img: string) => img.trim()).filter(Boolean);
-    } else if (this.editingProduct()) {
-      images = this.editingProduct().images;
-    } else {
-      images = ['assets/img/placeholder.png'];
-    }
+    const images = this.uploadedImages().length > 0
+      ? this.uploadedImages()
+      : ['assets/img/placeholder.png'];
 
     const payload = {
       name: formVal.name,
@@ -370,6 +368,45 @@ export class AdminComponent implements OnInit {
         this.errorMessage.set(err.error?.message || 'Error al actualizar el envío.');
       }
     });
+  }
+
+  onImageFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+
+    this.isUploadingImage.set(true);
+    this.errorMessage.set(null);
+
+    this.http.post<any>(`${this.base}/api/admin/upload-image`, formData).subscribe({
+      next: (res) => {
+        this.isUploadingImage.set(false);
+        if (res && res.path) {
+          this.uploadedImages.update(imgs => [...imgs, res.path]);
+        }
+      },
+      error: (err) => {
+        this.isUploadingImage.set(false);
+        this.errorMessage.set(err.error?.message || 'Error al subir la imagen.');
+      }
+    });
+  }
+
+  removeUploadedImage(idx: number) {
+    this.uploadedImages.update(imgs => imgs.filter((_, i) => i !== idx));
+  }
+
+  resolveImageSrc(src: string): string {
+    if (!src) return 'assets/img/placeholder.png';
+    if (/^https?:\/\//i.test(src)) return src;
+    const cleaned = src.replace(/^\/+/, '');
+    if (cleaned.startsWith('uploads/')) {
+      return `${this.base}/${cleaned}`;
+    }
+    return `/${cleaned}`;
   }
 
   goHome() {

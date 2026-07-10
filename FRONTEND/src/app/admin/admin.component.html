@@ -348,12 +348,14 @@
       </div>
       <div class="form-group">
         <label for="prodTag">Etiqueta de Tienda</label>
-        <select id="prodTag" formControlName="tag">
+        <input type="text" id="prodTag" formControlName="tag" list="tagPresets" placeholder="Ej: new, best, sold-out..." />
+        <datalist id="tagPresets">
           <option value="new">Novedad (New)</option>
           <option value="best">Destacado (Best)</option>
           <option value="sale">Oferta (Sale)</option>
           <option value="drop">Edición Limitada (Drop)</option>
-        </select>
+          <option value="sold-out">Agotado (Sold-out)</option>
+        </datalist>
       </div>
     </div>
 
@@ -362,9 +364,26 @@
       <input type="text" id="prodCol" formControlName="collectionTitle" />
     </div>
 
-    <div class="form-group">
-      <label for="prodImages">URLs de Imágenes (Separadas por comas)</label>
-      <input type="text" id="prodImages" formControlName="imageUrlInput" placeholder="assets/img/prod1.png, assets/img/prod1_detail.png" />
+    <!-- DIRECT FILE UPLOAD FOR IMAGES -->
+    <div class="form-group images-upload-section">
+      <label>Imágenes del Producto</label>
+      
+      <!-- Uploaded images previews grid -->
+      <div class="uploaded-thumbnails" *ngIf="uploadedImages().length > 0">
+        <div class="thumb-wrapper" *ngFor="let img of uploadedImages(); let idx = index">
+          <img [src]="resolveImageSrc(img)" alt="preview" />
+          <button type="button" class="btn-remove" (click)="removeUploadedImage(idx)" title="Eliminar imagen">×</button>
+        </div>
+      </div>
+      
+      <!-- Direct upload controls -->
+      <div class="upload-controls">
+        <input type="file" id="prodImageFile" (change)="onImageFileSelected($event)" accept="image/*" style="display: none;" #fileInput />
+        <button type="button" class="btn-secondary-upload" (click)="fileInput.click()" [disabled]="isUploadingImage()">
+          <span *ngIf="!isUploadingImage()">📁 Seleccionar Imagen...</span>
+          <span *ngIf="isUploadingImage()">⌛ Subiendo imagen...</span>
+        </button>
+      </div>
     </div>
 
     <div class="form-grid">

@@ -64,9 +64,7 @@ export class ProfileComponent implements OnInit {
   }
 
   toggleEdit() {
-    if (this.isEditing()) {
-      this.initForm(); // reset form
-    }
+    this.initForm(); // Always load latest currentUser values into the form
     this.isEditing.set(!this.isEditing());
     this.errorMessage.set(null);
     this.successMessage.set(null);

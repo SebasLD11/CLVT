@@ -1,7 +1,15 @@
 // BACKEND/src/controllers/product.controller.js
 const Product = require('../models/Product');
 const FRONT = (process.env.FRONT_URL || 'http://localhost:4200').replace(/\/$/, '');
-const abs = p => /^https?:\/\//i.test(p) ? p : `${FRONT}/${String(p||'').replace(/^\//,'')}`;
+const BACK = (process.env.BACKEND_URL || 'http://localhost:5000').replace(/\/$/, '');
+const abs = p => {
+  if (/^https?:\/\//i.test(p)) return p;
+  const cleaned = String(p || '').replace(/^\//, '');
+  if (cleaned.startsWith('uploads/')) {
+    return `${BACK}/${cleaned}`;
+  }
+  return `${FRONT}/${cleaned}`;
+};
 
 const serialize = p => ({
   _id: String(p._id),

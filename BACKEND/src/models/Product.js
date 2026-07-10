@@ -6,7 +6,7 @@ const ProductSchema = new Schema(
     // 👇 NUEVO
     description: { type: String, default: '' },
     price: { type: Number, required: true }, // en EUR, por ejemplo 29.9
-    tag: { type: String, enum: ['new', 'best', 'sale', 'drop'], default: 'new' },
+    tag: { type: String, default: 'new' },
     images: { type: [String], default: [] }, // hasta 5 imágenes
     sizes: { type: [String], default: []},
     // ✅ NUEVO: tallas disponibles (subset de sizes)
