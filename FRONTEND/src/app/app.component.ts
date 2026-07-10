@@ -107,8 +107,12 @@ export class AppComponent {
   isCollapsed(title: string) { return this.collapsed().has(title); }
 
   constructor(){
-    // flag /checkout
-    const isR = (u: string) => u.startsWith('/checkout') || u.startsWith('/thanks');
+    const isR = (u: string) => 
+      u.startsWith('/checkout') || 
+      u.startsWith('/thanks') || 
+      u.startsWith('/login') || 
+      u.startsWith('/profile') || 
+      u.startsWith('/admin');
     this.isRouted.set(isR(this.router.url));
     this.router.events.pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => this.isRouted.set(isR(this.router.url)));

@@ -19,17 +19,13 @@ async function seed() {
   await mongoose.connect(uri, { dbName });
   console.log('[Seed] Connected.');
 
-  // Clean collections
-  console.log('[Seed] Cleaning existing data...');
-  await User.deleteMany({});
-  await Product.deleteMany({});
-  await RestockRequest.deleteMany({});
-  await StockTransaction.deleteMany({});
-
-  // 1. Create Admin User
-  console.log('[Seed] Creating admin user...');
-  const hashedAdminPassword = await bcrypt.hash('adminpassword123', 10);
-  const adminUser = await User.create({
+  // 1. Create Admin User if not exists
+  console.log('[Seed] Checking admin user...');
+  let adminUser = await User.findOne({ email: 'admin@clvt.com' });
+  if (!adminUser) {
+    console.log('[Seed] Creating admin user...');
+    const hashedAdminPassword = await bcrypt.hash('adminpassword123', 10);
+    adminUser = await User.create({
     email: 'admin@clvt.com',
     password: hashedAdminPassword,
     fullName: 'Administrador CLVT',
@@ -42,34 +38,40 @@ async function seed() {
       city: 'Madrid',
       province: 'Madrid',
       postalCode: '28001',
-      country: 'ES'
     }
   });
+  }
 
-  // 2. Create Regular Member User
-  console.log('[Seed] Creating member user...');
-  const hashedMemberPassword = await bcrypt.hash('memberpassword123', 10);
-  const memberUser = await User.create({
-    email: 'socio@clvt.com',
-    password: hashedMemberPassword,
-    fullName: 'Socio Cultivate',
-    phone: '+34 600 222 333',
-    memberId: 'CLVT-0452',
-    role: 'member',
-    status: 'active',
-    address: {
-      line1: 'Avenida de la Constitución 15',
-      city: 'Barcelona',
-      province: 'Barcelona',
-      postalCode: '08001',
-      country: 'ES'
-    }
-  });
+  // 2. Create Regular Member User if not exists
+  console.log('[Seed] Checking member user...');
+  let memberUser = await User.findOne({ email: 'socio@clvt.com' });
+  if (!memberUser) {
+    console.log('[Seed] Creating member user...');
+    const hashedMemberPassword = await bcrypt.hash('memberpassword123', 10);
+    memberUser = await User.create({
+      email: 'socio@clvt.com',
+      password: hashedMemberPassword,
+      fullName: 'Socio Cultivate',
+      phone: '+34 600 222 333',
+      memberId: 'CLVT-0452',
+      role: 'member',
+      status: 'active',
+      address: {
+        line1: 'Avenida de la Constitución 15',
+        city: 'Barcelona',
+        province: 'Barcelona',
+        postalCode: '08001',
+        country: 'ES'
+      }
+    });
+  }
 
   // 3. Create Products with Variants & Stock
-  console.log('[Seed] Creating products with variants and stock levels...');
-  
-  const p1 = await Product.create({
+  const productCount = await Product.countDocuments({});
+  if (productCount === 0) {
+    console.log('[Seed] Creating products with variants and stock levels...');
+    
+    const p1 = await Product.create({
     name: 'Sudadera CLVT Basic',
     description: 'Sudadera de algodón orgánico con capucha y logo CLVT bordado en el pecho.',
     price: 49.99,
@@ -169,6 +171,9 @@ async function seed() {
         });
       }
     }
+  }
+  } else {
+    console.log('[Seed] Database already has products. Skipping product seed.');
   }
 
   console.log('[Seed] Seeding completed successfully!');
