@@ -166,7 +166,7 @@ exports.updateMe = async (req, res, next) => {
 
 exports.getMyOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    const orders = await Order.find({ userId: req.user._id }).sort({ createdAt: -1 }).populate({ path: 'items.productId', select: 'collectionTitle tags' });
     res.json(orders);
   } catch (error) {
     next(error);

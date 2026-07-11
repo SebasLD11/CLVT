@@ -15,6 +15,12 @@ import { colorLabel } from '../utils/color.util';
   styleUrls: ['./checkout-summary.component.scss']
 })
 export class CheckoutSummaryComponent {
+  getItemSizeLabel(item: any): string {
+    if ((item.collectionTitle || item.productId?.collectionTitle) === 'SKATEBOARDS') return 'Medida';
+    if (item.name?.toLowerCase().includes('taller')) return 'Horas';
+    return 'Talla';
+  }
+
   cart = inject(CartService);
   api = inject(CheckoutService);
   colorLabel = colorLabel;

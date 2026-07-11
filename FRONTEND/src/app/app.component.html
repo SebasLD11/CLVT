@@ -416,7 +416,7 @@
 
         <!-- Selector de tallas -->
         <div class="sizes" *ngIf="selected()?.sizes?.length">
-          <span class="lbl">{{ selected()?.name?.toLowerCase().includes('taller') ? 'Horas:' : 'Talla:' }}</span>
+          <span class="lbl">{{ getItemSizeLabel(selected()) }}:</span>
           <div class="sizes-row">
             <button type="button"
               *ngFor="let s of selected()!.sizes"
@@ -469,7 +469,7 @@
       <div class="details">
         <p class="name">
           {{ it.name }}
-          <span *ngIf="it.size" class="muted">· {{ it.name?.toLowerCase().includes('taller') ? 'Horas' : 'Talla' }} {{ it.size }}</span>
+          <span *ngIf="it.size" class="muted">· {{ getItemSizeLabel(it) }} {{ it.size }}</span>
           <!-- 👇 NUEVO: color legible -->
           <span *ngIf="it.color || it.colorLabel" class="muted">· Color {{ it.colorLabel || colorLabel(it.color) }}</span>
         </p>

@@ -555,7 +555,7 @@
           <div>
             <p style="margin: 0; font-weight: 600; font-size: 15px; color: #fff;">{{ item.name }} <span style="color: #9ca3af; font-size: 13px; font-weight: normal; margin-left: 6px;">(x{{ item.qty }})</span></p>
             <p style="margin: 6px 0 0 0; font-size: 13px; color: #9ca3af;">
-              <span *ngIf="item.size">{{ item.productId?.tags?.includes('Taller') ? 'Horas' : 'Talla' }}: <span style="color: #d1d5db;">{{ item.size }}</span></span>
+              <span *ngIf="item.size">{{ getItemSizeLabel(item) }}: <span style="color: #d1d5db;">{{ item.size }}</span></span>
               <span *ngIf="item.size && item.color"> | </span>
               <span *ngIf="item.color">Color: <span style="color: #d1d5db;">{{ item.color }}</span></span>
             </p>

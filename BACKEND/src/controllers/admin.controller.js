@@ -48,7 +48,7 @@ exports.getAnalytics = async (req, res, next) => {
     const recentOrders = await Order.find({})
       .sort({ createdAt: -1 })
       .limit(10)
-      .populate({ path: 'items.productId', select: 'tags' })
+      .populate({ path: 'items.productId', select: 'tags collectionTitle' })
       .lean();
 
     res.json({

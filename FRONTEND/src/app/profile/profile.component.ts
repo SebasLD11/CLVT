@@ -14,6 +14,12 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
+  getItemSizeLabel(item: any): string {
+    if ((item.collectionTitle || item.productId?.collectionTitle) === 'SKATEBOARDS') return 'Medida';
+    if (item.name?.toLowerCase().includes('taller')) return 'Horas';
+    return 'Talla';
+  }
+
   auth = inject(AuthService);
   private fb = inject(FormBuilder);
   router = inject(Router);

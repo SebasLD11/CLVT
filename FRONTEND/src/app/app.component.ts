@@ -18,6 +18,12 @@ import { AuthService } from './services/auth.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  getItemSizeLabel(item: any): string {
+    if ((item.collectionTitle || item.productId?.collectionTitle) === 'SKATEBOARDS') return 'Medida';
+    if (item.name?.toLowerCase().includes('taller')) return 'Horas';
+    return 'Talla';
+  }
+
   private document = inject(DOCUMENT);
   private titleSvc = inject(Title);
   private metaSvc = inject(Meta);

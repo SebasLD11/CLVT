@@ -8,6 +8,7 @@ import { colorLabel as clabel, colorValue as cvalue } from '../utils/color.util'
 export interface CartItem {
   key: string; id: string; name: string; price: number; qty: number;
   img?: string; size?: string | null; color?: string | null; colorLabel?: string | null;
+  collectionTitle?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -61,6 +62,8 @@ export class CartService {
       const colorLabel = typeof i?.colorLabel === 'string' && i.colorLabel.trim()
         ? i.colorLabel.trim()
         : (color ? clabel(color) : null);
+      const collectionTitle = i?.collectionTitle ? String(i.collectionTitle) : null;
+
       // 🔁 Migración: si la clave antigua no trae color (formato id__size),
       // genera la nueva (id__size__color). Usamos 'ANY' cuando no hay color.
       let key = String(i?.key ?? '');
@@ -99,7 +102,8 @@ export class CartService {
         img: p.images?.[0],
         size: normSize,
         color: normColor,
-        colorLabel: normColorLabel
+        colorLabel: normColorLabel,
+        collectionTitle: p.collectionTitle
       });
     }
     this.save(items);

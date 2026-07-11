@@ -498,6 +498,12 @@ export class AdminComponent implements OnInit {
   }
 
   // --- Logistics Shipping ---
+  getItemSizeLabel(item: any): string {
+    if ((item.collectionTitle || item.productId?.collectionTitle) === 'SKATEBOARDS') return 'Medida';
+    if (item.name?.toLowerCase().includes('taller')) return 'Horas';
+    return 'Talla';
+  }
+
   openOrderDetails(order: any) {
     this.selectedOrderDetails.set(order);
     this.showOrderDetailsModal.set(true);

@@ -147,7 +147,7 @@
                 <div class="prod-details">
                   <span class="name">{{ item.name }}</span>
                   <span class="specs">
-                    {{ item.name?.toLowerCase().includes('taller') ? 'Horas' : 'Talla' }}: {{ item.size || 'Única' }} · Color: {{ item.colorLabel || item.color || 'Único' }} · Qty: {{ item.qty }}
+                    {{ getItemSizeLabel(item) }}: {{ item.size || 'Única' }} · Color: {{ item.colorLabel || item.color || 'Único' }} · Qty: {{ item.qty }}
                   </span>
                 </div>
                 <span class="price">{{ item.price * item.qty | currency:'EUR':'symbol':'1.2-2' }}</span>
