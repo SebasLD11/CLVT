@@ -3,25 +3,25 @@
     "short_name":  "CLVT",
     "icons":  [
                   {
-                      "src":  "/assets/img/LogoCLVT_192.png",
+                      "src":  "/assets/img/LogoCLVT_192.png?v=2",
                       "sizes":  "192x192",
                       "type":  "image/png",
                       "purpose":  "any"
                   },
                   {
-                      "src":  "/assets/img/LogoCLVT_192.png",
+                      "src":  "/assets/img/LogoCLVT_192.png?v=2",
                       "sizes":  "192x192",
                       "type":  "image/png",
                       "purpose":  "maskable"
                   },
                   {
-                      "src":  "/assets/img/LogoCLVT_512.png",
+                      "src":  "/assets/img/LogoCLVT_512.png?v=2",
                       "sizes":  "512x512",
                       "type":  "image/png",
                       "purpose":  "any"
                   },
                   {
-                      "src":  "/assets/img/LogoCLVT_512.png",
+                      "src":  "/assets/img/LogoCLVT_512.png?v=2",
                       "sizes":  "512x512",
                       "type":  "image/png",
                       "purpose":  "maskable"
