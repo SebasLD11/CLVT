@@ -114,7 +114,13 @@
                       {{ order.status }}
                     </span>
                   </td>
-                  <td>
+                  <td style="display: flex; gap: 8px; align-items: center;">
+                    <button class="action-btn" (click)="openOrderDetails(order)" style="background: #374151; color: white;">
+                      Ver Detalles
+                    </button>
+                    <button class="action-btn" *ngIf="order.status === 'review' || order.status === 'awaiting_payment'" (click)="markOrderAsPaid(order)" style="background: #10b981; color: white;">
+                      Marcar Pagado
+                    </button>
                     <button class="action-btn ship" *ngIf="order.status === 'paid'" (click)="openShipModal(order)">
                       Marcar Envío
                     </button>
@@ -516,7 +522,56 @@
   </div>
 </div>
 
-<!-- ================= LOGISTICS SHIP MODAL ================= -->
+<!-- ================= ORDER DETAILS MODAL ================= -->
+  <div class="modal-backdrop" *ngIf="showOrderDetailsModal()" (click)="showOrderDetailsModal.set(false)"></div>
+  <div class="ship-modal" *ngIf="showOrderDetailsModal()" style="max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+    <div class="modal-header">
+      <h2>Detalles del Pedido</h2>
+      <button class="close-btn" (click)="showOrderDetailsModal.set(false)">×</button>
+    </div>
+    <div class="modal-body" *ngIf="selectedOrderDetails() as order">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+        <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px;">
+          <h3 style="margin-top: 0; color: var(--primary-color);">Comprador</h3>
+          <p style="margin: 4px 0;"><strong>Nombre:</strong> {{ order.buyer?.fullName }}</p>
+          <p style="margin: 4px 0;"><strong>Email:</strong> {{ order.buyer?.email }}</p>
+          <p style="margin: 4px 0;"><strong>Teléfono:</strong> {{ order.buyer?.phone }}</p>
+          <p style="margin: 4px 0;"><strong>Método de pago:</strong> {{ order.paymentMethod === 'transfer' ? 'Transferencia/Bizum' : order.paymentMethod }}</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px;">
+          <h3 style="margin-top: 0; color: var(--primary-color);">Envío</h3>
+          <p style="margin: 4px 0;"><strong>Dirección:</strong> {{ order.shipping?.address }}</p>
+          <p style="margin: 4px 0;"><strong>Ciudad:</strong> {{ order.shipping?.city }}, {{ order.shipping?.postalCode }}</p>
+          <p style="margin: 4px 0;"><strong>País:</strong> {{ order.shipping?.country }}</p>
+          <p style="margin: 4px 0;"><strong>Estado:</strong> {{ order.status | uppercase }}</p>
+        </div>
+      </div>
+
+      <h3 style="margin-bottom: 12px;">Productos</h3>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+        <div *ngFor="let item of order.items" style="display: flex; justify-content: space-between; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px;">
+          <div>
+            <p style="margin: 0; font-weight: bold;">{{ item.name }} (x{{ item.qty }})</p>
+            <p style="margin: 4px 0 0 0; font-size: 12px; color: #9ca3af;">
+              <span *ngIf="item.size">Talla: {{ item.size }}</span>
+              <span *ngIf="item.size && item.color"> | </span>
+              <span *ngIf="item.color">Color: {{ item.color }}</span>
+            </p>
+          </div>
+          <div style="font-weight: bold;">
+            {{ item.price | currency:'EUR':'symbol':'1.2-2' }}
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 16px; font-size: 18px; font-weight: bold;">
+        <span>Total Pago:</span>
+        <span style="color: var(--primary-color);">{{ order.total | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= LOGISTICS SHIP MODAL ================= -->
 <div class="modal-backdrop" *ngIf="showShipModal()" (click)="showShipModal.set(false)"></div>
 <div class="ship-modal" *ngIf="showShipModal()">
   <header>

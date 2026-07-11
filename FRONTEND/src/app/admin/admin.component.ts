@@ -117,6 +117,8 @@ export class AdminComponent implements OnInit {
   receiveStockQty = 1;
 
   // SHIP ORDER FORM
+  showOrderDetailsModal = signal(false);
+  selectedOrderDetails = signal<any | null>(null);
   showShipModal = signal(false);
   selectedOrderToShip = signal<any | null>(null);
   shipForm = this.fb.group({
@@ -496,6 +498,25 @@ export class AdminComponent implements OnInit {
   }
 
   // --- Logistics Shipping ---
+  openOrderDetails(order: any) {
+    this.selectedOrderDetails.set(order);
+    this.showOrderDetailsModal.set(true);
+  }
+
+  markOrderAsPaid(order: any) {
+    if (!confirm(`¿Confirmar recepción de pago para el pedido de ${order.buyer?.fullName || 'este cliente'}?`)) return;
+    
+    this.http.put(`${this.base}/api/admin/orders/${order._id}/pay`, {}).subscribe({
+      next: () => {
+        this.successMessage.set('Pedido marcado como Pagado.');
+        this.fetchAnalytics();
+      },
+      error: (err) => {
+        this.errorMessage.set(err.error?.message || 'Error al confirmar pago.');
+      }
+    });
+  }
+
   openShipModal(order: any) {
     this.selectedOrderToShip.set(order);
     this.shipForm.patchValue({ carrier: 'Correos', trackingNumber: '' });

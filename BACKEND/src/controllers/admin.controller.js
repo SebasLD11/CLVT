@@ -73,6 +73,21 @@ exports.getUsers = async (req, res, next) => {
   }
 };
 
+// PUT /api/admin/orders/:id/pay
+exports.payOrder = async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ error: 'not_found', message: 'Pedido no encontrado.' });
+    
+    order.status = 'paid';
+    await order.save();
+    
+    res.json({ ok: true, order });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // PUT /api/admin/users/:id
 exports.updateUser = async (req, res, next) => {
   try {

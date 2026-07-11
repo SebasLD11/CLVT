@@ -35,6 +35,7 @@ router.post('/products', ctrl.addProduct);
 router.put('/products/:id', ctrl.updateProduct);
 router.delete('/products/:id', ctrl.deleteProduct);
 router.get('/stock-transactions', ctrl.getStockTransactions);
+router.put('/orders/:id/pay', ctrl.payOrder);
 router.put('/orders/:id/ship', ctrl.shipOrder);
 
 router.get('/coupons', ctrl.getCoupons);
