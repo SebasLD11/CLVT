@@ -271,10 +271,10 @@
               <td style="vertical-align: top;">
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                   <div *ngFor="let req of group.requests" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px;">
-                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                      <span style="font-weight: 600; color: #fff;">{{ req.size || 'Única' }} - {{ req.color || 'Único' }}</span>
-                      <span class="critical-text" style="font-size: 12px; font-weight: bold;">{{ getLiveVariantStock(req) }} ud. restantes</span>
-                      <span class="status-pill" [ngClass]="req.status" style="font-size: 10px; width: fit-content; margin-top: 2px;">
+                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                      <span style="font-weight: 600; color: #fff; min-width: 120px;">{{ req.size || 'Única' }} - {{ req.color || 'Único' }}</span>
+                      <span class="critical-text" style="font-size: 12px; font-weight: bold; margin-left: 10px;">{{ getLiveVariantStock(req) }} ud. restantes</span>
+                      <span class="status-pill" [ngClass]="req.status" style="font-size: 10px; width: fit-content; margin-top: 0px;">
                         {{ 
                           req.status === 'pending' ? 'Bajo stock' : 
                           req.status === 'ordered' ? 'Pedido al Proveedor' : 
@@ -299,10 +299,10 @@
             </tr>
           </tbody>
           </table>
-          <div class="pagination-controls" style="margin-top:16px; display:flex; justify-content:center; gap:16px; align-items: center;" *ngIf="restockRequests().length > 10">
+          <div class="pagination-controls" style="margin-top:16px; display:flex; justify-content:center; gap:16px; align-items: center;" *ngIf="restockRequests().length > 5">
             <button class="row-btn" [disabled]="restockPage() === 0" (click)="restockPage.set(restockPage() - 1)">Anterior</button>
             <span style="color: #9ca3af; font-size: 14px;">Página {{ restockPage() + 1 }}</span>
-            <button class="row-btn" [disabled]="(restockPage() + 1) * 10 >= restockRequests().length" (click)="restockPage.set(restockPage() + 1)">Siguiente</button>
+            <button class="row-btn" [disabled]="(restockPage() + 1) * 5 >= restockRequests().length" (click)="restockPage.set(restockPage() + 1)">Siguiente</button>
           </div>
           <ng-template #noRestocks>
           <div class="empty-state">📦 No hay alertas de reposición generadas por bajo stock.</div>

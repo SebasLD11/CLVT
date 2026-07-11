@@ -76,8 +76,8 @@ export class AdminComponent implements OnInit {
   restockPage = signal(0);
   paginatedRestockRequests = computed(() => {
     const all = this.groupedRestockRequests();
-    const start = this.restockPage() * 10;
-    return all.slice(start, start + 10);
+    const start = this.restockPage() * 5;
+    return all.slice(start, start + 5);
   });
   stockTransactions = signal<any[]>([]);
   transactionsPage = signal(0);
