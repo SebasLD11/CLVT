@@ -524,49 +524,51 @@
 
 <!-- ================= ORDER DETAILS MODAL ================= -->
   <div class="modal-backdrop" *ngIf="showOrderDetailsModal()" (click)="showOrderDetailsModal.set(false)"></div>
-  <div class="ship-modal" *ngIf="showOrderDetailsModal()" style="max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
-    <div class="modal-header">
+  <div class="user-modal" *ngIf="showOrderDetailsModal()">
+    <header>
       <h2>Detalles del Pedido</h2>
       <button class="close-btn" (click)="showOrderDetailsModal.set(false)">×</button>
-    </div>
-    <div class="modal-body" *ngIf="selectedOrderDetails() as order">
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
-        <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px;">
-          <h3 style="margin-top: 0; color: var(--primary-color);">Comprador</h3>
-          <p style="margin: 4px 0;"><strong>Nombre:</strong> {{ order.buyer?.fullName }}</p>
-          <p style="margin: 4px 0;"><strong>Email:</strong> {{ order.buyer?.email }}</p>
-          <p style="margin: 4px 0;"><strong>Teléfono:</strong> {{ order.buyer?.phone }}</p>
-          <p style="margin: 4px 0;"><strong>Método de pago:</strong> {{ order.paymentMethod === 'transfer' ? 'Transferencia/Bizum' : order.paymentMethod }}</p>
+    </header>
+    <div class="modal-body" *ngIf="selectedOrderDetails() as order" style="color: #e5e7eb;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+        <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+          <h3 style="margin-top: 0; color: #10b981; font-size: 16px; margin-bottom: 12px; font-weight: 600;">Comprador</h3>
+          <p style="margin: 6px 0; font-size: 14px;"><strong style="color: #fff;">Nombre:</strong> {{ order.buyer?.fullName }}</p>
+          <p style="margin: 6px 0; font-size: 14px;"><strong style="color: #fff;">Email:</strong> {{ order.buyer?.email }}</p>
+          <p style="margin: 6px 0; font-size: 14px;"><strong style="color: #fff;">Teléfono:</strong> {{ order.buyer?.phone }}</p>
+          <p style="margin: 6px 0; font-size: 14px;"><strong style="color: #fff;">Método de pago:</strong> {{ order.paymentMethod === 'transfer' ? 'Transferencia/Bizum' : order.paymentMethod }}</p>
         </div>
-        <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px;">
-          <h3 style="margin-top: 0; color: var(--primary-color);">Envío</h3>
-          <p style="margin: 4px 0;"><strong>Dirección:</strong> {{ order.shipping?.address }}</p>
-          <p style="margin: 4px 0;"><strong>Ciudad:</strong> {{ order.shipping?.city }}, {{ order.shipping?.postalCode }}</p>
-          <p style="margin: 4px 0;"><strong>País:</strong> {{ order.shipping?.country }}</p>
-          <p style="margin: 4px 0;"><strong>Estado:</strong> {{ order.status | uppercase }}</p>
+        <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+          <h3 style="margin-top: 0; color: #10b981; font-size: 16px; margin-bottom: 12px; font-weight: 600;">Envío</h3>
+          <p style="margin: 6px 0; font-size: 14px;"><strong style="color: #fff;">Dirección:</strong> {{ order.shipping?.address }}</p>
+          <p style="margin: 6px 0; font-size: 14px;"><strong style="color: #fff;">Ciudad:</strong> {{ order.shipping?.city }}, {{ order.shipping?.postalCode }}</p>
+          <p style="margin: 6px 0; font-size: 14px;"><strong style="color: #fff;">País:</strong> {{ order.shipping?.country }}</p>
+          <p style="margin: 6px 0; font-size: 14px;"><strong style="color: #fff;">Estado del Pedido:</strong> 
+            <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-left: 6px;">{{ order.status | uppercase }}</span>
+          </p>
         </div>
       </div>
 
-      <h3 style="margin-bottom: 12px;">Productos</h3>
-      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
-        <div *ngFor="let item of order.items" style="display: flex; justify-content: space-between; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px;">
+      <h3 style="margin-bottom: 16px; font-size: 16px; color: #fff; font-weight: 600;">Productos Seleccionados</h3>
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+        <div *ngFor="let item of order.items" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;">
           <div>
-            <p style="margin: 0; font-weight: bold;">{{ item.name }} (x{{ item.qty }})</p>
-            <p style="margin: 4px 0 0 0; font-size: 12px; color: #9ca3af;">
-              <span *ngIf="item.size">Talla: {{ item.size }}</span>
+            <p style="margin: 0; font-weight: 600; font-size: 15px; color: #fff;">{{ item.name }} <span style="color: #9ca3af; font-size: 13px; font-weight: normal; margin-left: 6px;">(x{{ item.qty }})</span></p>
+            <p style="margin: 6px 0 0 0; font-size: 13px; color: #9ca3af;">
+              <span *ngIf="item.size">Talla: <span style="color: #d1d5db;">{{ item.size }}</span></span>
               <span *ngIf="item.size && item.color"> | </span>
-              <span *ngIf="item.color">Color: {{ item.color }}</span>
+              <span *ngIf="item.color">Color: <span style="color: #d1d5db;">{{ item.color }}</span></span>
             </p>
           </div>
-          <div style="font-weight: bold;">
+          <div style="font-weight: 700; font-size: 16px; color: #fff;">
             {{ item.price | currency:'EUR':'symbol':'1.2-2' }}
           </div>
         </div>
       </div>
 
-      <div style="display: flex; justify-content: flex-end; gap: 16px; font-size: 18px; font-weight: bold;">
-        <span>Total Pago:</span>
-        <span style="color: var(--primary-color);">{{ order.total | currency:'EUR':'symbol':'1.2-2' }}</span>
+      <div style="display: flex; justify-content: flex-end; align-items: center; gap: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08);">
+        <span style="font-size: 16px; color: #9ca3af;">Total a Pagar:</span>
+        <span style="font-size: 24px; font-weight: 700; color: #10b981;">{{ order.total | currency:'EUR':'symbol':'1.2-2' }}</span>
       </div>
     </div>
   </div>
