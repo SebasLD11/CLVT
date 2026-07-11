@@ -162,7 +162,10 @@ async function buildSummary(req, { items, buyer, discountCode, shipping }) {
   let shippingSel = shipping || null;
 
   if (!shippingSel) shippingOptions = quoteOptions(buyer);
-  if (baseGross >= FREE_SHIPPING) {
+  
+  const allTaller = dbProducts.length > 0 && dbProducts.every(p => p.tag && p.tag.toLowerCase() === 'taller');
+
+  if (baseGross >= FREE_SHIPPING || allTaller) {
     shippingOptions = (shippingOptions || []).map(o => ({ ...o, cost: 0 }));
     if (shippingSel) shippingSel = { ...shippingSel, cost: 0 };
   }
