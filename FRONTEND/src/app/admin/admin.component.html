@@ -247,46 +247,48 @@
         <table *ngIf="restockRequests().length > 0; else noRestocks">
           <thead>
             <tr>
-              <th>Fecha Alerta</th>
-              <th>Producto</th>
-              <th>Talla</th>
-              <th>Color</th>
-              <th>Stock Restante</th>
-              <th>Estado</th>
-              <th>Acción</th>
+              <th style="width: 25%;">Producto</th>
+              <th>Variantes en Alerta & Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let req of paginatedRestockRequests()">
-              <td>{{ req.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
-              <td class="product-td">
+            <tr *ngFor="let group of paginatedRestockRequests()">
+              <td class="product-td" style="vertical-align: top;">
                 <div class="product-info-wrapper">
-                  <img [src]="req.productId?.images?.[0] || 'assets/img/placeholder.png'" alt="thumb" />
-                  <span>{{ req.productId?.name }}</span>
+                  <img [src]="group.product?.images?.[0] || 'assets/img/placeholder.png'" alt="thumb" />
+                  <div class="details">
+                    <span class="name">{{ group.product?.name }}</span>
+                    <span class="desc" style="font-size: 11px; color: #9ca3af;">{{ group.requests.length }} variantes afectadas</span>
+                  </div>
                 </div>
               </td>
-              <td>{{ req.size || 'Única' }}</td>
-              <td>{{ req.color || 'Único' }}</td>
-              <td class="critical-text">{{ getLiveVariantStock(req) }} unidades</td>
-              <td>
-                <span class="status-pill" [ngClass]="req.status">
-                  {{ 
-                    req.status === 'pending' ? 'Bajo stock' : 
-                    req.status === 'ordered' ? 'Pedido al Proveedor' : 
-                    req.status === 'received' ? 'Recibido' : req.status
-                  }}
-                </span>
-              </td>
-              <td>
-                <div class="row-actions" *ngIf="req.status !== 'received'">
-                  <button class="row-btn restock-order" *ngIf="req.status === 'pending'" (click)="updateRestockStatus(req, 'ordered')">
-                    Marcar Pedido
-                  </button>
-                  <button class="row-btn restock-received" (click)="updateRestockStatus(req, 'received')">
-                    Ingresar Stock
-                  </button>
+              <td style="vertical-align: top;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div *ngFor="let req of group.requests" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px;">
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                      <span style="font-weight: 600; color: #fff;">{{ req.size || 'Única' }} - {{ req.color || 'Único' }}</span>
+                      <span class="critical-text" style="font-size: 12px; font-weight: bold;">{{ getLiveVariantStock(req) }} ud. restantes</span>
+                      <span class="status-pill" [ngClass]="req.status" style="font-size: 10px; width: fit-content; margin-top: 2px;">
+                        {{ 
+                          req.status === 'pending' ? 'Bajo stock' : 
+                          req.status === 'ordered' ? 'Pedido al Proveedor' : 
+                          req.status === 'received' ? 'Recibido' : req.status
+                        }}
+                      </span>
+                    </div>
+                    <div>
+                      <div class="row-actions" *ngIf="req.status !== 'received'">
+                        <button class="row-btn restock-order" *ngIf="req.status === 'pending'" (click)="updateRestockStatus(req, 'ordered')">
+                          Marcar Pedido
+                        </button>
+                        <button class="row-btn restock-received" (click)="updateRestockStatus(req, 'received')">
+                          Ingresar Stock
+                        </button>
+                      </div>
+                      <span class="completed-restock" *ngIf="req.status === 'received'" style="font-size: 12px; color: #10b981; font-weight: bold;">Completado</span>
+                    </div>
+                  </div>
                 </div>
-                <span class="completed-restock" *ngIf="req.status === 'received'">Completado</span>
               </td>
             </tr>
           </tbody>

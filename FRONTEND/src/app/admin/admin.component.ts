@@ -50,9 +50,32 @@ export class AdminComponent implements OnInit {
   users = signal<any[]>([]);
   coupons = signal<any[]>([]);
   restockRequests = signal<any[]>([]);
+  groupedRestockRequests = computed(() => {
+    const requests = this.restockRequests() || [];
+    const groups = new Map<string, any>();
+    
+    for (const req of requests) {
+      if (!req.productId) continue;
+      const pId = req.productId._id || req.productId;
+      if (!groups.has(pId)) {
+        groups.set(pId, {
+          product: req.productId,
+          createdAt: req.createdAt,
+          requests: []
+        });
+      }
+      groups.get(pId).requests.push(req);
+    }
+    
+    // Sort by most recent alert first
+    return Array.from(groups.values()).sort((a: any, b: any) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  });
+  
   restockPage = signal(0);
   paginatedRestockRequests = computed(() => {
-    const all = this.restockRequests() || [];
+    const all = this.groupedRestockRequests();
     const start = this.restockPage() * 10;
     return all.slice(start, start + 10);
   });
