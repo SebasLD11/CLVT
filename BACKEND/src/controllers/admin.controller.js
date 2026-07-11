@@ -16,6 +16,8 @@ exports.getAnalytics = async (req, res, next) => {
 
     const totalMembers = await User.countDocuments({ role: 'member', status: 'active' });
 
+    const activeRestocks = await RestockRequest.find({ status: { $in: ['pending', 'ordered'] } }).lean();
+
     // Low stock warnings
     const products = await Product.find({});
     const lowStockAlerts = [];
@@ -23,13 +25,20 @@ exports.getAnalytics = async (req, res, next) => {
       if (p.variants && p.variants.length) {
         p.variants.forEach(v => {
           if (v.stock <= 5) {
-            lowStockAlerts.push({
-              _id: p._id,
-              name: p.name,
-              size: v.size,
-              color: v.color,
-              stock: v.stock
-            });
+            const hasAlert = activeRestocks.some(r => 
+              r.productId.toString() === p._id.toString() && 
+              r.size === (v.size || '') && 
+              r.color === (v.color || '')
+            );
+            if (!hasAlert) {
+              lowStockAlerts.push({
+                _id: p._id,
+                name: p.name,
+                size: v.size,
+                color: v.color,
+                stock: v.stock
+              });
+            }
           }
         });
       }
