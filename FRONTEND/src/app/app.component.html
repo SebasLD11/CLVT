@@ -416,7 +416,7 @@
 
         <!-- Selector de tallas -->
         <div class="sizes" *ngIf="selected()?.sizes?.length">
-          <span class="lbl">{{ selected()?.tags?.includes('Taller') ? 'Horas:' : 'Talla:' }}</span>
+          <span class="lbl">{{ selected()?.name?.toLowerCase().includes('taller') ? 'Horas:' : 'Talla:' }}</span>
           <div class="sizes-row">
             <button type="button"
               *ngFor="let s of selected()!.sizes"
